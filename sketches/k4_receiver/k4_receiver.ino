@@ -126,10 +126,10 @@ void fireFirework(String message) {
   digitalWrite(STATUS_PIN, HIGH);
     
   //Serial.println("Chunk 2 : "+chunk2);
-  int nbOfRelayToFire = getValue(message,';',4).toInt();
+  int nbOfRelayToFire = getValue(message,';',5).toInt();
   
   //Activation des relays! feu!!
-  int chunkNumber = 5;
+  int chunkNumber = 6;
   for(int i=0;i<nbOfRelayToFire;i++) 
   {     
      int relayToFire = getValue(message,';',chunkNumber + i).toInt(); //Numéro de relay à déclencher (1..16)
@@ -244,8 +244,9 @@ void loop() {
     if (payload.length() >= 1 && payload.charAt(0) == BEGIN_TRAME) {
 
       //Message description
-      String senderAddress = getValue(payload,';',1);
-      String receiverAddress = getValue(payload,';',2);
+      String frameId = getValue(payload,';',1);
+      String senderAddress = getValue(payload,';',2);
+      String receiverAddress = getValue(payload,';',3);
 
       //is this message for me ?
       if (receiverAddress == RECEIVER_ID) {
@@ -253,7 +254,7 @@ void loop() {
         //Ok send acknownledgement
         sendAck(payload);  
 
-        String order = getValue(payload,';',3);
+        String order = getValue(payload,';',4);
 
         if (DEBUG) {
           Serial.println("Received order : "+order+" from sender with id : "+senderAddress);    
@@ -264,7 +265,7 @@ void loop() {
         }
 
         if (order == "OHM") {
-          int relayToCheck = getValue(payload,';',4).toInt();
+          int relayToCheck = getValue(payload,';',5).toInt();
           checkResistance(relayToCheck);
         }     
 

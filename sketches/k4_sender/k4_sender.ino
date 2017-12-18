@@ -1,20 +1,28 @@
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
+// pin definitions
+#define I2C_ADDRESS 0x3C
 
+#include "SSD1306Ascii.h"
+#include "SSD1306AsciiAvrI2c.h"
+
+SSD1306AsciiAvrI2c oled;
 #include <SPI.h>
 #include <LoRa.h>
 
-#define DEBUG 1
-
-#define OLED_RESET D0  // GPIO0
-Adafruit_SSD1306 display(OLED_RESET);
+#define DEBUG 0
 
 const long freq = 868E6;
 const int SF = 9;
-const int retryMessageSending = 2;
+const int RETRY_MESSAGE_SENDING = 2;
 //In Ms
 const int waitForAck = 200;
 const long bw = 125E3;
+
+const String ACK_OK = "ACK_OK";
+const String ACK_KO = "ACK_KO"; 
+const char END_FRAME = '|';
+const int MAX_FRAME_LENGTH = 255;
+const String RECEIVER_ADDRESS = "0";
+const char FRAME_SEPARATOR = ';';
 
 int counter = 1, messageLostCounter = 0;
 
@@ -24,12 +32,15 @@ void setup() {
   Serial.begin(115200);
   while (!Serial);
 
-  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3C (for the 64x48)
-  //display.display();  
-  //display.clearDisplay();
+  oled.begin(&Adafruit128x64, I2C_ADDRESS);
+  oled.setFont(Adafruit5x7);
+  oled.clear();  
+  //delay(2000);
+  
+  //InitScreen();
 
   //Set LoRa Pins to work with Wemos
-  LoRa.setPins(16, 17, 15); // set CS, reset, IRQ pin
+  //LoRa.setPins(16, 17, 15); // set CS, reset, IRQ pin
 
   if (DEBUG)
     Serial.println("K4 Sender");
@@ -54,53 +65,112 @@ void setup() {
   }
 }
 
-void clearScreen() {
-  // Efface l'écran et positionne le curseur dans le coin supérieur gauche - clear display and set cursor on the top left corner
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(WHITE);
-  display.setCursor(0,0);
+void displayOnScreen(String message) {    
+  
+  oled.println(message);
+    
+  if (DEBUG) {
+    Serial.println("Message a afficher : ");
+    Serial.println(message);
+  }
 }
 
 void loop() {
   
-  clearScreen();
+  //If nothing availbale on Serial just return...
+  if (!Serial.available()) return;
 
-  display.println("Temp.");  
-  display.println(" c");
-  display.display();
+  //First Read Frame from Serial
+  String payload = "";
+  int frameLenght = 0;  
 
-  String message = "Hello " + String(counter);
+  while (Serial.available() > 0 || frameLenght >= MAX_FRAME_LENGTH) {
+    char received = Serial.read();
+    payload.concat(received); 
+
+    frameLenght++;
+    
+    if (received == END_FRAME) 
+      break;
+
+    delay(10);
+  }
+
+  counter++;
   
-  sendMessage(message);
+  displayOnScreen("Received (" + String(counter) + ") : " + payload);
+  
+  
+  //if (payload == "") return;
+ 
+  if (DEBUG) {
+    Serial.print("Received: ");
+    Serial.print(payload); 
+  }
+
+  String frameId = getValue(payload, FRAME_SEPARATOR, 1);
+  String senderAddress = getValue(payload, FRAME_SEPARATOR, 2);
+  //Parse message here...to get if message receiver address
+  String receiverAddress = getValue(payload, FRAME_SEPARATOR, 3);
+  
+  //payload is for me :)
+  if (receiverAddress == RECEIVER_ADDRESS) {
+    String order = getValue(payload, FRAME_SEPARATOR, 4);
+    if (order == "PING") {
+      sendAck(true, frameId, receiverAddress, senderAddress);
+    }
+    else {
+      sendAck(false, frameId, receiverAddress, senderAddress);
+    }
+
+    //Done here!
+    return;
+  }
+   
+  //Will do that later
+  sendMessage(payload);
   
   int nackCounter = 0;
-  while (!receiveAck(message) && nackCounter <= retryMessageSending) {
+  while (!receiveAck(payload) && nackCounter <= RETRY_MESSAGE_SENDING) {
 
-    Serial.println(" refused ");
-    Serial.print(nackCounter);
-    //LoRa.sleep();
-    //delay(1000);
-    sendMessage(message);
+    if (DEBUG) {
+       Serial.println("Refused...");
+       Serial.print(nackCounter);
+    }
+
+    //Send message again...
+    sendMessage(payload);
     nackCounter++;
   }
 
-  if (nackCounter >= retryMessageSending) {
+  if (nackCounter >= RETRY_MESSAGE_SENDING) {
+    
     if (DEBUG) {
       Serial.println("");
       Serial.println("--------------- MESSAGE LOST ---------------------");
-    }
-    messageLostCounter++;
-    //delay(100);
+    }    
+
+    sendAck(false, frameId, senderAddress, receiverAddress);
   } else {
     if (DEBUG)
-      Serial.println("Acknowledged ");
-  } 
+      Serial.println("Acknowledged...");
 
-  counter++;
+    sendAck(true, frameId, senderAddress, receiverAddress);
+  }  
 }
 
-bool receiveAck(String message) {
+void sendAck(bool isOk, String frameId, String senderId, String receiverId) {
+  if (isOk) {
+    Serial.print("@;" + frameId + ";" + receiverId + ";" + senderId + ";" + ACK_OK + ";|");
+    displayOnScreen("@;" + frameId + ";" + receiverId + ";" + senderId + ";" + ACK_OK + ";|");
+  }
+  else {
+    Serial.print("@;" + frameId + ";" + receiverId + ";" + senderId + ";" + ACK_KO + ";|");
+    displayOnScreen("@;" + frameId + ";" + receiverId + ";" + senderId + ";" + ACK_KO + ";|");
+  }
+}
+
+bool receiveAck(String payload) {
   String ack;
 
   if (DEBUG)  
@@ -116,9 +186,9 @@ bool receiveAck(String message) {
       }
       int check = 0;
       // Serial.print("///");
-      for (int i = 0; i < message.length(); i++) {
-        check += message[i];
-        //   Serial.print(message[i]);
+      for (int i = 0; i < payload.length(); i++) {
+        check += payload[i];
+        //   Serial.print(payload[i]);
       }
       /*    Serial.print("/// ");
           Serial.println(check);
@@ -130,7 +200,8 @@ bool receiveAck(String message) {
         Serial.print(check);
       }
       if (ack.toInt() == check) {
-        Serial.print(" Checksum OK ");
+        if (DEBUG)
+          Serial.print(" Checksum OK ");
         stat = true;
       }
     }
@@ -138,14 +209,39 @@ bool receiveAck(String message) {
   return stat;
 }
 
-void sendMessage(String message) {
+String getValue(String data, char separator, int index) 
+{
+  int maxIndex = data.length()-1;
+  int j=0;
+  String chunkVal = "";
+  
+  for(int i=0;i<=maxIndex && j<=index;i++) {    
+    if (data[i]==separator) 
+    {
+      j++;
+      
+      if (j>index) 
+      {
+        chunkVal.trim();
+        return chunkVal;
+      }
+      
+      chunkVal=""; 
+    }    
+    else {
+       chunkVal.concat(data[i]);
+    }
+  }  
+}
+
+void sendMessage(String payload) {
   if (DEBUG) {
-     Serial.print("Sending message : ");
-     Serial.print(message);
+     Serial.print("Sending payload : ");
+     Serial.print(payload);
   }
   
   // send packet
   LoRa.beginPacket();
-  LoRa.print(message);
+  LoRa.print(payload);
   LoRa.endPacket();
 }
