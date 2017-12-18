@@ -20,7 +20,7 @@ const long bw = 125E3;
 const String ACK_OK = "ACK_OK";
 const String ACK_KO = "ACK_KO"; 
 const char END_FRAME = '|';
-const int MAX_FRAME_LENGTH = 255;
+const int MAX_FRAME_LENGTH = 50;
 const String RECEIVER_ADDRESS = "0";
 const char FRAME_SEPARATOR = ';';
 
@@ -29,7 +29,7 @@ int counter = 1, messageLostCounter = 0;
 void setup() {
 
   //Set Serial baudrate
-  Serial.begin(115200);
+  Serial.begin(9600);
   while (!Serial);
 
   oled.begin(&Adafruit128x64, I2C_ADDRESS);
@@ -84,21 +84,22 @@ void loop() {
   String payload = "";
   int frameLenght = 0;  
 
-  while (Serial.available() > 0 || frameLenght >= MAX_FRAME_LENGTH) {
-    char received = Serial.read();
-    payload.concat(received); 
+  while (frameLenght <= MAX_FRAME_LENGTH) {
+    if (Serial.available()) {
+      char received = Serial.read();
+      payload.concat(received); 
 
-    frameLenght++;
+      frameLenght++;
     
-    if (received == END_FRAME) 
-      break;
-
-    delay(10);
+      if (received == END_FRAME) 
+        break;
+    }
+    //delay(10);
   }
 
   counter++;
   
-  displayOnScreen("Received (" + String(counter) + ") : " + payload);
+  displayOnScreen(String(counter) + " : " + payload);
   
   
   //if (payload == "") return;
