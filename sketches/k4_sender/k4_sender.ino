@@ -130,7 +130,7 @@ void loop() {
   //Will do that later
   sendMessage(payload);
   
-  int nackCounter = 0;
+  int nackCounter = 1;
   while (!receiveAck(payload) && nackCounter <= RETRY_MESSAGE_SENDING) {
 
     if (DEBUG) {
