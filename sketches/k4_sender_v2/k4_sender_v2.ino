@@ -10,10 +10,22 @@ const char START_FRAME_DELIMITER = '@';
 const char END_FRAME_DELIMITER = '|';
 const int MIN_FRAME_LENGHT = 17; 
 //** Sample ***
-//*** @;1;1;1;PING;7A;| 
-//*** @;6;0;0;PING;F0;|
+
+//*** Test PING
+//*** @;33;0;0;PING;;96;|
+
+//*** Bad frame
+//*** @;34;0;0;PING;;91;|
+//*** @;32;0;0;PINGO;;E4;|
+
+//*** INIT
+//*** @;211;0;3;INIT;;CD;|
+
+//*** FIRE
+//*** @;251;0;3;FIRE;3+1+2+3;0D;|
+
 const int WAIT_FOR_FRAME_TIMEOUT = 200; //in ms
-const int WAIT_FOR_ACK_TIMEOUT = 200; // in ms
+const int WAIT_FOR_ACK_TIMEOUT = 500; // in ms
 const long FREQ = 868E6;
 const int SF = 9;
 const long BW = 125E3;
@@ -71,11 +83,11 @@ void loop() {
   if (isFrameTimeout) 
     printDebug("Timeout !! ");
   
-  printDebug("Frame received : |" + frame + "|");
+  printDebug("Frame received : *" + frame + "*");
 
-  if (!frameSanityCheck(frame)) {
-    sendACK(createFrame(UNKNOWN_FRAME_ID, MODULE_ADDRESS, UNKNOWN_RECEIVER_ADDRESS, ACK_KO, ACK_KO_BAD_FRAME_RECEIVED));
-    //sendAckKO(ACK_KO_BAD_FRAME_RECEIVED);
+  if (!frameSanityCheck(frame)) {    
+    printDebug("syntax of received frame KO : " + frame);    
+    sendACK(createFrame(UNKNOWN_FRAME_ID, MODULE_ADDRESS, UNKNOWN_RECEIVER_ADDRESS, ACK_KO, ACK_KO_BAD_FRAME_RECEIVED));    
   }
   else {
     printDebug("Frame syntax OK here");    
@@ -84,25 +96,27 @@ void loop() {
     sendMessage(frame);    
   }
 
+  printDebug("Purging serial buffer...");
   //Clear serial buffer
   purgeSerialBuffer();
 }
 
 void sendMessage(String frame) {
   String receiverAddress = getReceiverAddressValue(frame);
-  //String ackFrame = "";
 
   //Message sent to me ?
   if (receiverAddress == MODULE_ADDRESS) {
     if (getFrameMessageValue(frame) == "PING") {
-      sendACK(createFrame(getFrameIdValue(frame), getSenderAddressValue(frame), getReceiverAddressValue(frame), ACK_OK, ACK_OK_PONG));    
-     
+      printDebug("Message for me and it is PING...sending PONG :)");
+      sendACK(createFrame(getFrameIdValue(frame), getSenderAddressValue(frame), getReceiverAddressValue(frame), ACK_OK, ACK_OK_PONG));         
     }
     else {      
+      printDebug("Message for me and but unknown message...");
       sendACK(createFrame(getFrameIdValue(frame), getSenderAddressValue(frame), getReceiverAddressValue(frame), ACK_KO, ACK_KO_UNKNOWN_MESSAGE_FRAME_RECEIVED));
     }
   }
   else {
+    printDebug("Message not for me sending message via LoRa");
     sendLoRaPacket(frame);
     waitForAck();
   }
@@ -112,8 +126,11 @@ void waitForAck() {
  
   unsigned long entry = millis();
   String ackFrame = "";
+
+  printDebug("Waiting for ACK...");
   
   while (millis() - entry < WAIT_FOR_ACK_TIMEOUT) {
+  //while(1) {
     if (LoRa.parsePacket()) {      
       while (LoRa.available()) {
         ackFrame = ackFrame + ((char)LoRa.read());
@@ -125,14 +142,19 @@ void waitForAck() {
  }
 
  if (ackFrame != "") {
-     if (!frameSanityCheck(ackFrame)) {                
+    printDebug("Received LoRa ACK : " + ackFrame);
+  
+     if (!frameSanityCheck(ackFrame)) {           
+        printDebug("Bad syntax of received LoRa ACK : " + ackFrame);     
         sendACK(createFrame(UNKNOWN_FRAME_ID, MODULE_ADDRESS, UNKNOWN_RECEIVER_ADDRESS, ACK_KO, ACK_KO_BAD_FRAME_RECEIVED_FROM_SENDER));
      }
      else {
+        printDebug("Sending ACK to program : " + ackFrame);     
         sendACK(ackFrame);            
      }
  }
  else {   
+    printDebug("Timeout waiting for LoRa ACK");
     sendACK(createFrame(UNKNOWN_FRAME_ID, MODULE_ADDRESS, UNKNOWN_RECEIVER_ADDRESS, ACK_KO, ACK_KO_TIMEOUT_WAITING_FOR_ACK));     
  }
 }
@@ -143,9 +165,9 @@ void sendACK(String ackFrame) {
 
 String createFrame(String frameId, String senderAddress, String receiverAddress, String message, String message_complement) {
   
-  String frame = String(START_FRAME_DELIMITER) + ";" + frameId + ";" + senderAddress + ";" + receiverAddress + ";" + message + ";" + message_complement;
-  String checkSum = ComputeCheckSum(frame);
+  String frame = String(START_FRAME_DELIMITER) + ";" + frameId + ";" + senderAddress + ";" + receiverAddress + ";" + message + ";" + message_complement;  
   frame.concat(";");
+  String checkSum = ComputeCheckSum(frame);
   frame.concat(checkSum);
   frame.concat(";");
   frame.concat(String(END_FRAME_DELIMITER));
@@ -178,8 +200,8 @@ bool frameSanityCheck(String frame) {
 
   printDebug("Nb of ; : " + String(countCharInString(frame,';')));
 
-  //At least 6 ;  
-  if (countCharInString(frame,';') != 6) return false;
+  //At least 7 ;  
+  if (countCharInString(frame,';') != 7) return false;
   
   //Check frame lenght
   if (frame.length() < MIN_FRAME_LENGHT) return false;
@@ -211,18 +233,24 @@ int countCharInString(String message, char toFind) {
 bool isCheckSumValid(String frame) {
 
   String frameCheckSum = getCheckSumValue(frame);
-
+  
   printDebug("frameCheckSum : " + frameCheckSum);
 
   //Sanity check
   if (frameCheckSum == "") return false;
   if (frameCheckSum.length() != 2) return false;
 
-  int lenghtToTake =  frame.length() - 5; 
+  int lenghtToTake =  frame.length() - 4; 
   String trimmedFrame = frame.substring(0, lenghtToTake);
-  
-  if (ComputeCheckSum(trimmedFrame) == frameCheckSum) return true;
 
+  printDebug("Computing debug of : " + trimmedFrame);
+  
+  if (ComputeCheckSum(trimmedFrame) == frameCheckSum) {
+    printDebug("Check sum is ok for me");
+    return true;
+  }
+
+    printDebug("Check sum is not ok for me");
   return false;
 }
 
@@ -251,7 +279,7 @@ String ComputeCheckSum(String frame) {
     checkSumStr = "0" + checkSumStr;
   }
 
-  printDebug("CheckSum Str : " + checkSumStr);
+  printDebug("CheckSum Str : *" + checkSumStr + "*");
 
   return checkSumStr;
 }
@@ -261,7 +289,7 @@ String getFrameMessageValue(String frame) {
 }
 
 String getCheckSumValue(String frame) {
-  return getFrameChunk(frame, ';', 5);
+  return getFrameChunk(frame, ';', 6);
 }
 
 String getReceiverAddressValue(String frame) {
@@ -299,9 +327,8 @@ String getFrameChunk(String data, char separator, int index)
        chunkVal.concat(data[i]);
     }
   }  
-
-  //Nothing found !! return empty string !!
-  return "";
+  
+  return chunkVal;
 }
 
 void printDebug(String debugMessage) {
