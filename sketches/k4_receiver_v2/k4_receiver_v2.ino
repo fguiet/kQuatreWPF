@@ -106,9 +106,9 @@ String ComputeCheckSum(String frame) {
 
 String createFrame(String frameId, String senderAddress, String receiverAddress, String message, String message_complement) {
   
-  String frame = String(START_FRAME_DELIMITER) + ";" + frameId + ";" + senderAddress + ";" + receiverAddress + ";" + message + ";" + message_complement;
-  String checkSum = ComputeCheckSum(frame);
+  String frame = String(START_FRAME_DELIMITER) + ";" + frameId + ";" + senderAddress + ";" + receiverAddress + ";" + message + ";" + message_complement;  
   frame.concat(";");
+  String checkSum = ComputeCheckSum(frame);
   frame.concat(checkSum);
   frame.concat(";");
   frame.concat(String(END_FRAME_DELIMITER));
@@ -170,10 +170,47 @@ void handleFrameMessage(String frame)  {
     int relayToCheck = getValue(payload,';',5).toInt();
     checkResistance(relayToCheck);
   }     
-
+*/
   if (message == "FIRE") { //Ok let's fire!!
-    fireFirework(payload);                        
-  } */   
+    fireFirework(frame);                        
+  }
+
+  //Handle message unknown here?
+}
+
+void fireFirework(String frame) {
+
+  String messageComplement = getFrameMessageCompValue(frame);
+
+  printDebug("Firework message complement : " + messageComplement);
+  
+  //On indique que l'on a recu quelque chose
+  digitalWrite(STATUS_PIN, HIGH);
+    
+  //Serial.println("Chunk 2 : "+chunk2);
+  int nbOfRelayToFire = getFrameChunk(messageComplement,'+',0).toInt();
+  
+  //Activation des relays! feu!!
+  int chunkNumber = 1;
+  for(int i=0;i<nbOfRelayToFire;i++) 
+  {          
+     int relayToFire = getFrameChunk(messageComplement,'+',chunkNumber + i).toInt(); //Numéro de relay à déclencher (1..16)
+     printDebug("Activating relay : " + String(relayToFire));
+     digitalWrite(FIRST_RELAY_DIGITAL_PIN + relayToFire, LOW); //Le relay 1 doit être branché sur le digital 30 et ainsi de suite
+  }
+  
+  //On patiente un peu...
+  delay(1000);
+  
+  //Désactivation des relays pour éviter les courts-circuit
+  for(int i=0;i<nbOfRelayToFire;i++) 
+  {                    
+     int relayToFire = getFrameChunk(messageComplement,'+',chunkNumber + i).toInt(); //Numéro de relay à déclencher (1..16)
+     digitalWrite(FIRST_RELAY_DIGITAL_PIN + relayToFire, HIGH); //Le relay 1 doit être branché sur le digital 22 et ainsi de suite
+  }
+  
+  //Terminé on eteint la led
+  digitalWrite(STATUS_PIN, LOW);
 }
 
 bool isCheckSumValid(String frame) {
@@ -186,7 +223,7 @@ bool isCheckSumValid(String frame) {
   if (frameCheckSum == "") return false;
   if (frameCheckSum.length() != 2) return false;
 
-  int lenghtToTake =  frame.length() - 5; 
+  int lenghtToTake =  frame.length() - 4; 
   String trimmedFrame = frame.substring(0, lenghtToTake);
   
   if (ComputeCheckSum(trimmedFrame) == frameCheckSum) return true;
@@ -198,8 +235,8 @@ bool frameSanityCheck(String frame) {
 
   printDebug("Nb of ; : " + String(countCharInString(frame,';')));
 
-  //At least 6 ;  
-  if (countCharInString(frame,';') != 6) return false;
+  //At least 7 ;  
+  if (countCharInString(frame,';') != 7) return false;
   
   //Check frame lenght
   if (frame.length() < MIN_FRAME_LENGHT) return false;
@@ -222,6 +259,9 @@ bool frameSanityCheck(String frame) {
 
 void sendLoRaPacket(String frame) {
 
+  //For testing purpose...
+  //frame = "@;211;3;0;ACK_OK;OK_R3;DD;|";
+
   printDebug("Sending LoRa frame :  " + frame);  
   
   // send packet
@@ -234,8 +274,12 @@ String getFrameMessageValue(String frame) {
   return getFrameChunk(frame, ';', 4);
 }
 
-String getCheckSumValue(String frame) {
+String getFrameMessageCompValue(String frame) {
   return getFrameChunk(frame, ';', 5);
+}
+
+String getCheckSumValue(String frame) {
+  return getFrameChunk(frame, ';', 6);
 }
 
 String getReceiverAddressValue(String frame) {
@@ -273,9 +317,8 @@ String getFrameChunk(String data, char separator, int index)
        chunkVal.concat(data[i]);
     }
   }  
-
-  //Nothing found !! return empty string !!
-  return "";
+ 
+  return chunkVal;  
 }
 
 void printDebug(String debugMessage) {
