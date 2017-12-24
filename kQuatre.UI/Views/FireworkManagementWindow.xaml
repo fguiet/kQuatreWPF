@@ -1,0 +1,56 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Guiet.kQuatre.UI.Views"
+        xmlns:igDP="http://infragistics.com/DataPresenter" x:Class="Guiet.kQuatre.UI.Views.FireworkManagementWindow"
+        mc:Ignorable="d"
+        Title="Gestion des artifices" Height="300" Width="455.825" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="85"/>
+                <ColumnDefinition Width="85"/>
+                <ColumnDefinition Width="85"/>
+            </Grid.ColumnDefinitions>
+            <Border  Grid.Column="0"  Background="LightGray" />
+            <Border  Grid.Column="1"  Background="LightGray" />
+            <Border  Grid.Column="2"  Background="LightGray" />
+            <Border  Grid.Column="3"  Background="LightGray" />
+            <Button Content="Ajouter" Grid.Column="1" HorizontalAlignment="Center"   VerticalAlignment="Center" Width="75" x:Name="_btnAdd" />
+            <Button Content="Modifier" Grid.Column="2" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="75" x:Name="_btnModify" />
+            <Button x:Name="_btnClose" Content="Fermer" Grid.Column="3" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="75" />
+        </Grid>
+        <igDP:XamDataGrid DataSource="{Binding FireworkManager.AllFireworks}" 
+                          Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" 
+                          SelectedDataItemsScope="RecordsOnly" GroupByAreaLocation="None"
+                          VerticalAlignment="Stretch">
+            <igDP:XamDataGrid.FieldLayoutSettings>
+                <igDP:FieldLayoutSettings  AutoGenerateFields="False"/>
+            </igDP:XamDataGrid.FieldLayoutSettings>
+
+            <igDP:XamDataGrid.FieldLayouts>
+                <igDP:FieldLayout Key="Firework">
+                    <igDP:FieldLayout.Fields>
+                        <igDP:Field IsReadOnly="True" Label="Référence" Name="Reference" Width="Auto" />
+                        <igDP:Field IsReadOnly="True" Label="Désignation" Name="Designation" Width="Auto" />
+                        <igDP:Field IsReadOnly="True" Label="Durée" Name="Duration" />
+                    </igDP:FieldLayout.Fields>
+                </igDP:FieldLayout>
+            </igDP:XamDataGrid.FieldLayouts>
+
+        </igDP:XamDataGrid>
+    </Grid>
+</Window>
