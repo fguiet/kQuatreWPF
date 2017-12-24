@@ -61,6 +61,7 @@ void setup() {
 void loop() {
 
   String frame = "";
+  int rssi;
   
   if (LoRa.parsePacket()) {      
     
@@ -69,8 +70,11 @@ void loop() {
     }
     
     printDebug("Trame received : " + frame);  
+
+    //Get Rssi
+    rssi = LoRa.packetRssi();
     
-    handleReceivedFrame(frame);
+    handleReceivedFrame(frame, rssi);
   }  
 }
 
@@ -127,7 +131,7 @@ int countCharInString(String message, char toFind) {
 }
 
 
-void handleReceivedFrame(String frame) {
+void handleReceivedFrame(String frame, int rssi) {
 
   //Check received frame
   if (!frameSanityCheck(frame)) {          
@@ -149,7 +153,7 @@ void handleReceivedFrame(String frame) {
       printDebug("trame received is for me :  " + frame);  
       
       //SendACK OK here, everything!!
-      sendLoRaPacket(createFrame(getFrameIdValue(frame), MODULE_ADDRESS, getSenderAddressValue(frame), ACK_OK, ACK_OK_FRAME_RECEIVED));    
+      sendLoRaPacket(createFrame(getFrameIdValue(frame), MODULE_ADDRESS, getSenderAddressValue(frame), ACK_OK, ACK_OK_FRAME_RECEIVED + "+" + String(rssi)));    
       
       handleFrameMessage(frame);
     }
@@ -166,6 +170,10 @@ void handleFrameMessage(String frame)  {
     initRelays();
   }
 
+  if (message == "PING") {
+    //Nothing to do here :)
+    return;    
+  }
   /*if (message == "OHM") {
     int relayToCheck = getValue(payload,';',5).toInt();
     checkResistance(relayToCheck);

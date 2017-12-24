@@ -105,12 +105,18 @@ namespace Guiet.kQuatre.Business.Transceiver
         #endregion
 
         #region Public Members
-
+        
+        /// <summary>
+        /// Tells whether transceiver is well connected
+        /// </summary>
         public bool IsConnected
         {
             get
             {
-                return (_serialPortHelper.SerialPort.IsOpen);
+                if (_serialPortHelper != null && _serialPortHelper.SerialPort != null && _serialPortHelper.SerialPort.IsOpen)
+                    return true;
+                else
+                    return false;
             }
         }
 
@@ -125,6 +131,9 @@ namespace Guiet.kQuatre.Business.Transceiver
             }
         }
 
+        /// <summary>
+        /// Transceiver Address
+        /// </summary>
         public string Address
         {
             get

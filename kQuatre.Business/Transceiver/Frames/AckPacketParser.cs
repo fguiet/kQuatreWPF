@@ -14,9 +14,15 @@ namespace Guiet.kQuatre.Business.Transceiver.Frames
 
         public static FrameBase ParseResponsePacket(string packet)
         {
-            if (string.IsNullOrEmpty(packet)) throw new InvalidPacketReceivedException("Received packet is null or empty");
+            if (string.IsNullOrEmpty(packet))
+            {             
+                throw new InvalidPacketReceivedException("Received packet is null or empty");
+            }
 
-            if (!packet.StartsWith(FrameBase.FRAME_START_DELIMITER)) throw new InvalidPacketReceivedException(string.Format("Received packet does not begin with correct begin frame char. Got : {0}", packet));
+            if (!packet.StartsWith(FrameBase.FRAME_START_DELIMITER))
+            {                
+                throw new InvalidPacketReceivedException(string.Format("Received packet does not begin with correct begin frame char. Got : {0}", packet));
+            }
 
             if (!packet.EndsWith(FrameBase.FRAME_END_DELIMITER)) throw new InvalidPacketReceivedException(string.Format("Received packet does not end with correct end frame char. Got : {0}", packet));
 
@@ -41,7 +47,12 @@ namespace Guiet.kQuatre.Business.Transceiver.Frames
                     fb.SetFrameId = frameId;
 
                     if (fb.IsAckOk)
+                    {                        
+                        string rssi = ackComplement.Split('+')[1];
+                        fb.Rssi = rssi;
+
                         _logger.Info(string.Format("ACK OK (frame id : {0}) => receiver from sender address : {1}. Receiver address is {2}", frameId, senderId, receiverId));
+                    }
 
                     if (!fb.IsAckOk)
                         _logger.Warn(string.Format("ACK KO (frame id : {0}) => receiver from sender address : {1}. Receiver address is {2}. Ack KO Return Code : {3}", frameId, senderId, receiverId, ackComplement));

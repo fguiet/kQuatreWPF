@@ -20,7 +20,9 @@ namespace Guiet.kQuatre.UI.ViewModel
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
-        #region Private Members
+        #region Private Members        
+
+        private Receptor _selectedTestReceptor = null;
 
         private DeviceManager _deviceManager = null;
 
@@ -41,7 +43,23 @@ namespace Guiet.kQuatre.UI.ViewModel
 
         #endregion
 
-        #region Public Members        
+        #region Public Members 
+        
+        public Receptor SelectedTestReceptor
+        {
+            get
+            {
+                return _selectedTestReceptor;
+            }
+            set
+            {
+                if (_selectedTestReceptor != value)
+                {
+                    _selectedTestReceptor = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         public FireworkManager FireworkManager
         {
@@ -229,6 +247,16 @@ namespace Guiet.kQuatre.UI.ViewModel
         #endregion
 
         #region Public Members
+
+        public void StopTestingReceptor()
+        {
+            _selectedTestReceptor.StopTest();
+        }
+
+        public void StartTestingReceptor()
+        {
+            _selectedTestReceptor.StartTest(_deviceManager.Transceiver);
+        }
 
         /// <summary>
         /// Lets start firework!!

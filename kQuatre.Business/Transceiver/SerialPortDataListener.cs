@@ -131,11 +131,11 @@ namespace Guiet.kQuatre.Business.Transceiver
                         }
                         catch(InvalidPacketReceivedException ipre)
                         {
-                            _logger.Warn(ipre, string.Format("Invalid packet received : {0}", utf8_packet));
+                            _logger.Warn(ipre, string.Format("Invalid packet received : {0}, inner exception message {1}", utf8_packet, ipre.Message));
                         }
                         catch(Exception e)
                         {
-                            _logger.Error(e, "Error parsing Ack packet...");                            
+                            _logger.Error(e, string.Format("Error parsing Ack packet, inner exception message {1}", utf8_packet, e.Message));                            
                         }                        
                     }
                 }

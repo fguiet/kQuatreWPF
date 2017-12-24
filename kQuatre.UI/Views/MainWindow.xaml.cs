@@ -171,5 +171,15 @@ namespace Guiet.kQuatre.UI.Views
         {
             MessageBox.Show(message, "Information", MessageBoxButton.OK, MessageBoxImage.Exclamation, MessageBoxResult.OK);
         }
+        
+        private void _btnStopTestReceptor_Click(object sender, RoutedEventArgs e)
+        {
+            _viewModel.StopTestingReceptor();
+        }
+
+        private void _btnStartTestReceptor_Click(object sender, RoutedEventArgs e)
+        {
+            _viewModel.StartTestingReceptor();
+        }
     }
 }

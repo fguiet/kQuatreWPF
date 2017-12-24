@@ -150,23 +150,61 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Grid Grid.Row="0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"></RowDefinition>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Label Grid.Row="0" Grid.Column="0" Content="Sélection d'un récepteurs : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
-                        <ComboBox Grid.Column="1" Grid.Row="0"  DisplayMemberPath="Name" ItemsSource="{Binding Path=FireworkManager.Receptors}" HorizontalAlignment="Left" VerticalAlignment="Center" Width="200"  />
-                    </Grid>
+                    <GroupBox Grid.Row="0" HorizontalAlignment="Stretch" Margin="10,10,10,10">
+                        <GroupBox.Header>
+                            <TextBlock FontWeight="Bold">Récepteur(s) disponible(s)</TextBlock>
+                        </GroupBox.Header>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Row="0" Grid.Column="0" Content="Sélection d'un récepteurs : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
+                            <ComboBox Name="_cbxTestReceptors" Grid.Column="1" Grid.Row="0" SelectedValue="{Binding Path=SelectedTestReceptor}"  DisplayMemberPath="Name" ItemsSource="{Binding Path=FireworkManager.Receptors}" HorizontalAlignment="Left" VerticalAlignment="Center" Width="200"  />
+                            <Button Margin="10,0,0,0" Grid.Row="0" Grid.Column="2" x:Name="_btnDoReceptorTest" IsEnabled="{Binding SelectedTestReceptor.IsTestLaunchAllowed, FallbackValue=false}" Width="120" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Lancer le tester" Click="_btnStartTestReceptor_Click" ></Button>
+                            <Button Margin="10,0,0,0" Grid.Row="0" Grid.Column="3" x:Name="_btnStopReceptorTest" IsEnabled="{Binding SelectedTestReceptor.IsTestStopAllowed, FallbackValue=false}" Width="120" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Arrêter le test" Click="_btnStopTestReceptor_Click" ></Button>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Grid.Row="1" HorizontalAlignment="Stretch" Margin="10,10,10,10">
+                        <GroupBox.Header>
+                            <TextBlock FontWeight="Bold">Test de réception</TextBlock>
+                        </GroupBox.Header>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Row="0" Grid.Column="0" Content="Nb de messages envoyés : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
+                            <Label Grid.Row="0" Grid.Column="1" Content="{Binding Path=SelectedTestReceptor.MessageSentCounter, FallbackValue=NA}"></Label>
+                            <Label Grid.Row="0" Grid.Column="2" Content="Reçus : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
+                            <Label Grid.Row="0" Grid.Column="3" Content="{Binding Path=SelectedTestReceptor.MessageReceivedCounter, FallbackValue=NA}"></Label>
+                            <Label Grid.Row="0" Grid.Column="4" Content="Perdus : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
+                            <Label Grid.Row="0" Grid.Column="5" Content="{Binding Path=SelectedTestReceptor.MessageLostCounter, FallbackValue=NA}"></Label>
+                            <Label Grid.Row="0" Grid.Column="6" Content="Rssi : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
+                            <Label Grid.Row="0" Grid.Column="7" Content="{Binding Path=SelectedTestReceptor.MessageRssi, FallbackValue=NA}"></Label>
+                        </Grid>
+                    </GroupBox>
                 </Grid>
             </Custom:TabItemEx>
             <Custom:TabItemEx x:Name="_tabFire" Header="Exécution">
