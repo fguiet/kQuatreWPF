@@ -1,0 +1,295 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:igPrim="http://schemas.infragistics.com/xaml/primitives"
+                    xmlns:ig="http://schemas.infragistics.com/xaml"
+                    xmlns:local="clr-namespace:Guiet.kQuatre.UI.Views"
+                    xmlns:igSchedulePrim="clr-namespace:Infragistics.Controls.Schedules.Primitives;assembly=InfragisticsWPF4.Controls.Schedules.XamGantt.v17.1">
+
+
+    <Color x:Key="Color_001">#FF262B2F</Color>
+    <Color x:Key="Color_002">#FF303B43</Color>
+    <Color x:Key="Color_003">#FF4B606E</Color>
+
+    <Color x:Key="Color_005">#FF9BACB8</Color>
+    <Color x:Key="Color_006">#FFFFFFFF</Color>
+    <Color x:Key="Color_007">#FF195A6A</Color>
+    <Color x:Key="Color_008">#FF357686</Color>
+    <Color x:Key="Color_009">#FF4CABC2</Color>
+    <Color x:Key="Color_010">#FF486403</Color>
+    <Color x:Key="Color_011">#FF719121</Color>
+    <Color x:Key="Color_012">#FF94BA39</Color>
+
+    <Color x:Key="Color_014">#FFCE861A</Color>
+    <Color x:Key="Color_015">#FFF3BE4A</Color>
+    <Color x:Key="Color_016">#FFFFDD93</Color>
+
+    <Color x:Key="Color_021">#FF68141C</Color>
+    <Color x:Key="Color_022">#FF95222D</Color>
+    <Color x:Key="Color_023">#FFB82634</Color>
+    <Color x:Key="Color_024">#EEFFFFFF</Color>
+    <Color x:Key="Color_025">#00FFFFFF</Color>
+    <Color x:Key="Color_026">#55FFFFFF</Color>
+
+    <Color x:Key="Color_034">#FFE4E5F0</Color>
+
+
+    <LinearGradientBrush x:Key="TooltipGenericBackgroundBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{StaticResource Color_006}" Offset="0"/>
+        <GradientStop Color="{StaticResource Color_034}" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="ToolipGenericBorderBrush" EndPoint="0.5,1" StartPoint="0.5,0">
+        <GradientStop Color="{StaticResource Color_005}" Offset="0"/>
+        <GradientStop Color="{StaticResource Color_003}" Offset="1"/>
+    </LinearGradientBrush>
+
+    <SolidColorBrush x:Key="TaskShapeBorderBrush" Color="{StaticResource Color_001}"/>
+
+    <LinearGradientBrush x:Key="TaskShapeBackgroundBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{StaticResource Color_003}" Offset="0"/>
+        <GradientStop Color="{StaticResource Color_002}" Offset="1"/>
+    </LinearGradientBrush>
+
+
+    <SolidColorBrush x:Key="InactiveTaskBackgroundBrush" Color="{StaticResource Color_006}"/>
+    <SolidColorBrush x:Key="InactiveTaskBorderBrush" Color="{StaticResource Color_003}"/>
+
+    <SolidColorBrush x:Key="DurationOnlyTaskBorderBrush" Color="{StaticResource Color_014}"/>
+    <LinearGradientBrush x:Key="DurationOnlyOverlayLeftBrush" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="{StaticResource Color_024}" Offset=".2"/>
+        <GradientStop Color="{StaticResource Color_026}" Offset=".7"/>
+        <GradientStop Color="{StaticResource Color_025}" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="DurationOnlyOverlayRightBrush" StartPoint="1,0" EndPoint="0,0">
+        <GradientStop Color="{StaticResource Color_024}" Offset=".2"/>
+        <GradientStop Color="{StaticResource Color_026}" Offset=".7"/>
+        <GradientStop Color="{StaticResource Color_025}" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="AutomaticTaskBackgroundBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{StaticResource Color_012}" Offset="0"/>
+        <GradientStop Color="{StaticResource Color_011}" Offset="1"/>
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="AutomaticTaskBorderBrush" Color="{StaticResource Color_010}"/>
+    <LinearGradientBrush x:Key="ActiveSummaryTaskBackgroundBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{StaticResource Color_003}" Offset="0"/>
+        <GradientStop Color="{StaticResource Color_002}" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="ManualTaskBackgroundBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{StaticResource Color_009}" Offset="0"/>
+        <GradientStop Color="{StaticResource Color_008}" Offset="1"/>
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="ManualTaskBorderBrush" Color="{StaticResource Color_007}"/>
+    <LinearGradientBrush x:Key="DurationOnlyTaskBackgroundBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{StaticResource Color_016}" Offset="0"/>
+        <GradientStop Color="{StaticResource Color_015}" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="CriticalTaskBackgroundBrush" StartPoint="0,0" EndPoint="0,1" igPrim:XamlHelper.IsExcludedFromWash="True">
+        <GradientStop Color="{StaticResource Color_023}" Offset="0"/>
+        <GradientStop Color="{StaticResource Color_022}" Offset="1"/>
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="CriticalTaskBorderBrush" Color="{StaticResource Color_021}" igPrim:XamlHelper.IsExcludedFromWash="True"/>
+
+    <igPrim:ProjectTaskStatesValueConverter x:Key="rightShapeToAreaType" RequiredStates="PlaceholderFinish">
+        <igPrim:ProjectTaskStatesValueConverter.DestinationValue>
+            <igPrim:GanttTaskDragAreaType>MoveTaskBar</igPrim:GanttTaskDragAreaType>
+        </igPrim:ProjectTaskStatesValueConverter.DestinationValue>
+        <igPrim:ProjectTaskStatesValueConverter.FallbackValue>
+            <igPrim:GanttTaskDragAreaType>ResizeTaskBarEnd</igPrim:GanttTaskDragAreaType>
+        </igPrim:ProjectTaskStatesValueConverter.FallbackValue>
+    </igPrim:ProjectTaskStatesValueConverter>
+
+    <igPrim:ProjectTaskStatesValueConverter x:Key="leftShapeToAreaType" RequiredStates="PlaceholderStart">
+        <igPrim:ProjectTaskStatesValueConverter.DestinationValue>
+            <igPrim:GanttTaskDragAreaType>MoveTaskBar</igPrim:GanttTaskDragAreaType>
+        </igPrim:ProjectTaskStatesValueConverter.DestinationValue>
+        <igPrim:ProjectTaskStatesValueConverter.FallbackValue>
+            <igPrim:GanttTaskDragAreaType>ChangePercentComplete</igPrim:GanttTaskDragAreaType>
+        </igPrim:ProjectTaskStatesValueConverter.FallbackValue>
+    </igPrim:ProjectTaskStatesValueConverter>
+
+    <igPrim:ValueConverterGroup x:Key="visibilityToNotVisibility">
+        <!-- flip the visibility -->
+        <igPrim:FixedValueConverter>
+            <igPrim:FixedValueConverter.SourceValue>
+                <Visibility>Visible</Visibility>
+            </igPrim:FixedValueConverter.SourceValue>
+            <igPrim:FixedValueConverter.DestinationValue>
+                <Visibility>Collapsed</Visibility>
+            </igPrim:FixedValueConverter.DestinationValue>
+        </igPrim:FixedValueConverter>
+
+        <igPrim:FixedValueConverter>
+            <igPrim:FixedValueConverter.DestinationValue>
+                <Visibility>Visible</Visibility>
+            </igPrim:FixedValueConverter.DestinationValue>
+        </igPrim:FixedValueConverter>
+    </igPrim:ValueConverterGroup>
+
+    <igPrim:ProjectTaskStatesVisibilityConverter x:Key="activeManualNonCriticalToVisibility" RequiredStates="ManuallyScheduled,Active" DisallowedStates="Placeholder,DisplayAsCritical" />
+    <igPrim:ProjectTaskStatesVisibilityConverter x:Key="activeAutoTaskNonCriticalToVisibility" RequiredStates="Active" DisallowedStates="ManuallyScheduled,Placeholder,DisplayAsCritical" />
+    <igPrim:ProjectTaskStatesVisibilityConverter x:Key="inactiveToVisibility" DisallowedStates="Active" />
+    <igPrim:ProjectTaskStatesVisibilityConverter x:Key="activeDurationOnlyToVisibility" RequiredStates="Active,PlaceholderDuration" />
+    <igPrim:ProjectTaskStatesVisibilityConverter x:Key="activeCriticalToVisibility" RequiredStates="Active, DisplayAsCritical" DisallowedStates="Placeholder" />
+    <igPrim:ProjectTaskStatesVisibilityConverter x:Key="durationOnlyToVisibility" RequiredStates="PlaceholderDuration"/>
+    <igPrim:EmptyToCollapsedConverter x:Key="emptyToCollapsed" />
+
+    <ControlTemplate x:Key="toolTipTemplate" TargetType="ToolTip">
+        <Grid>
+            <Border Background="{StaticResource TooltipGenericBackgroundBrush}"  BorderThickness="1" BorderBrush="{StaticResource ToolipGenericBorderBrush}" CornerRadius="2">
+                <ContentPresenter />
+            </Border>
+        </Grid>
+    </ControlTemplate>
+
+    <Style x:Key="taskBarPresenterBase" TargetType="igPrim:GanttTaskPresenterBase">
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Margin" Value="0,5" />
+    </Style>
+
+    <!-- ================================ -->
+    <!--     GanttNormalTaskPresenter     -->
+    <!-- ================================ -->
+    <Style TargetType="igSchedulePrim:GanttNormalTaskPresenter" BasedOn="{StaticResource taskBarPresenterBase}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="igSchedulePrim:GanttNormalTaskPresenter">
+                    <igSchedulePrim:GanttTaskContentPanel
+                        BarHeight="{TemplateBinding BarHeight}"
+                        x:Name="ContentPanel"
+                        LeftShapeAlignment="InsideEdge"
+                        RightShapeAlignment="InsideEdge"
+                        igPrim:XamlHelper.SnapsToDevicePixels="True"
+                        >
+                        <ToolTipService.ToolTip>
+                            <ToolTip Template="{StaticResource toolTipTemplate}">
+                                <igSchedulePrim:GanttNormalTaskToolTipPresenter Task="{TemplateBinding Task}" TaskStates="{TemplateBinding TaskStates}" />
+                            </ToolTip>
+                        </ToolTipService.ToolTip>
+                        <igSchedulePrim:GanttTaskContentPanel.LeftShape>
+                            <Grid Visibility="{TemplateBinding ComputedLeftShapeVisibility}" Canvas.ZIndex="1">
+                                <!-- Note: The natural size of the shape paths should be small so it scales properly with the uniformtofill -->
+                                <Path StrokeThickness="1"
+                                      Stroke="{StaticResource TaskShapeBorderBrush}"
+                                      Fill="{StaticResource TaskShapeBackgroundBrush}"
+                                      Stretch="UniformToFill"
+                                      Data="M 0,0 2.5,0 2.5,1 1,1 1,4 2.5,4 2.5,5 0,5 Z"
+                                    />
+
+                                <!-- when this is a start only task then we want to be able to move the task (or change the progress) -->
+                                <igSchedulePrim:GanttTaskDragArea AreaType="{Binding TaskStates, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource leftShapeToAreaType}}" />
+                            </Grid>
+                        </igSchedulePrim:GanttTaskContentPanel.LeftShape>
+                        <igSchedulePrim:GanttTaskContentPanel.RightShape>
+                            <Grid Visibility="{TemplateBinding ComputedRightShapeVisibility}" Canvas.ZIndex="1">
+                                <!-- Note: The natural size of the shape paths should be small so it scales properly with the uniformtofill -->
+                                <Path StrokeThickness="1"
+                                      Stroke="{StaticResource TaskShapeBorderBrush}"
+                                      Fill="{StaticResource TaskShapeBackgroundBrush}"
+                                      Stretch="UniformToFill"
+                                      Data="M 0,0 2.5,0 2.5,5 0,5 0,4 1.5,4 1.5,1 0,1 Z"
+                                    />
+
+                                <!-- when this is a finish only task then we want to be able to move the task (or drag the end) -->
+                                <igSchedulePrim:GanttTaskDragArea AreaType="{Binding TaskStates, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource rightShapeToAreaType}}" />
+                            </Grid>
+                        </igSchedulePrim:GanttTaskContentPanel.RightShape>
+                        <Grid Visibility="{TemplateBinding ComputedMiddleBarVisibility}">
+                            <!-- Active Manually Scheduled -->
+                            <Rectangle
+                                Visibility="{Binding Path=TaskStates, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource activeManualNonCriticalToVisibility}}"
+                                RadiusX="3"
+                                RadiusY="3"
+                                Fill="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Task.DataItem.TaskBrush}"
+                                Stroke="{StaticResource ManualTaskBorderBrush}"
+                                StrokeThickness="{TemplateBinding BorderThickness}"
+                                />
+                            <!-- Active Automatically Scheduled -->
+                            <Rectangle
+                                Visibility="{Binding Path=TaskStates, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource activeAutoTaskNonCriticalToVisibility}}"
+                                RadiusX="3"
+                                RadiusY="3"
+                                Fill="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Task.DataItem.TaskBrush}"
+                                Stroke="{StaticResource AutomaticTaskBorderBrush}"
+                                StrokeThickness="{TemplateBinding BorderThickness}"
+                                />
+                            <!-- Inactive -->
+                            <Rectangle
+                                Visibility="{Binding Path=TaskStates, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource inactiveToVisibility}}"
+                                RadiusX="3"
+                                RadiusY="3"
+                                Fill="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Task.DataItem.TaskBrush}"
+                                Stroke="{StaticResource InactiveTaskBorderBrush}"
+                                StrokeThickness="{TemplateBinding BorderThickness}"
+                                />
+                            <!-- Active Duration-Only -->
+                            <Rectangle Visibility="{Binding Path=TaskStates, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource activeDurationOnlyToVisibility}}"
+                                RadiusX="3"
+                                RadiusY="3"
+                                Fill="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Task.DataItem.TaskBrush}"
+                                Stroke="{StaticResource DurationOnlyTaskBorderBrush}"
+                                StrokeThickness="{TemplateBinding BorderThickness}"
+                                />
+                            <!-- Critical task -->
+                            <Rectangle Visibility="{Binding Path=TaskStates, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource activeCriticalToVisibility}}"
+                                RadiusX="3"
+                                RadiusY="3"
+                                Fill="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Task.DataItem.TaskBrush}"
+                                Stroke="{StaticResource CriticalTaskBorderBrush}"
+                                StrokeThickness="{TemplateBinding BorderThickness}"
+                                />
+                            <!-- Duration only overlay to white-out the left/right edges -->
+                            <Grid Visibility="{Binding Path=TaskStates, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource durationOnlyToVisibility}}">
+                                <Rectangle HorizontalAlignment="Left" Width="9" Fill="{StaticResource DurationOnlyOverlayLeftBrush}" />
+                                <Rectangle HorizontalAlignment="Right" Width="9" Fill="{StaticResource DurationOnlyOverlayRightBrush}" />
+                            </Grid>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition MaxWidth="8" MinWidth="1" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition MaxWidth="8" MinWidth="1" />
+                                </Grid.ColumnDefinitions>
+                                <!-- this spans the entire middle and is used to move the task -->
+                                <igSchedulePrim:GanttTaskDragArea Grid.ColumnSpan="3" />
+
+                                <!-- we only need this when we don't have a left shape -->
+                                <igSchedulePrim:GanttTaskDragArea
+                                    AreaType="ChangePercentComplete"
+                                    Visibility="{Binding ComputedLeftShapeVisibility, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource visibilityToNotVisibility}}"
+                                    Grid.Column="0" />
+
+                                <!-- we only need this when we don't have a right shape -->
+                                <igSchedulePrim:GanttTaskDragArea
+                                    AreaType="ResizeTaskBarEnd"
+                                    Visibility="{Binding ComputedRightShapeVisibility, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource visibilityToNotVisibility}}"
+                                    Grid.Column="2" />
+                            </Grid>
+                        </Grid>
+
+                        <!-- Adorners -->
+                        <StackPanel 
+                            Orientation="Horizontal" 
+                            Margin="0,0,10,0" 
+                            Visibility="{TemplateBinding TaskAdornmentVisibility}" 
+                            igSchedulePrim:GanttTaskContentPanel.AdornerLocation="Left">
+                            <igSchedulePrim:GanttTaskDependencyDragArea AreaType="Start" Margin="5,0,0,0" Visibility="{TemplateBinding ComputedStartLinkVisibility}" />
+                        </StackPanel>
+                        <StackPanel 
+                            Orientation="Horizontal" 
+                            Margin="10,0,0,0" 
+                            Visibility="{TemplateBinding TaskAdornmentVisibility}" 
+                            igSchedulePrim:GanttTaskContentPanel.AdornerLocation="Right">
+                            <igSchedulePrim:GanttTaskDependencyDragArea AreaType="Finish" Margin="0,0,5,0" Visibility="{TemplateBinding ComputedFinishLinkVisibility}" />
+                            <Grid IsHitTestVisible="False">
+                                <TextBlock Visibility="{Binding Path=Text, RelativeSource={RelativeSource Self}, Converter={StaticResource emptyToCollapsed}}"
+                                    Text="{Binding Path=Task.ResourcesText, RelativeSource={RelativeSource TemplatedParent}}" />
+                            </Grid>
+                        </StackPanel>
+                    </igSchedulePrim:GanttTaskContentPanel>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>
