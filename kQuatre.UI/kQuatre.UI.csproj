@@ -34,17 +34,39 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="InfragisticsWPF4.Controls.Charts.XamGauge.v17.1, Version=17.1.20171.1000, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL" />
-    <Reference Include="InfragisticsWPF4.Controls.Editors.XamCalendar.v17.1, Version=17.1.20171.1000, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL" />
-    <Reference Include="InfragisticsWPF4.Controls.Grids.XamGrid.v17.1, Version=17.1.20171.1000, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL" />
-    <Reference Include="InfragisticsWPF4.Controls.Menus.XamMenu.v17.1, Version=17.1.20171.1000, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL" />
-    <Reference Include="InfragisticsWPF4.Controls.Schedules.v17.1, Version=17.1.20171.1000, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL" />
-    <Reference Include="InfragisticsWPF4.Controls.Schedules.XamGantt.v17.1, Version=17.1.20171.1000, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL" />
-    <Reference Include="InfragisticsWPF4.DataManager.v17.1, Version=17.1.20171.1000, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL" />
-    <Reference Include="InfragisticsWPF4.DataPresenter.v17.1, Version=17.1.20171.1000, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL" />
-    <Reference Include="InfragisticsWPF4.DataVisualization.v17.1, Version=17.1.20171.1000, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL" />
-    <Reference Include="InfragisticsWPF4.Editors.v17.1, Version=17.1.20171.1000, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL" />
-    <Reference Include="InfragisticsWPF4.v17.1, Version=17.1.20171.1000, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL" />
+    <Reference Include="InfragisticsWPF4.Controls.Charts.XamGauge.v17.1, Version=17.1.20171.1000, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL">
+      <HintPath>..\packages\Infragistics.17.1\InfragisticsWPF4.Controls.Charts.XamGauge.v17.1.dll</HintPath>
+    </Reference>
+    <Reference Include="InfragisticsWPF4.Controls.Editors.XamCalendar.v17.1, Version=17.1.20171.1000, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL">
+      <HintPath>..\packages\Infragistics.17.1\InfragisticsWPF4.Controls.Editors.XamCalendar.v17.1.dll</HintPath>
+    </Reference>
+    <Reference Include="InfragisticsWPF4.Controls.Grids.XamGrid.v17.1, Version=17.1.20171.1000, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL">
+      <HintPath>..\packages\Infragistics.17.1\InfragisticsWPF4.Controls.Grids.XamGrid.v17.1.dll</HintPath>
+    </Reference>
+    <Reference Include="InfragisticsWPF4.Controls.Menus.XamMenu.v17.1, Version=17.1.20171.1000, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL">
+      <HintPath>..\packages\Infragistics.17.1\InfragisticsWPF4.Controls.Menus.XamMenu.v17.1.dll</HintPath>
+    </Reference>
+    <Reference Include="InfragisticsWPF4.Controls.Schedules.v17.1, Version=17.1.20171.1000, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL">
+      <HintPath>..\packages\Infragistics.17.1\InfragisticsWPF4.Controls.Schedules.v17.1.dll</HintPath>
+    </Reference>
+    <Reference Include="InfragisticsWPF4.Controls.Schedules.XamGantt.v17.1, Version=17.1.20171.1000, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL">
+      <HintPath>..\packages\Infragistics.17.1\InfragisticsWPF4.Controls.Schedules.XamGantt.v17.1.dll</HintPath>
+    </Reference>
+    <Reference Include="InfragisticsWPF4.DataManager.v17.1, Version=17.1.20171.1000, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL">
+      <HintPath>..\packages\Infragistics.17.1\InfragisticsWPF4.DataManager.v17.1.dll</HintPath>
+    </Reference>
+    <Reference Include="InfragisticsWPF4.DataPresenter.v17.1, Version=17.1.20171.1000, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL">
+      <HintPath>..\packages\Infragistics.17.1\InfragisticsWPF4.DataPresenter.v17.1.dll</HintPath>
+    </Reference>
+    <Reference Include="InfragisticsWPF4.DataVisualization.v17.1, Version=17.1.20171.1000, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL">
+      <HintPath>..\packages\Infragistics.17.1\InfragisticsWPF4.DataVisualization.v17.1.dll</HintPath>
+    </Reference>
+    <Reference Include="InfragisticsWPF4.Editors.v17.1, Version=17.1.20171.1000, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL">
+      <HintPath>..\packages\Infragistics.17.1\InfragisticsWPF4.Editors.v17.1.dll</HintPath>
+    </Reference>
+    <Reference Include="InfragisticsWPF4.v17.1, Version=17.1.20171.1000, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL">
+      <HintPath>..\packages\Infragistics.17.1\InfragisticsWPF4.v17.1.dll</HintPath>
+    </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.4.12\lib\net45\NLog.dll</HintPath>
     </Reference>
@@ -142,7 +164,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <EmbeddedResource Include="Properties\Licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -178,7 +199,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /Y "$(SolutionDir)packages\XBeeJavaLibrary\*.dll" "$(TargetDir)"
+    <PostBuildEvent>
 </PostBuildEvent>
   </PropertyGroup>
 </Project>

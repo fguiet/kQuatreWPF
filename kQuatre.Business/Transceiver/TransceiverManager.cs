@@ -110,7 +110,7 @@ namespace Guiet.kQuatre.Business.Transceiver
         {
             get
             {
-                return (_serialPortHelper.SerialPort.IsOpen);+
+                return (_serialPortHelper.SerialPort.IsOpen);
             }
         }
 
