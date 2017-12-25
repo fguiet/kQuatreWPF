@@ -2,6 +2,8 @@
 #include <LoRa.h>
 
 //DEBUG MODE
+// 0 - Non debug mode
+// 1 - debug mode
 #define DEBUG 0
 
 const String ACK_OK = "ACK_OK";
@@ -124,11 +126,10 @@ void sendMessage(String frame) {
 
 void waitForAck() {
  
-  unsigned long entry = millis();
-  String ackFrame = "";
-  
   printDebug("Waiting for ACK...");
-  
+
+  String ackFrame = "";
+  unsigned long entry = millis();  
   while (millis() - entry < WAIT_FOR_ACK_TIMEOUT) {
   //while(1) {
     if (LoRa.parsePacket()) {      

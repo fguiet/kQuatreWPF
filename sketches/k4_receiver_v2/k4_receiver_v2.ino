@@ -2,6 +2,8 @@
 #include <LoRa.h>
 
 //DEBUG MODE
+// 0 - Non debug mode
+// 1 - debug mode
 #define DEBUG 0
 
 const long FREQ = 868E6;
