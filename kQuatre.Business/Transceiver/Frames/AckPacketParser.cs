@@ -48,8 +48,19 @@ namespace Guiet.kQuatre.Business.Transceiver.Frames
 
                     if (fb.IsAckOk)
                     {                        
-                        string rssi = ackComplement.Split('+')[1];
-                        fb.Rssi = rssi;
+                        String[] ackComplementArray = ackComplement.Split('+');
+                        if (ackComplementArray.Length >= 2)
+                        {
+                            string rssi = ackComplement.Split('+')[1];
+                            fb.Rssi = rssi;
+                        }
+
+                        if (ackComplementArray.Length >= 3)
+                        {
+                            string ohm = ackComplement.Split('+')[2];
+                            fb.Ohm = ohm;
+                        }
+
 
                         _logger.Info(string.Format("ACK OK (frame id : {0}) => receiver from sender address : {1}. Receiver address is {2}", frameId, senderId, receiverId));
                     }

@@ -1,5 +1,6 @@
 ﻿using Guiet.kQuatre.Business.Configuration;
 using Guiet.kQuatre.Business.Firework;
+using Guiet.kQuatre.Business.Receptor;
 using Guiet.kQuatre.UI.ViewModel;
 using Infragistics.Controls.Schedules;
 using Infragistics.Windows.DataPresenter;
@@ -105,7 +106,7 @@ namespace Guiet.kQuatre.UI.Views
         {
 
         }
-
+        
         private void _miFireworkManagement_Click(object sender, EventArgs e)
         {
             _viewModel.OpenFireworkManagementWindow();
@@ -180,6 +181,21 @@ namespace Guiet.kQuatre.UI.Views
         private void _btnStartTestReceptor_Click(object sender, RoutedEventArgs e)
         {
             _viewModel.StartTestingReceptor();
+        }
+
+        /// <summary>
+        /// Test whether a ligne is well connected by testing is resistance
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void _btnTestResistance_Click(object sender, RoutedEventArgs e)
+        {
+            DataRecord dataRecord = _receptorChannelsDatagrid.ActiveRecord as DataRecord;
+            ReceptorAddress ra = dataRecord.DataItem as ReceptorAddress;
+
+            _viewModel.SelectedTestReceptor.TestResistance(ra);
+
+
         }
     }
 }

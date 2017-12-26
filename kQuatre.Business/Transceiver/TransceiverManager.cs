@@ -21,8 +21,8 @@ namespace Guiet.kQuatre.Business.Transceiver
 
         private static Logger _logger = LogManager.GetCurrentClassLogger();
 
-        private const int DEFAULT_BAUD_RATE = 9600;
-        private const int DEFAULT_ACKTIMEOUT = 1000;
+        private const int DEFAULT_BAUD_RATE = 115200;
+        private const int DEFAULT_ACKTIMEOUT = 500;
 
         //Max number of timeout authorized for main node communication
         private const int MAX_TIMEOUT_OCCURENCES_FROM_TRANSCEIVER_ALLOWED = 3;
@@ -42,7 +42,10 @@ namespace Guiet.kQuatre.Business.Transceiver
         /// </summary>
         private string _port = null;
 
-        private int _ackTimeout;
+        /// <summary>
+        /// Total time before timeout after a frame has been sent and ack has been received
+        /// </summary>
+        private int _sendReceiveFrameAckTimeOut;
 
         private string _transceiverAddress;
 
@@ -151,7 +154,7 @@ namespace Guiet.kQuatre.Business.Transceiver
 
         }
 
-        public TransceiverManager(string port, int baud, string transceiverAddress, int ackTimeout)
+        public TransceiverManager(string port, int baud, string transceiverAddress, int sendReceiveFrameAckTimeout)
         {
 
             _serialPortHelper = new SerialPortHelper(port, baud);
@@ -159,16 +162,14 @@ namespace Guiet.kQuatre.Business.Transceiver
             _serialPortDataListener.Start();
 
             _port = port;
-            _ackTimeout = ackTimeout;
+            _sendReceiveFrameAckTimeOut = sendReceiveFrameAckTimeout;
             _transceiverAddress = transceiverAddress;
 
             //Start Ping Timer to ensure device is still connected
             _pingTimer = new System.Timers.Timer();
             _pingTimer.Interval = 2000;
             _pingTimer.Elapsed += PingTimer_Elapsed;
-            //_pingTimer.Start();
-
-            //TODO : Send a message to Xbee to get address of xbee and compare to the configured one, throw exception otherwise
+            _pingTimer.Start();            
         }
 
         #endregion
@@ -222,10 +223,12 @@ namespace Guiet.kQuatre.Business.Transceiver
         {            
             _logger.Info(string.Format("Sending packet : {0}", packet));
 
-            byte[] buf = Encoding.UTF8.GetBytes(packet);
-            _serialPortHelper.SerialPort.Write(buf, 0, buf.Length);
-
-            //Useful ??
+            if (_serialPortHelper.SerialPort.IsOpen)
+            {
+                byte[] buf = Encoding.UTF8.GetBytes(packet);
+                _serialPortHelper.SerialPort.Write(buf, 0, buf.Length);
+            }
+            //Useful??
             //_serialPortHelper.SerialPort.BaseStream.Flush();
         }
 
@@ -234,10 +237,12 @@ namespace Guiet.kQuatre.Business.Transceiver
         #region Public Methods
 
         /// <summary>
-        /// Send Packet and waits for response or timeout
+        /// Send Packet and waits for response, overrinding default timeout parameter
         /// </summary>
-        /// <param name="loraPacket"></param>
-        public FrameBase SendPacketSynchronously(FrameBase frame)
+        /// <param name="frame"></param>
+        /// <param name="timeOut"></param>
+        /// <returns></returns>
+        public FrameBase SendPacketSynchronously(FrameBase frame, int timeOut)
         {
             int retry = 0;
             PacketReceivedListener prl = null;
@@ -253,6 +258,10 @@ namespace Guiet.kQuatre.Business.Transceiver
                     //Set frame id
                     frame.SetFrameId = GetNextFrameID();
 
+                    //Set ACK Timeout (time sender wait for a response)
+                    //La valeur est empirique mais correspond au temps d'un envoi global / 2 (temps d'un envoi + temps d'une réception)
+                    frame.SetAckTimeOut = timeOut / 2;
+
                     // Generate a packet received listener for the packet to be sent.
                     prl = new PacketReceivedListener(frame, lockObject);
 
@@ -260,7 +269,8 @@ namespace Guiet.kQuatre.Business.Transceiver
                     _serialPortDataListener.AddDataReceiveListener(prl);
 
                     //Compute send/receive packet duration
-                    var stopwatch = new Stopwatch();
+                    Stopwatch stopwatch = new Stopwatch();
+
                     stopwatch.Start();
 
                     // Write the packet data.
@@ -273,7 +283,7 @@ namespace Guiet.kQuatre.Business.Transceiver
                         {
                             try
                             {
-                                Monitor.Wait(lockObject, _ackTimeout);
+                                Monitor.Wait(lockObject, timeOut);
                             }
                             catch (ThreadInterruptedException) { }
                         }
@@ -284,7 +294,7 @@ namespace Guiet.kQuatre.Business.Transceiver
                         if (prl.PacketReceived == null)
                         {
                             retry++;
-                            _logger.Warn(string.Format("Timeout occured sending packet with frame id {0} to address : {1}. Waited for {2} ms for ACK but nothing came out. try number : {3}", prl.PacketSent.FrameId, prl.PacketSent.ReceiverId, _ackTimeout, retry));                          
+                            _logger.Warn(string.Format("Timeout occured sending packet with frame id {0} to address : {1}. Waited for {2} ms for ACK but nothing came out. try number : {3}", prl.PacketSent.FrameId, prl.PacketSent.ReceiverId, timeOut, retry));
                         }
                         else
                         {
@@ -299,17 +309,26 @@ namespace Guiet.kQuatre.Business.Transceiver
                         // Always remove the packet listener from the list.
                         _serialPortDataListener.RemoveDataReceiveListener(prl);
                     }
-                }                
+                }
             }
 
             if (null == prl || prl.PacketReceived == null)
             {
-                throw new TimeoutPacketException(string.Format("Send packet to address : {0}, and waited for {1} ms for ACK but nothing came out. Retried to send message : {2}", prl.PacketSent.ReceiverId, _ackTimeout, retry));
+                throw new TimeoutPacketException(string.Format("Send packet to address : {0}, and waited for {1} ms for ACK but nothing came out. Retried to send message : {2}", prl.PacketSent.ReceiverId, timeOut, retry));
             }
             else
             {
                 return prl.PacketReceived;
             }
+        }
+
+        /// <summary>
+        /// Send Packet (with default timeout) and waits for response or timeout
+        /// </summary>
+        /// <param name="loraPacket"></param>
+        public FrameBase SendPacketSynchronously(FrameBase frame)
+        {
+            return SendPacketSynchronously(frame, _sendReceiveFrameAckTimeOut);
         }
 
         #endregion

@@ -47,8 +47,10 @@ namespace Guiet.kQuatre.Business.Firework
 
         //Line number
         private int _number = -1;
+
         //Receptor address linked to this line
         private ReceptorAddress _receptorAddress = null;
+
         //Time at which firework(s) is/are launched
         private TimeSpan _ignition;
 

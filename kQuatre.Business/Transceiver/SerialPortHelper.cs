@@ -32,19 +32,14 @@ namespace Guiet.kQuatre.Business.Transceiver
             _serialPort.DataBits = 8;
             _serialPort.StopBits = StopBits.One;
             _serialPort.Handshake = Handshake.None;
-
-            _serialPort.Open();
-            _serialPort.DiscardOutBuffer();
-            _serialPort.DiscardInBuffer();
+            _serialPort.Open();            
             _serialPort.DataReceived += SerialPort_DataReceived;
             
         }
 
         public void Stop()
         {
-
-            //_serialPort.DiscardOutBuffer();
-            //_serialPort.DiscardInBuffer();
+            
             _serialPort.DataReceived -= SerialPort_DataReceived;
 
             if (_serialPort.IsOpen)
@@ -54,15 +49,13 @@ namespace Guiet.kQuatre.Business.Transceiver
         private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             try
-            {
-                //Something has arrived !! 
-                //Tell listening threads!!
+            {                
                 if (_serialPort.BytesToRead > 0)
-                {                    
+                {                  
                     lock (this)
                     {
                         Monitor.Pulse(this);
-                    }
+                    }                    
                 }
             }
             catch (Exception ex)

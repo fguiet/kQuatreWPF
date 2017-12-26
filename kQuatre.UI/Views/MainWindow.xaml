@@ -53,10 +53,11 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
+                        <ColumnDefinition Width="97*"/>
+                        <ColumnDefinition Width="653*"/>
                     </Grid.ColumnDefinitions>
 
-                    <Grid Grid.Row="0">
+                    <Grid Grid.Row="0" Grid.ColumnSpan="2">
                         <Grid.RowDefinitions>
                             <RowDefinition />
                         </Grid.RowDefinitions>
@@ -172,7 +173,7 @@
                             </Grid.ColumnDefinitions>
                             <Label Grid.Row="0" Grid.Column="0" Content="Sélection d'un récepteurs : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
                             <ComboBox Name="_cbxTestReceptors" Grid.Column="1" Grid.Row="0" SelectedValue="{Binding Path=SelectedTestReceptor}"  DisplayMemberPath="Name" ItemsSource="{Binding Path=FireworkManager.Receptors}" HorizontalAlignment="Left" VerticalAlignment="Center" Width="200"  />
-                            <Button Margin="10,0,0,0" Grid.Row="0" Grid.Column="2" x:Name="_btnDoReceptorTest" IsEnabled="{Binding SelectedTestReceptor.IsTestLaunchAllowed, FallbackValue=false}" Width="120" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Lancer le tester" Click="_btnStartTestReceptor_Click" ></Button>
+                            <Button Margin="10,0,0,0" Grid.Row="0" Grid.Column="2" x:Name="_btnDoReceptorTest" IsEnabled="{Binding SelectedTestReceptor.IsTestLaunchAllowed,  FallbackValue=false}" Width="120" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Lancer le test" Click="_btnStartTestReceptor_Click" ></Button>
                             <Button Margin="10,0,0,0" Grid.Row="0" Grid.Column="3" x:Name="_btnStopReceptorTest" IsEnabled="{Binding SelectedTestReceptor.IsTestStopAllowed, FallbackValue=false}" Width="120" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Arrêter le test" Click="_btnStopTestReceptor_Click" ></Button>
                         </Grid>
                     </GroupBox>
@@ -198,12 +199,70 @@
                             <Label Grid.Row="0" Grid.Column="0" Content="Nb de messages envoyés : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
                             <Label Grid.Row="0" Grid.Column="1" Content="{Binding Path=SelectedTestReceptor.MessageSentCounter, FallbackValue=NA}"></Label>
                             <Label Grid.Row="0" Grid.Column="2" Content="Reçus : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
-                            <Label Grid.Row="0" Grid.Column="3" Content="{Binding Path=SelectedTestReceptor.MessageReceivedCounter, FallbackValue=NA}"></Label>
+                            <Label Grid.Row="0" Grid.Column="3"  Content="{Binding Path=SelectedTestReceptor.MessageReceivedCounter, FallbackValue=NA}" Foreground="Green" />
                             <Label Grid.Row="0" Grid.Column="4" Content="Perdus : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
-                            <Label Grid.Row="0" Grid.Column="5" Content="{Binding Path=SelectedTestReceptor.MessageLostCounter, FallbackValue=NA}"></Label>
+                            <Label Grid.Row="0" Grid.Column="5" Content="{Binding Path=SelectedTestReceptor.MessageLostCounter, FallbackValue=NA}" Foreground="Red"></Label>
                             <Label Grid.Row="0" Grid.Column="6" Content="Rssi : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
                             <Label Grid.Row="0" Grid.Column="7" Content="{Binding Path=SelectedTestReceptor.MessageRssi, FallbackValue=NA}"></Label>
                         </Grid>
+                    </GroupBox>
+                    <GroupBox Grid.Row="3" Margin="10,10,10,10">
+                        <GroupBox.Header>
+                            <TextBlock FontWeight="Bold">Test de la résistance des canaux du récepteur connecté à une ligne du feu</TextBlock>
+                        </GroupBox.Header>
+                        <DockPanel Margin="10,10,10,10">
+                            <igDP:XamDataGrid Name="_receptorChannelsDatagrid" Theme="IGTheme"
+                           DataSource="{Binding SelectedTestReceptor.PluggedChannels}"  SelectedDataItemsScope="RecordsOnly" GroupByAreaLocation="None">
+                                <igDP:XamDataGrid.Resources>
+                                    <Style x:Key="lineRowColorStyle" TargetType="igDP:DataRecordCellArea">
+                                        <Setter Property="Background" Value="Gray"/>
+                                    </Style>
+                                    <Style x:Key="fireworkRowColorStyle" TargetType="igDP:DataRecordCellArea">
+                                        <Setter Property="Background" Value="LightGray"/>
+                                    </Style>
+
+                                    <Style x:Key="lineRecordStyle" TargetType="{x:Type igDP:DataRecordPresenter}">
+                                        <Setter Property="Margin" Value="0,40,0,0"/>
+                                        <Setter Property="FontSize" Value="14"/>
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                    </Style>
+
+                                    <Style x:Key="fireworkRecordStyle" TargetType="{x:Type igDP:DataRecordPresenter}">
+                                        <Setter Property="Margin" Value="30,0,0,0"/>
+                                    </Style>
+
+                                    <Style x:Key="buttonInCellStyle" TargetType="{x:Type igDP:CellValuePresenter}">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type igDP:CellValuePresenter}">
+                                                    <Button Name="_btnTestResistance" Content="Tester" Click="_btnTestResistance_Click" 
+                                                            IsEnabled="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}},Path=DataContext.SelectedTestReceptor.IsTestLaunchAllowed,  FallbackValue=false}"                                                            
+                                                            FontStyle="Normal" />
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </igDP:XamDataGrid.Resources>
+                                <igDP:XamDataGrid.FieldLayoutSettings>
+                                    <igDP:FieldLayoutSettings AutoGenerateFields="False"/>
+                                </igDP:XamDataGrid.FieldLayoutSettings>
+
+                                <igDP:XamDataGrid.FieldLayouts>
+                                    <igDP:FieldLayout Key="Channels">
+                                        <igDP:FieldLayout.Fields>
+                                            <igDP:Field IsReadOnly="True" Width="Auto" Label="Numéro de ligne" Name="LineAssociatedNumberUI" />
+                                            <igDP:Field IsReadOnly="True" Label="Liaison" Name="ReceptorAddressUI" Width="250"/>
+                                            <igDP:Field IsReadOnly="True" Label="Résistance" Name="Resistance" Width="250"/>
+                                            <igDP:UnboundField Label="Action">
+                                                <igDP:Field.Settings>
+                                                    <igDP:FieldSettings CellValuePresenterStyle="{StaticResource buttonInCellStyle}" />
+                                                </igDP:Field.Settings>
+                                            </igDP:UnboundField>
+                                        </igDP:FieldLayout.Fields>
+                                    </igDP:FieldLayout>
+                                </igDP:XamDataGrid.FieldLayouts>
+                            </igDP:XamDataGrid>
+                        </DockPanel>
                     </GroupBox>
                 </Grid>
             </Custom:TabItemEx>

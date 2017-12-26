@@ -65,6 +65,7 @@
     <Compile Include="Transceiver\Frames\FireFrame.cs" />
     <Compile Include="Transceiver\Frames\FrameBase.cs" />
     <Compile Include="Transceiver\Frames\AckPacketParser.cs" />
+    <Compile Include="Transceiver\Frames\OhmFrame.cs" />
     <Compile Include="Transceiver\Frames\PingFrame.cs" />
     <Compile Include="Transceiver\PacketReceivedListener.cs" />
     <Compile Include="Transceiver\SerialPortDataListener.cs" />

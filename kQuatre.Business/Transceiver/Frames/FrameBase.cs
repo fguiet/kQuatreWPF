@@ -26,12 +26,29 @@ namespace Guiet.kQuatre.Business.Transceiver.Frames
         private string _frameId = null;
         private string _senderId = null;
         private string _receiverId = null;
+        private string _address = null;
         protected string _frameComplement = null;
+
+        //Time that the sender has to wait for ack before timing out
+        private int _ackTimeOut = - 1;
 
         protected FrameBase(string senderId, string receiverId)
         {
             _senderId = senderId;
             _receiverId = receiverId;            
+        }
+
+        public int SetAckTimeOut
+        {
+            set
+            {
+                _ackTimeOut = value;
+            }
+
+            get
+            {
+                return _ackTimeOut;
+            }
         }
 
         public String SetFrameId
@@ -71,8 +88,13 @@ namespace Guiet.kQuatre.Business.Transceiver.Frames
             if (null == _frameId || null == _senderId || null == _receiverId || _frameOrder == FrameOrder.UNKNOWN)
                 throw new Exception("Frame instance is not fully completed");
 
+            string frameOrder = _frameOrder.ToString();
+
+            if (_ackTimeOut != -1)
+                frameOrder = string.Format("{0}+{1}", frameOrder, _ackTimeOut);
+
             //Frame sample is @;251;1;2;FIRE;3+1+2+3;OD;|
-            string frame = string.Format("{0};{1};{2};{3};{4};{5};", FRAME_START_DELIMITER, _frameId, _senderId, _receiverId, _frameOrder.ToString(), _frameComplement);
+            string frame = string.Format("{0};{1};{2};{3};{4};{5};", FRAME_START_DELIMITER, _frameId, _senderId, _receiverId, frameOrder, _frameComplement);
 
             //Calcule checksum
             string checkSum = CalculateChecksum(frame);

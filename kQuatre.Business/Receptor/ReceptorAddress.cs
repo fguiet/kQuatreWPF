@@ -2,7 +2,9 @@
 using Guiet.kQuatre.Business.Firework;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,7 +13,7 @@ namespace Guiet.kQuatre.Business.Receptor
     /// <summary>
     /// Handle receptor address (availability, channel, etc...)
     /// </summary>
-    public class ReceptorAddress
+    public class ReceptorAddress : INotifyPropertyChanged
     {
         #region Private Members
 
@@ -35,6 +37,11 @@ namespace Guiet.kQuatre.Business.Receptor
         /// </summary>
         private Line _line = null;
 
+        /// <summary>
+        /// Current resistance of this receptor address
+        /// </summary>
+        private string _resistance = "";
+
         #endregion
 
         public bool IsAvailable
@@ -44,6 +51,8 @@ namespace Guiet.kQuatre.Business.Receptor
                 return (_line == null);
             }
         }
+
+       
 
         #region Constructor
 
@@ -57,6 +66,30 @@ namespace Guiet.kQuatre.Business.Receptor
         #endregion
 
         #region Public Members
+
+        public string Resistance
+        {
+            get
+            {
+                return _resistance;
+            }
+
+            set
+            {
+                if (_resistance != value) { 
+                    _resistance = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string LineAssociatedNumberUI
+        {
+            get
+            {
+                return _line.NumberUI;
+            }
+        }
 
         public string ReceptorAddressUI
         {
@@ -107,6 +140,19 @@ namespace Guiet.kQuatre.Business.Receptor
             get
             {
                 return _receptor;
+            }
+        }
+
+        #endregion
+
+        #region Events
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged([CallerMemberName] String propertyName = "")
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
 

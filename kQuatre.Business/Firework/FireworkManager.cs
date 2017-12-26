@@ -29,12 +29,7 @@ namespace Guiet.kQuatre.Business.Firework
     public class FireworkManager : INotifyPropertyChanged
     {
         #region Private members
-
-        /// <summary>
-        /// Device connected to serial port
-        /// </summary>
-        private TransceiverManager _transceiver = null;
-
+        
         private ObservableCollection<TaskModel> _ganttDataSource = null;
 
         /// <summary>
@@ -208,7 +203,7 @@ namespace Guiet.kQuatre.Business.Firework
             }
 
         }
-
+        
         #region Constructor
 
         public FireworkManager(SoftwareConfiguration configuration,
@@ -217,12 +212,31 @@ namespace Guiet.kQuatre.Business.Firework
             _configuration = configuration;
             _deviceManager = deviceManager;
 
+            _deviceManager.DeviceConnected += DeviceManager_DeviceConnected;
+            _deviceManager.DeviceDisconnected += DeviceManager_DeviceDisconnected;
+
             //Set default receptors
             _receptors = new ObservableCollection<Receptor.Receptor>();
 
             foreach (Receptor.Receptor r in _configuration.DefaultReceptors)
             {
                 _receptors.Add(r);
+            }
+        }
+
+        private void DeviceManager_DeviceDisconnected(object sender, EventArgs e)
+        {
+            foreach (Receptor.Receptor r in _receptors)
+            {
+                r.SetDeviceManager(null);
+            }
+        }
+
+        private void DeviceManager_DeviceConnected(object sender, ConnectionEventArgs e)
+        {
+            foreach (Receptor.Receptor r in _receptors)
+            {
+                r.SetDeviceManager(_deviceManager);
             }
         }
 
@@ -243,7 +257,7 @@ namespace Guiet.kQuatre.Business.Firework
         #endregion
 
         #region Public Methods
-
+        
         /// <summary>
         /// TODO : Implement this
         /// </summary>
@@ -260,10 +274,8 @@ namespace Guiet.kQuatre.Business.Firework
         /// <summary>
         /// Start firework !!!
         /// </summary>
-        public void Start(TransceiverManager tm)
-        {
-            _transceiver = tm;
-
+        public void Start()
+        {            
             _fireworkWorker = new BackgroundWorker();
             _fireworkWorker.DoWork += FireworkWorker_DoWork;
             _fireworkWorker.RunWorkerCompleted += FireworkWorker_RunWorkerCompleted;
@@ -371,6 +383,9 @@ namespace Guiet.kQuatre.Business.Firework
 
                     Guiet.kQuatre.Business.Receptor.Receptor receptor = GetReceptor(address);
                     Guiet.kQuatre.Business.Receptor.ReceptorAddress ra = receptor.GetAddress(Convert.ToInt32(channelNumber));
+
+                    //TODO : A revoir
+                    receptor.SetDeviceManager(_deviceManager);
 
                     line.AssignReceptorAddress(ra);
                 }
@@ -625,8 +640,8 @@ namespace Guiet.kQuatre.Business.Firework
                         try
                         {
                             //Send Message here and get result
-                            FireFrame pf = new FireFrame(_transceiver.Address, message.Value[0].ReceptorAddress.Address, LineHelper.GetFireMessage(message.Value));
-                            FrameBase fb = _transceiver.SendPacketSynchronously(pf);
+                            FireFrame pf = new FireFrame(_deviceManager.Transceiver.Address, message.Value[0].ReceptorAddress.Address, LineHelper.GetFireMessage(message.Value));
+                            FrameBase fb = _deviceManager.Transceiver.SendPacketSynchronously(pf);
 
                             af = (AckFrame)fb;
                         }

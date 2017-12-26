@@ -1,8 +1,10 @@
 ﻿using Guiet.kQuatre.Business.Exceptions;
+using Guiet.kQuatre.Business.Firework;
 using Guiet.kQuatre.Business.Transceiver;
 using Guiet.kQuatre.Business.Transceiver.Frames;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -15,16 +17,21 @@ namespace Guiet.kQuatre.Business.Receptor
     public class Receptor : INotifyPropertyChanged
     {
         #region Private Members
-        
+
         /// <summary>
         /// Device connected to serial port
         /// </summary>
-        private TransceiverManager _transceiver = null;
+        private DeviceManager _deviceManager = null;
 
         /// <summary>
         /// Background worker for testing receptor
         /// </summary>
         private BackgroundWorker _receptorWorker = null;
+
+        /// <summary>
+        /// Background worker for testing resistance
+        /// </summary>
+        private BackgroundWorker _receptorWorkerOhm = null;
 
         /// <summary>
         /// Receptor name
@@ -55,7 +62,7 @@ namespace Guiet.kQuatre.Business.Receptor
         /// In test mode count the number of received message
         /// </summary>
         private String _messageReceivedCounter = "NA";
-        
+
         /// <summary>
         /// In test mode Rssi received
         /// </summary>
@@ -65,6 +72,23 @@ namespace Guiet.kQuatre.Business.Receptor
 
         private bool _isTestStopAllowed = false;
 
+        private ReceptorAddress _receptorAddressTested = null;
+
+        /// <summary>
+        /// Get Current Receptor Channel associated with a line
+        /// </summary>
+        public ObservableCollection<ReceptorAddress> PluggedChannels
+        {
+            get
+            {
+                List<ReceptorAddress> raList = (from ra in _receptorAddresses
+                                                where !ra.IsAvailable
+                                                select ra).ToList();
+
+                return new ObservableCollection<ReceptorAddress>(raList);
+            }
+        }
+
         #endregion
 
         #region Public Members
@@ -73,7 +97,10 @@ namespace Guiet.kQuatre.Business.Receptor
         {
             get
             {
-                return _isTestLaunchAllowed;
+                if (_deviceManager == null || !_deviceManager.IsEmitterConnected)
+                    return false;
+                else
+                    return _isTestLaunchAllowed;
             }
 
             set
@@ -83,7 +110,7 @@ namespace Guiet.kQuatre.Business.Receptor
                     _isTestLaunchAllowed = value;
                     OnPropertyChanged();
                 }
-            }           
+            }
         }
 
         public bool IsTestStopAllowed
@@ -119,7 +146,7 @@ namespace Guiet.kQuatre.Business.Receptor
                 }
             }
         }
-        
+
         public string MessageReceivedCounter
         {
             get
@@ -155,7 +182,7 @@ namespace Guiet.kQuatre.Business.Receptor
         }
 
         public string MessageSentCounter
-        {            
+        {
             get
             {
                 return _messageSentCounter;
@@ -244,24 +271,89 @@ namespace Guiet.kQuatre.Business.Receptor
                 _receptorWorker.CancelAsync();
         }
 
-        public void StartTest(TransceiverManager tm)
+        public void SetDeviceManager(DeviceManager dm)
         {
-            _transceiver = tm;
+            //Stop test in case transceiver has been dettached..
+            if (dm == null && _receptorWorker != null && _receptorWorker.IsBusy)
+            {
+                _receptorWorker.CancelAsync();
+            }
 
+            _deviceManager = dm;
+
+            //Refresh GUI
+            OnPropertyChanged("IsTestLaunchAllowed");
+        }
+
+        /// <summary>
+        /// Get resiste of receptor address
+        /// </summary>
+        /// <param name="ra"></param>
+        public void TestResistance(ReceptorAddress ra)
+        {
+            if (_receptorWorkerOhm != null && _receptorWorkerOhm.IsBusy) return;
+
+            _receptorAddressTested = ra;
+
+            _receptorWorkerOhm = new BackgroundWorker();
+            _receptorWorkerOhm.DoWork += ReceptorWorkerOhm_DoWork;
+            _receptorWorkerOhm.RunWorkerCompleted += ReceptorWorkerOhm_RunWorkerCompleted;
+            _receptorWorkerOhm.RunWorkerAsync(ra);
+
+        }
+
+        private void ReceptorWorkerOhm_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            _receptorAddressTested.Resistance = e.Result.ToString();
+        }
+
+        private void ReceptorWorkerOhm_DoWork(object sender, DoWorkEventArgs e)
+        {
+
+            try
+            {
+                FrameBase db = new OhmFrame(_deviceManager.Transceiver.Address, _receptorAddressTested.Address, _receptorAddressTested.Channel.ToString());                
+
+                //ACK takes at least 1500ms to respond...
+                FrameBase receivedFrame = _deviceManager.Transceiver.SendPacketSynchronously(db, 4000);
+
+                if (receivedFrame is AckFrame)
+                {
+                    AckFrame af = (AckFrame)receivedFrame;
+
+                    if (af.IsAckOk)
+                    {
+                        e.Result = af.Ohm;
+                    }
+
+                    if (!af.IsAckOk)
+                    {
+                        e.Result = "ACK KO";
+                    }
+                }
+            }
+            catch (TimeoutPacketException)
+            {
+                e.Result = "No response";
+            }
+        }
+
+        public void StartTest()
+        {
             IsTestLaunchAllowed = false;
             IsTestStopAllowed = true;
 
             _receptorWorker = new BackgroundWorker();
             _receptorWorker.WorkerSupportsCancellation = true;
             _receptorWorker.DoWork += ReceptorWorker_DoWork;
-            _receptorWorker.RunWorkerCompleted += ReceptorWorker_RunWorkerCompleted;             
+            _receptorWorker.RunWorkerCompleted += ReceptorWorker_RunWorkerCompleted;
             _receptorWorker.RunWorkerAsync();
         }
 
         private void ReceptorWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             IsTestLaunchAllowed = true;
-            IsTestStopAllowed = false;            
+            IsTestStopAllowed = false;
         }
 
         private void ReceptorWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -288,8 +380,8 @@ namespace Guiet.kQuatre.Business.Receptor
 
                     MessageSentCounter = (messageSentCounter++).ToString();
 
-                    FrameBase db = new PingFrame(_transceiver.Address, _address);
-                    FrameBase receivedFrame = _transceiver.SendPacketSynchronously(db);                    
+                    FrameBase db = new PingFrame(_deviceManager.Transceiver.Address, _address);
+                    FrameBase receivedFrame = _deviceManager.Transceiver.SendPacketSynchronously(db);
 
                     if (receivedFrame is AckFrame)
                     {
@@ -300,7 +392,7 @@ namespace Guiet.kQuatre.Business.Receptor
                             MessageRssi = af.Rssi;
                             MessageReceivedCounter = (messageReceivedCounter++).ToString();
                         }
-                        
+
                         if (!af.IsAckOk)
                         {
                             MessageLostCounter = (messageLostCounter++).ToString();
@@ -310,7 +402,7 @@ namespace Guiet.kQuatre.Business.Receptor
                     //Pause for 1s
                     Thread.Sleep(1000);
                 }
-                catch (TimeoutPacketException tpe)
+                catch (TimeoutPacketException)
                 {
                     MessageLostCounter = (messageLostCounter++).ToString();
                 }
@@ -320,7 +412,7 @@ namespace Guiet.kQuatre.Business.Receptor
         #endregion
 
         #region Events
-        
+
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] String propertyName = "")
         {

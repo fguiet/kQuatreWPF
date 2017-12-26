@@ -27,9 +27,9 @@ const int MIN_FRAME_LENGHT = 17;
 //*** @;251;0;3;FIRE;3+1+2+3;0D;|
 
 const int WAIT_FOR_FRAME_TIMEOUT = 200; //in ms
-const int WAIT_FOR_ACK_TIMEOUT = 500; // in ms
+
 const long FREQ = 868E6;
-const int SF = 9;
+const int SF = 7;
 const long BW = 125E3;
 const String MODULE_ADDRESS = "0";
 const String UNKNOWN_RECEIVER_ADDRESS = "-1";
@@ -43,7 +43,7 @@ const String ACK_OK_PONG = "OK_S1";
 void setup() {
   
   //Set Serial baudrate
-  Serial.begin(9600);
+  Serial.begin(115200);
   while (!Serial);
 
   //Init LoRa
@@ -120,17 +120,19 @@ void sendMessage(String frame) {
   else {
     printDebug("Message not for me sending message via LoRa");
     sendLoRaPacket(frame);
-    waitForAck();
+
+    int timeOut = getFrameAckTimeOutValue(frame).toInt();
+    waitForAck(timeOut);
   }
 }
 
-void waitForAck() {
- 
-  printDebug("Waiting for ACK...");
+void waitForAck(int timeOut) {  
+   
+  printDebug("Waiting for ACK...TimeOut is : " + String(timeOut));
 
   String ackFrame = "";
   unsigned long entry = millis();  
-  while (millis() - entry < WAIT_FOR_ACK_TIMEOUT) {
+  while (millis() - entry < timeOut) {
   //while(1) {
     if (LoRa.parsePacket()) {      
       while (LoRa.available()) {
@@ -285,8 +287,18 @@ String ComputeCheckSum(String frame) {
   return checkSumStr;
 }
 
+String getFrameAckTimeOutValue(String frame) {
+
+  String message = getFrameChunk(frame, ';', 4);
+
+  return getFrameChunk(message, '+', 1);
+}
+
 String getFrameMessageValue(String frame) {
-  return getFrameChunk(frame, ';', 4);
+
+  String message = getFrameChunk(frame, ';', 4);
+
+  return getFrameChunk(message, '+', 0);
 }
 
 String getCheckSumValue(String frame) {

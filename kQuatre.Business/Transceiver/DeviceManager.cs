@@ -48,7 +48,7 @@ namespace Guiet.kQuatre.Business.Transceiver
         public bool IsEmitterConnected
         {
             get
-            {
+            {                
                 return (_emitter != null);
             }
         }

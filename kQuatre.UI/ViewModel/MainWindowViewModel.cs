@@ -111,11 +111,11 @@ namespace Guiet.kQuatre.UI.ViewModel
             _deviceManager.DeviceDisconnected += DeviceManager_DeviceDisconnected;
             _deviceManager.DeviceErrorWhenConnecting += DeviceManager_DeviceErrorWhenConnecting;
             _deviceManager.USBConnection += DeviceManager_USBConnection;
+            
+            FireworkManager = InstantiateNewFirework();
 
             //Device already plugged?
             _deviceManager.DiscoverDevice();
-            
-            FireworkManager = InstantiateNewFirework();
 
         }
 
@@ -227,12 +227,12 @@ namespace Guiet.kQuatre.UI.ViewModel
         }
 
         private void DeviceManager_DeviceDisconnected(object sender, EventArgs e)
-        {
+        {            
             DeviceConnectionInfo = DEFAULT_NOT_TRANSCEIVER_CONNECTED_MESSAGE;
         }
 
         private void DeviceManager_DeviceConnected(object sender, ConnectionEventArgs e)
-        {
+        {            
             DeviceConnectionInfo = string.Format(DEFAULT_TRANSCEIVER_CONNECTED_MESSAGE, e.Port);
         }
 
@@ -255,7 +255,7 @@ namespace Guiet.kQuatre.UI.ViewModel
 
         public void StartTestingReceptor()
         {
-            _selectedTestReceptor.StartTest(_deviceManager.Transceiver);
+            _selectedTestReceptor.StartTest();
         }
 
         /// <summary>
@@ -264,7 +264,7 @@ namespace Guiet.kQuatre.UI.ViewModel
         public void StartFirework()
         {            
             //TODO : Sanity check
-            _fireworkManager.Start(_deviceManager.Transceiver);
+            _fireworkManager.Start();
         }
 
         /// <summary>
