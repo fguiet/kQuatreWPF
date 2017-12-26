@@ -32,7 +32,7 @@ const String ACK_OK_FRAME_RECEIVED = "OK_R1";
 /***
  * !!! Modify this !!!
  */
-const String MODULE_ADDRESS = "3";
+const String MODULE_ADDRESS = "2";
 
 void setup() {
   //Set Serial baudrate
@@ -84,6 +84,8 @@ String GetResistance(String frame) {
 
   String messageComplement = getFrameMessageCompValue(frame);
 
+  printDebug("Channel a tester : "+messageComplement);
+
   int relayToCheck = messageComplement.toInt();
   
   //Active test relay mode
@@ -114,14 +116,15 @@ String GetResistance(String frame) {
   char valBuffer[10];
             
   memset(valBuffer,'\0',10);
-  
-  //strcat(Buffer,"OHM;");
-  //strcat(Buffer,String(relayToCheck).c_str());
-  //strcat(Buffer,";");
+    
   dtostrf(resistance,4,4,valBuffer);
-  //strcat(Buffer,charVal);  
+  
   String result(valBuffer);
 
+  printDebug("Result resistance : "+result);
+
+  //result.replace(".",",");
+  
   return result;  
 }
 
@@ -251,7 +254,7 @@ void handleFrameMessage(String frame, int rssi)  {
   }
 
   if (message == "OHM") {
-    String result = GetResistance(frame);
+    String result = GetResistance(frame);    
     //Send ACK with OHM mesurement
     sendLoRaPacket(createFrame(getFrameIdValue(frame), MODULE_ADDRESS, getSenderAddressValue(frame), ACK_OK, ACK_OK_FRAME_RECEIVED + "+" + String(rssi) + "+" + result));    
   }
