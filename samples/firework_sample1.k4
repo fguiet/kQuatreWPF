@@ -1,0 +1,285 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FireworkDefinition fireworkName="OUTARVILLE RELIQUAT 2015">
+  <Receptors>
+    <Receptor name="Boitier 1" address="1" nbOfChannels="16" />
+    <Receptor name="Boitier 2" address="2" nbOfChannels="16" />
+    <Receptor name="Boitier 3" address="3" nbOfChannels="16" />
+  </Receptors>
+  <Lines>
+    <Line number="1" ignition="00:00:00">
+      <ReceptorAddress address="3" channel="1" />
+      <Fireworks>
+        <Firework designation="MARRON AIR 50MM TITANE LOGE EN MORTIER" duration="00:00:03" />
+      </Fireworks>
+    </Line>
+    <Line number="2" ignition="00:00:05">
+      <ReceptorAddress address="3" channel="13" />
+      <Fireworks>
+        <Firework designation="PACK CD 19 CPS BBTES 4 EFFETS VARIES" duration="00:00:28" />
+      </Fireworks>
+    </Line>
+    <Line number="3" ignition="00:00:10">
+      <ReceptorAddress address="3" channel="3" />
+      <Fireworks>
+        <Firework designation="KAKI BLEU CLIGNOTANT ARGENT&#xD;&#xA;PACK CD 25 COUPS BOMBE" duration="00:00:34" />
+      </Fireworks>
+    </Line>
+    <Line number="4" ignition="00:00:15">
+      <ReceptorAddress address="3" channel="4" />
+      <Fireworks>
+        <Firework designation="5 BOMBES 75MM R5 TOURMALINE&#xD;&#xA;R5 / 42 47 52 57 02" duration="00:00:22" />
+      </Fireworks>
+    </Line>
+    <Line number="5" ignition="00:00:20">
+      <ReceptorAddress address="3" channel="5" />
+      <Fireworks>
+        <Firework designation="CHD 30 MM 10 TIRS PÔT-À- FEU CLIGNOTANT ROSE" duration="00:00:40" />
+      </Fireworks>
+    </Line>
+    <Line number="6" ignition="00:00:25">
+      <ReceptorAddress address="3" channel="6" />
+      <Fireworks>
+        <Firework designation="CHD 30 MM 8 BOMBETTES CLIGNOTANT ROSE" duration="00:00:38" />
+      </Fireworks>
+    </Line>
+    <Line number="7" ignition="00:00:30">
+      <ReceptorAddress address="3" channel="7" />
+      <Fireworks>
+        <Firework designation="PACK CD 19 CPS PALME OR CLIGNO RGE" duration="00:00:26" />
+      </Fireworks>
+    </Line>
+    <Line number="8" ignition="00:00:35">
+      <ReceptorAddress address="3" channel="8" />
+      <Fireworks>
+        <Firework designation="BOMBE 100MM COULEURS SPECIALES CLIGNOTANT ROSE" duration="00:00:06" />
+      </Fireworks>
+    </Line>
+    <Line number="9" ignition="00:00:40">
+      <ReceptorAddress address="3" channel="9" />
+      <Fireworks>
+        <Firework designation="HALLOWEEN BUCOLIQUE&#xD;&#xA;PACK 16 COMETES VERTES TOURBIL" duration="00:00:29" />
+      </Fireworks>
+    </Line>
+    <Line number="10" ignition="00:00:45">
+      <ReceptorAddress address="3" channel="10" />
+      <Fireworks>
+        <Firework designation="HORTENSIA SCINTILLANT ARGENT A VERT&#xD;&#xA;PACK CW 42 COU" duration="00:00:22" />
+        <Firework designation="5 BOMBES 75MM R5 PISTIL&#xD;&#xA;R5 / 40 45 50 55 00" duration="00:00:22" />
+      </Fireworks>
+    </Line>
+    <Line number="11" ignition="00:00:50">
+      <ReceptorAddress address="3" channel="11" />
+      <Fireworks>
+        <Firework designation="PACK CD 16 CPS BBTES 4 EFFETS VARIES" duration="00:00:25" />
+      </Fireworks>
+    </Line>
+    <Line number="12" ignition="00:00:55">
+      <ReceptorAddress address="3" channel="12" />
+      <Fireworks>
+        <Firework designation="SAC 5 BOMBES 75MM DALHIA N°1&#xD;&#xA;R4 / 12 16 20 24 28" duration="00:00:22" />
+      </Fireworks>
+    </Line>
+    <Line number="13" ignition="00:01:00">
+      <ReceptorAddress address="1" channel="13" />
+      <Fireworks>
+        <Firework designation="HELIOTROPE TRONC ASSORTI SAULE COULEUR&#xD;&#xA;PACK CD 25" duration="00:00:22" />
+      </Fireworks>
+    </Line>
+    <Line number="14" ignition="00:01:05">
+      <ReceptorAddress address="3" channel="14" />
+      <Fireworks>
+        <Firework designation="SAC 5 BOMBES 75MM R5 PETALES ASSORTIES&#xD;&#xA;R5 / 55 00 05 10 15" duration="00:00:22" />
+      </Fireworks>
+    </Line>
+    <Line number="15" ignition="00:01:10">
+      <ReceptorAddress address="3" channel="15" />
+      <Fireworks>
+        <Firework designation="PASSIFLORE CLIGNOTANT PECHE ET CREPITANT&#xD;&#xA;PACK CW 2" duration="00:00:26" />
+      </Fireworks>
+    </Line>
+    <Line number="16" ignition="00:01:15">
+      <ReceptorAddress address="3" channel="16" />
+      <Fireworks>
+        <Firework designation="SAC 5 BOMBES 75MM PISTIL ASSORTI&#xD;&#xA;R5 / 45 50 55 00 05" duration="00:00:26" />
+      </Fireworks>
+    </Line>
+    <Line number="17" ignition="00:01:20">
+      <ReceptorAddress address="2" channel="1" />
+      <Fireworks>
+        <Firework designation="FLAMBOYANT CREPITANT&#xD;&#xA;PACK CD 19 COUPS BOMBETTES CR" duration="00:00:32" />
+      </Fireworks>
+    </Line>
+    <Line number="18" ignition="00:05:40">
+      <ReceptorAddress address="2" channel="2" />
+      <Fireworks>
+        <Firework designation="ABELIA ASSORTI ET CREPITANT&#xD;&#xA;PACK CW 25 COUPS ETOI" duration="00:00:19" />
+      </Fireworks>
+    </Line>
+    <Line number="19" ignition="00:05:55">
+      <ReceptorAddress address="2" channel="3" />
+      <Fireworks>
+        <Firework designation="5 BOMBES 75MM R5 AIGUE MARINE&#xD;&#xA;R5 / 55 00 05 10 15" duration="00:00:22" />
+        <Firework designation="SAC 5 BOMBES 75MM AIGUE MARINE&#xD;&#xA;R5 / 55 00 05 10 15" duration="00:00:26" />
+      </Fireworks>
+    </Line>
+    <Line number="20" ignition="00:06:20">
+      <ReceptorAddress address="2" channel="4" />
+      <Fireworks>
+        <Firework designation="CHANDELLE 50MM 8 PAF ORANGE" duration="00:00:26" />
+      </Fireworks>
+    </Line>
+    <Line number="21" ignition="00:06:40">
+      <ReceptorAddress address="2" channel="5" />
+      <Fireworks>
+        <Firework designation="GENTIANE ROUGE ET OR&#xD;&#xA;PACK CZ 25 COUPS COMETES ROUG" duration="00:00:24" />
+        <Firework designation="5 BOMBES 75MM R5 OPALINE&#xD;&#xA;R5 / 40 45 50 55 00" duration="00:00:22" />
+      </Fireworks>
+    </Line>
+    <Line number="22" ignition="00:07:00">
+      <ReceptorAddress address="2" channel="6" />
+      <Fireworks>
+        <Firework designation="BOMBE 100MM COURONNE ARGENT" duration="00:00:06" />
+      </Fireworks>
+    </Line>
+    <Line number="23" ignition="00:07:06">
+      <ReceptorAddress address="2" channel="7" />
+      <Fireworks>
+        <Firework designation="BAUHINIA TRONC ASSORTI + CLIGNOTANT VERT ROUGE&#xD;&#xA;PA" duration="00:00:32" />
+      </Fireworks>
+    </Line>
+    <Line number="24" ignition="00:07:35">
+      <ReceptorAddress address="2" channel="8" />
+      <Fireworks>
+        <Firework designation="BAUHINIA TRONC ASSORTI + CLIGNOTANT VERT ROUGE&#xD;&#xA;PA" duration="00:00:32" />
+      </Fireworks>
+    </Line>
+    <Line number="25" ignition="00:07:45">
+      <ReceptorAddress address="2" channel="9" />
+      <Fireworks>
+        <Firework designation="5 BOMBES 75MM R5 PIERRE DE LUNE&#xD;&#xA;R5 / 45 50 55 00 05" duration="00:00:22" />
+      </Fireworks>
+    </Line>
+    <Line number="26" ignition="00:08:10">
+      <ReceptorAddress address="2" channel="10" />
+      <Fireworks>
+        <Firework designation="CHD 49 MM 7 TIRS PÔT-À- FEU KAMURO" duration="00:00:25" />
+      </Fireworks>
+    </Line>
+    <Line number="27" ignition="00:08:30">
+      <ReceptorAddress address="2" channel="11" />
+      <Fireworks>
+        <Firework designation="CHD 30 MM 10 TIRS COMETES KAMURO" duration="00:00:25" />
+      </Fireworks>
+    </Line>
+    <Line number="28" ignition="00:08:35">
+      <ReceptorAddress address="2" channel="12" />
+      <Fireworks>
+        <Firework designation="CHD 8 BOMBETTES KAMURO AVEC AE" duration="00:00:20" />
+      </Fireworks>
+    </Line>
+    <Line number="29" ignition="00:08:53">
+      <ReceptorAddress address="2" channel="13" />
+      <Fireworks>
+        <Firework designation="BOMBE 75MM TRONC DE PALMIER KAMURO" duration="00:00:08" />
+      </Fireworks>
+    </Line>
+    <Line number="30" ignition="00:09:00">
+      <ReceptorAddress address="2" channel="14" />
+      <Fireworks>
+        <Firework designation="ROMA ARGENT&#xD;&#xA;PACK CZ 20 COUPS CROSSETTE ARGENT" duration="00:00:27" />
+        <Firework designation="PACK CD 36 CPS BBTES 5 EFFETS VARIES" duration="00:00:27" />
+      </Fireworks>
+    </Line>
+    <Line number="31" ignition="00:09:25">
+      <ReceptorAddress address="2" channel="15" />
+      <Fireworks>
+        <Firework designation="CENTAUREA BOREALE&#xD;&#xA;PACK CD 25 COUPS COMETES ARGENT" duration="00:00:58" />
+      </Fireworks>
+    </Line>
+    <Line number="32" ignition="00:09:45">
+      <ReceptorAddress address="2" channel="16" />
+      <Fireworks>
+        <Firework designation="5 BOMBES 75MM R5 OUTREMER&#xD;&#xA;R5 / 45 50 55 00 05" duration="00:00:22" />
+      </Fireworks>
+    </Line>
+    <Line number="33" ignition="00:10:10">
+      <ReceptorAddress address="1" channel="1" />
+      <Fireworks>
+        <Firework designation="KAKI BLEU CLIGNOTANT ARGENT&#xD;&#xA;PACK CD 25 COUPS BOMBE" duration="00:00:34" />
+      </Fireworks>
+    </Line>
+    <Line number="34" ignition="00:10:35">
+      <ReceptorAddress address="1" channel="2" />
+      <Fireworks>
+        <Firework designation="BAUHINIA TRONC ASSORTI + CLIGNOTANT VERT ROUGE&#xD;&#xA;PA" duration="00:00:32" />
+      </Fireworks>
+    </Line>
+    <Line number="35" ignition="00:10:45">
+      <ReceptorAddress address="1" channel="3" />
+      <Fireworks>
+        <Firework designation="5 BOMBES 75MM R5 CROSSETTE&#xD;&#xA;R5 / 45 50 55 00 05" duration="00:00:22" />
+      </Fireworks>
+    </Line>
+    <Line number="36" ignition="00:11:10">
+      <ReceptorAddress address="1" channel="4" />
+      <Fireworks>
+        <Firework designation="PACK CW 90 COUPS PAF LAT.RGE/VERT CTRE  ARGT/CRAC" duration="00:00:30" />
+      </Fireworks>
+    </Line>
+    <Line number="37" ignition="00:11:20">
+      <ReceptorAddress address="1" channel="5" />
+      <Fireworks>
+        <Firework designation="SAC 5 BOMBES 100MM COULEURS ASSORTIES&#xD;&#xA;R5 / 20 25 30 35 40" duration="00:00:22" />
+      </Fireworks>
+    </Line>
+    <Line number="38" ignition="00:11:45">
+      <ReceptorAddress address="1" channel="6" />
+      <Fireworks>
+        <Firework designation="CHANDELLE 25MM 8 TRONCS VERT" duration="00:00:25" />
+      </Fireworks>
+    </Line>
+    <Line number="39" ignition="00:12:05">
+      <ReceptorAddress address="1" channel="7" />
+      <Fireworks>
+        <Firework designation="MADURO VERT ET JAUNE&#xD;&#xA;PACK CW 21 COUPS COMETES VERT" duration="00:00:25" />
+      </Fireworks>
+    </Line>
+    <Line number="40" ignition="00:12:10">
+      <ReceptorAddress address="1" channel="8" />
+      <Fireworks>
+        <Firework designation="5 BOMBES 75MM R5 PALME&#xD;&#xA;R5 / 10 15 20 25 30" duration="00:00:22" />
+      </Fireworks>
+    </Line>
+    <Line number="41" ignition="00:12:35">
+      <ReceptorAddress address="1" channel="9" />
+      <Fireworks>
+        <Firework designation="PACK CD 25 SIFFLETS ARGENTÉS" duration="00:00:27" />
+      </Fireworks>
+    </Line>
+    <Line number="42" ignition="00:12:45">
+      <ReceptorAddress address="1" channel="10" />
+      <Fireworks>
+        <Firework designation="FLEUR DE BAMBOU&#xD;&#xA;PACK CD 25 COUPS COMETES VERTES BO" duration="00:00:23" />
+        <Firework designation="FLAMBOYANT CREPITANT&#xD;&#xA;PACK CD 19 COUPS BOMBETTES CR" duration="00:00:32" />
+      </Fireworks>
+    </Line>
+    <Line number="43" ignition="00:12:50">
+      <ReceptorAddress address="1" channel="11" />
+      <Fireworks>
+        <Firework designation="PACK BOUQUET 14 BOMBES 45MM R10 EN TETE" duration="00:00:40" />
+        <Firework designation="PACK BOUQUET 14 BOMBES 45MM R10 EN TETE" duration="00:00:35" />
+        <Firework designation="5 BOMBES 75MM PISTIL R3 R20 EN TETE&#xD;&#xA;R3 / 10 13 16 19 22" duration="00:00:42" />
+        <Firework designation="SAC 5 BOMBES 75MM AIGUE MARINE R3&#xD;&#xA;R3 / 50 53 56 59 02" duration="00:00:18" />
+        <Firework designation="5 BOMBES 75MM PALME R2 R25 EN TETE&#xD;&#xA;R2 / 15 17 19 21 23" duration="00:00:44" />
+      </Fireworks>
+    </Line>
+    <Line number="44" ignition="00:13:03">
+      <ReceptorAddress address="1" channel="12" />
+      <Fireworks>
+        <Firework designation="SAC 5 BOMBES 75MM AIGUE MARINE R3&#xD;&#xA;R3 / 03 06 09 12 15" duration="00:00:18" />
+        <Firework designation="5 BOMBES 75MM R5 CHRYSANTHEME&#xD;&#xA;R5 / 03 08 13 18 23" duration="00:00:22" />
+        <Firework designation="SAC 5 BOMBES 75MM OPALINE&#xD;&#xA;R2 / 15 17 19 21 23" duration="00:00:14" />
+      </Fireworks>
+    </Line>
+  </Lines>
+</FireworkDefinition>
