@@ -7,7 +7,7 @@
 #define DEBUG 0
 
 const long FREQ = 868E6;
-const int SF = 9;
+const int SF = 7;
 const long BW = 125E3;
 
 #define NUMBER_OF_RELAY 16 //Nb of relay
@@ -36,7 +36,7 @@ const String MODULE_ADDRESS = "3";
 
 void setup() {
   //Set Serial baudrate
-  Serial.begin(9600);
+  Serial.begin(115200);
   while (!Serial);
 
   //Init LoRa
@@ -78,6 +78,75 @@ void loop() {
     
     handleReceivedFrame(frame, rssi);
   }  
+}
+
+String GetResistance(String frame) {
+
+  String messageComplement = getFrameMessageCompValue(frame);
+
+  int relayToCheck = messageComplement.toInt();
+  
+  //Active test relay mode
+  digitalWrite(RELAY1_TEST_PIN,HIGH);
+  digitalWrite(RELAY2_TEST_PIN,HIGH);
+
+  //Wait a litlle
+  delay(500);
+
+  digitalWrite(FIRST_RELAY_DIGITAL_PIN + relayToCheck, LOW); //Le relay 1 doit être branché sur le digital 30 et ainsi de suite
+  
+  //Wait a little
+  delay(500);
+    
+  //Read resistance
+  float resistance = ComputeResistance();
+                            
+  //Deactive test relay mode
+  digitalWrite(FIRST_RELAY_DIGITAL_PIN + relayToCheck, HIGH);        
+
+  //Wait a little
+  delay(500);
+       
+  //Deactivate test mode
+  digitalWrite(RELAY1_TEST_PIN,LOW);
+  digitalWrite(RELAY2_TEST_PIN,LOW);    
+      
+  char valBuffer[10];
+            
+  memset(valBuffer,'\0',10);
+  
+  //strcat(Buffer,"OHM;");
+  //strcat(Buffer,String(relayToCheck).c_str());
+  //strcat(Buffer,";");
+  dtostrf(resistance,4,4,valBuffer);
+  //strcat(Buffer,charVal);  
+  String result(valBuffer);
+
+  return result;  
+}
+
+float ComputeResistance() {
+  
+  int raw= 0;
+  int Vin= 5; //Voltage en entrée 5V
+  float Vout= 0;
+  float R1= 47; //47 Ohm pour la résistance que l'on connait (100Ohm pour celle que l'on mesure)
+  float R2= 0;
+  float Buffer= 0;
+  
+  raw=analogRead(OHMETER_PIN);
+
+  printDebug("Raw : " + String(raw));
+    
+  if (raw) 
+  {  
+     Buffer= raw * Vin;
+     Vout= (Buffer)/1024.0;
+     Buffer= (Vin/Vout) -1;
+     R2= R1 * Buffer; 
+  }  
+  
+  return R2;
 }
 
 String ComputeCheckSum(String frame) {
@@ -150,19 +219,23 @@ void handleReceivedFrame(String frame, int rssi) {
     //Frame ok here let's handle frame message
     //Let's see whether frame is for me...
     String receiverAddress = getReceiverAddressValue(frame);
+    String message = getFrameMessageValue(frame);
+    
     if (receiverAddress == MODULE_ADDRESS) {
 
       printDebug("trame received is for me :  " + frame);  
+
+      if (message != "OHM") {
+        //Send always ACK here ... except when message is OHM ... will send ACK later
+        sendLoRaPacket(createFrame(getFrameIdValue(frame), MODULE_ADDRESS, getSenderAddressValue(frame), ACK_OK, ACK_OK_FRAME_RECEIVED + "+" + String(rssi)));    
+      }
       
-      //SendACK OK here, everything!!
-      sendLoRaPacket(createFrame(getFrameIdValue(frame), MODULE_ADDRESS, getSenderAddressValue(frame), ACK_OK, ACK_OK_FRAME_RECEIVED + "+" + String(rssi)));    
-      
-      handleFrameMessage(frame);
+      handleFrameMessage(frame, rssi);
     }
   } 
 }
 
-void handleFrameMessage(String frame)  {
+void handleFrameMessage(String frame, int rssi)  {
 
   String message = getFrameMessageValue(frame);
 
@@ -176,11 +249,13 @@ void handleFrameMessage(String frame)  {
     //Nothing to do here :)
     return;    
   }
-  /*if (message == "OHM") {
-    int relayToCheck = getValue(payload,';',5).toInt();
-    checkResistance(relayToCheck);
-  }     
-*/
+
+  if (message == "OHM") {
+    String result = GetResistance(frame);
+    //Send ACK with OHM mesurement
+    sendLoRaPacket(createFrame(getFrameIdValue(frame), MODULE_ADDRESS, getSenderAddressValue(frame), ACK_OK, ACK_OK_FRAME_RECEIVED + "+" + String(rssi) + "+" + result));    
+  }
+ 
   if (message == "FIRE") { //Ok let's fire!!
     fireFirework(frame);                        
   }
@@ -280,8 +355,18 @@ void sendLoRaPacket(String frame) {
   LoRa.endPacket();
 }
 
+String getFrameAckTimeOutValue(String frame) {
+
+  String message = getFrameChunk(frame, ';', 4);
+
+  return getFrameChunk(message, '+', 1);
+}
+
 String getFrameMessageValue(String frame) {
-  return getFrameChunk(frame, ';', 4);
+
+  String message = getFrameChunk(frame, ';', 4);
+
+  return getFrameChunk(message, '+', 0);
 }
 
 String getFrameMessageCompValue(String frame) {
