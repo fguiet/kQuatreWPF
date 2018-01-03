@@ -1,22 +1,23 @@
-﻿using Guiet.kQuatre.Business.Gantt;
-using Infragistics.Controls.Schedules;
-using System;
-using System.Collections.ObjectModel;
+﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Timers;
 using System.Windows.Media;
-using System.Windows.Threading;
 
 namespace Guiet.kQuatre.Business.Firework
 {
     /// <summary>
     /// Handle firework 
     /// </summary>
-    public class Firework
+    public class Firework : INotifyPropertyChanged
     {
         #region Private Members
+
+        /// <summary>
+        /// Firework order number
+        /// </summary>
+        private int _number;
 
         /// <summary>
         /// 
@@ -36,7 +37,7 @@ namespace Guiet.kQuatre.Business.Firework
         /// <summary>
         /// Pourcentage completed once fired
         /// </summary>
-        private decimal _percentComplete = 0;
+        private decimal _percentComplete = 100;
 
         /// <summary>
         /// Firework state
@@ -58,15 +59,28 @@ namespace Guiet.kQuatre.Business.Firework
         /// </summary>
         private SolidColorBrush _colorPresentation = new SolidColorBrush(Colors.Gray);
 
+        /// <summary>
+        /// Color representation of firework on Timeline Diagramm
+        /// </summary>
+        private Color _radColor = Colors.Gray;
+
+        /// <summary>
+        /// Line assigned to this firework
+        /// </summary>
+        private Line _assignedLine = null;        
+
         #endregion
 
         #region Constructor
 
-        public Firework(string reference, string designation, TimeSpan duration)
+        public Firework(int orderNumber, string reference, string designation, TimeSpan duration, Line line)
         {
             _reference = reference;
             _designation = designation;
             _duration = duration;
+            _assignedLine = line;
+            _number = orderNumber;
+
         }
 
         #endregion
@@ -98,20 +112,26 @@ namespace Guiet.kQuatre.Business.Firework
                 FireworkFinished(this, new EventArgs());
             }
         }
-
-        private TaskModel _taskModel = null;
-
+        
         #endregion
 
-        #region Public Members  
+        #region Public Members 
 
-        public TaskModel TaskModel
+        public string SummaryUI
         {
             get
             {
-                return _taskModel;
+                return string.Format("{0} ({1})", _assignedLine.NumberUI, _assignedLine.ReceptorAddressUI);
             }
         }
+
+        public DateTime RadStart
+        {
+            get
+            {
+                return DateTime.Now.Date.Add(_assignedLine.Ignition);
+            }
+        }        
 
         public bool IsFinished
         {
@@ -131,22 +151,27 @@ namespace Guiet.kQuatre.Business.Firework
                 {
                     case FireworkState.Finished:
                         this.ColorPresentation = new SolidColorBrush(Colors.Green);
+                        this.RadColor = Colors.Green;
                         break;
 
                     case FireworkState.ImminentLaunch:
                         this.ColorPresentation = new SolidColorBrush(Colors.Orange);
+                        this.RadColor = Colors.Orange;
                         break;
 
                     case FireworkState.InProgress:
                         this.ColorPresentation = new SolidColorBrush(Colors.Red);
+                        this.RadColor = Colors.Red;
                         break;
 
                     case FireworkState.LaunchFailed:
                         this.ColorPresentation = new SolidColorBrush(Colors.Black);
+                        this.RadColor = Colors.Black;
                         break;
 
                     case FireworkState.Standby:
                         this.ColorPresentation = new SolidColorBrush(Colors.Gray);
+                        this.RadColor = Colors.Gray;
                         break;
                 }
             }
@@ -163,6 +188,19 @@ namespace Guiet.kQuatre.Business.Firework
                 if (_elapsedTime == null) return TimeSpan.Parse("00:00");
 
                 return _elapsedTime.Elapsed;
+            }
+        }
+
+        public Color RadColor
+        {
+            get { return _radColor; }
+            set
+            {
+                if (_radColor != value)
+                {
+                    _radColor = value;
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -191,6 +229,14 @@ namespace Guiet.kQuatre.Business.Firework
                 }
             }
 
+        }
+
+        public int RadRowIndex
+        {
+            get
+            {
+                return _number;
+            }
         }
 
         public TimeSpan Duration
@@ -236,12 +282,7 @@ namespace Guiet.kQuatre.Business.Firework
 
             //Change firework state
             this.State = FireworkState.InProgress;
-        }
-
-        public void SetTaskModel(TaskModel tm)
-        {
-            _taskModel = tm;
-        }
+        }               
 
         public void SetFailed()
         {

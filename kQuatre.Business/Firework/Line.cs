@@ -30,12 +30,21 @@ namespace Guiet.kQuatre.Business.Firework
         }
 
         public event EventHandler LineStarted;
+        public event EventHandler LineFailed;
 
         private void OnLineStartedEvent()
         {
             if (LineStarted != null)
             {
                 LineStarted(this, new EventArgs());
+            }
+        }
+
+        private void OnLineFailedEvent()
+        {
+            if (LineFailed != null)
+            {
+                LineFailed(this, new EventArgs());
             }
         }
 
@@ -66,7 +75,7 @@ namespace Guiet.kQuatre.Business.Firework
         /// Elapsed time since line has been fired
         /// </summary>
         private Stopwatch _elapsedTime = null;
-        
+
         #endregion
 
         #region Public Members
@@ -108,7 +117,7 @@ namespace Guiet.kQuatre.Business.Firework
                 }
             }
         }
-
+        
         public string NumberUI
         {
             get
@@ -116,7 +125,7 @@ namespace Guiet.kQuatre.Business.Firework
                 return string.Format("Ligne n° {0}", _number.ToString());
             }
         }
-
+        
         public TimeSpan Ignition
         {
             get
@@ -175,7 +184,7 @@ namespace Guiet.kQuatre.Business.Firework
             }
 
         }
-
+        
         public TimeSpan? LongestFireworkDuration
         {
             get
@@ -244,6 +253,8 @@ namespace Guiet.kQuatre.Business.Firework
 
         public void SetFailed()
         {
+            OnLineFailedEvent();
+
             _state = LineState.LaunchFailed;
 
             foreach (Firework firework in _fireworks)
@@ -286,7 +297,7 @@ namespace Guiet.kQuatre.Business.Firework
         /// <param name="firework"></param>
         public void AddFirework(Firework firework)
         {
-            firework.FireworkFinished += Firework_FireworkFinished;
+            firework.FireworkFinished += Firework_FireworkFinished;            
             _fireworks.Add(firework);
         }
 

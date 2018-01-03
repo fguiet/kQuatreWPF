@@ -1,23 +1,19 @@
-﻿using Infragistics.Documents.Excel;
+﻿using Guiet.kQuatre.Business.Configuration;
+using Guiet.kQuatre.Business.Exceptions;
+using Guiet.kQuatre.Business.Receptor;
+using Guiet.kQuatre.Business.Transceiver;
+using Guiet.kQuatre.Business.Transceiver.Frames;
+using Infragistics.Documents.Excel;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Linq;
-using Guiet.kQuatre.Business.Configuration;
-using System.Windows.Threading;
-using Guiet.kQuatre.Business.Gantt;
-using Infragistics.Controls.Schedules;
-using System.Windows.Media;
-using System.Timers;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Xml.Linq;
-using Guiet.kQuatre.Business.Exceptions;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
-using Guiet.kQuatre.Business.Transceiver;
-using Guiet.kQuatre.Business.Receptor;
-using Guiet.kQuatre.Business.Transceiver.Frames;
+using System.Timers;
+using System.Xml.Linq;
 
 namespace Guiet.kQuatre.Business.Firework
 {
@@ -28,9 +24,7 @@ namespace Guiet.kQuatre.Business.Firework
     /// </summary>
     public class FireworkManager : INotifyPropertyChanged
     {
-        #region Private members
-        
-        private ObservableCollection<TaskModel> _ganttDataSource = null;
+        #region Private members        
 
         /// <summary>
         /// Each receptor owns a mac address. Each receptor has got x channels. A channel is linked to a firework line
@@ -81,6 +75,15 @@ namespace Guiet.kQuatre.Business.Firework
         #region Events
 
         public event EventHandler LineStarted;
+        public event EventHandler LineFailed;
+
+        private void OnLineFailedEvent(object sender)
+        {
+            if (LineFailed != null)
+            {
+                LineFailed(sender, new EventArgs());
+            }
+        }
 
         private void OnLineStartedEvent(object sender)
         {
@@ -110,21 +113,70 @@ namespace Guiet.kQuatre.Business.Firework
             }
         }
 
-        public string TotalDuration
+        public DateTime DefaultPeriodStartUI
         {
             get
             {
-                if (_lines == null || _lines.Count == 0) return "00:00:00";
+                return DateTime.Now.Date;
+            }
+        }
 
-                TimeSpan sp;
+        public DateTime DefaultPeriodEndUI
+        {
+            get
+            {
+                return DateTime.Now.Date.Add(new TimeSpan(0, 1, 0));
+            }
+        }
 
-                if (_lines[_lines.Count - 1].LongestFireworkDuration.HasValue)
-                    sp = _lines[_lines.Count - 1].Ignition.Add(_lines[_lines.Count - 1].LongestFireworkDuration.Value);
-                else
-                    sp = _lines[_lines.Count - 1].Ignition;
+        public DateTime PeriodStartUI
+        {
+            get
+            {
+                return DateTime.Now.Date;
+            }
+        }
+        
+        public DateTime PeriodEndUI
+        {
+            get
+            {
+                //Add 10 seconds so graph is does not end abrutly
+                return DateTime.Now.Date.Add(TotalDuration).Add(new TimeSpan(0, 0, 5));
+            }
+        }
 
-                return $"{sp:hh\\:mm\\:ss}";
+        public TimeSpan TotalDuration
+        {
+            get
+            {
+                if (_lines == null || _lines.Count == 0) return new TimeSpan(0, 0, 0);
 
+                TimeSpan sp = new TimeSpan(0, 0, 0);
+                TimeSpan maxSp = new TimeSpan(0, 0, 0);
+                foreach (Line l in _lines)
+                {
+                    if (l.LongestFireworkDuration.HasValue)
+                        sp = l.Ignition.Add(l.LongestFireworkDuration.Value);
+                    else
+                        sp = l.Ignition;
+
+                    if (sp.CompareTo(maxSp) == 1)
+                    {
+                        maxSp = sp;
+                    }
+                }
+
+                return maxSp;
+
+            }
+        }
+
+        public string TotalDurationUI
+        {
+            get
+            {
+                return $"{TotalDuration:hh\\:mm\\:ss}";
             }
         }
 
@@ -177,23 +229,7 @@ namespace Guiet.kQuatre.Business.Firework
                 return ra;
 
             }
-        }
-
-        public ObservableCollection<TaskModel> GanttDataSource
-        {
-            get
-            {
-                return _ganttDataSource;
-            }
-            set
-            {
-                if (_ganttDataSource != value)
-                {
-                    _ganttDataSource = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
+        }       
 
         public ObservableCollection<Line> Lines
         {
@@ -203,7 +239,7 @@ namespace Guiet.kQuatre.Business.Firework
             }
 
         }
-        
+
         #region Constructor
 
         public FireworkManager(SoftwareConfiguration configuration,
@@ -242,7 +278,6 @@ namespace Guiet.kQuatre.Business.Firework
 
         #endregion
 
-
         #region Event
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -257,7 +292,7 @@ namespace Guiet.kQuatre.Business.Firework
         #endregion
 
         #region Public Methods
-        
+
         /// <summary>
         /// TODO : Implement this
         /// </summary>
@@ -275,7 +310,7 @@ namespace Guiet.kQuatre.Business.Firework
         /// Start firework !!!
         /// </summary>
         public void Start()
-        {            
+        {
             _fireworkWorker = new BackgroundWorker();
             _fireworkWorker.DoWork += FireworkWorker_DoWork;
             _fireworkWorker.RunWorkerCompleted += FireworkWorker_RunWorkerCompleted;
@@ -362,12 +397,14 @@ namespace Guiet.kQuatre.Business.Firework
             List<XElement> lines = (from l in fireworkDefinition.Descendants("Line")
                                     select l).ToList();
 
+            int fireworkNumber = 0;
             foreach (XElement l in lines)
             {
                 int lineNumber = Convert.ToInt32(l.Attribute("number").Value.ToString());
                 Line line = new Line(lineNumber);
 
                 line.LineStarted += Line_LineStarted;
+                line.LineFailed += Line_LineFailed;
                 line.PropertyChanged += Line_PropertyChanged;
 
                 if (l.Attribute("ignition") != null)
@@ -400,17 +437,24 @@ namespace Guiet.kQuatre.Business.Firework
                     string designation = f.Attribute("designation").Value.ToString();
                     TimeSpan duration = TimeSpan.Parse(f.Attribute("duration").Value.ToString());
 
-                    Firework firework = new Firework(reference, designation, duration);
+                    Firework firework = new Firework(fireworkNumber, reference, designation, duration, line);
 
                     _allFireworks.Add(firework);
                     line.AddFirework(firework);
+
+                    fireworkNumber++;
 
                 }
 
                 _lines.Add(line);
             }
 
-            GenerateGanttDataSource();
+            //GenerateGanttDataSource();
+        }
+
+        private void Line_LineFailed(object sender, EventArgs e)
+        {
+            OnLineFailedEvent(sender);
         }
 
         private void Line_LineStarted(object sender, EventArgs e)
@@ -440,6 +484,7 @@ namespace Guiet.kQuatre.Business.Firework
                 int firstRowDataIndex = _configuration.ExcelFirstRowData;
                 int rowIndex = 1;
                 Line line = null;
+                int fireworkOrderNumber = 0;
                 foreach (WorksheetRow row in fireworkDefWs.Rows)
                 {
                     if (rowIndex >= firstRowDataIndex)
@@ -453,6 +498,7 @@ namespace Guiet.kQuatre.Business.Firework
                             line = new Line(Convert.ToInt32(row.GetCellText(0)));
 
                             line.LineStarted += Line_LineStarted;
+                            line.LineFailed += Line_LineFailed;
                             line.PropertyChanged += Line_PropertyChanged;
 
                             line.Ignition = TimeSpan.Parse(row.GetCellText(1));
@@ -463,16 +509,16 @@ namespace Guiet.kQuatre.Business.Firework
                         string reference = row.GetCellText(4);
                         string designation = row.GetCellText(7);
                         TimeSpan duration = TimeSpan.Parse(row.GetCellText(5));
-                        Firework firework = new Firework(reference, designation, duration);
+                        Firework firework = new Firework(fireworkOrderNumber, reference, designation, duration, line);
 
                         _allFireworks.Add(firework);
                         line.AddFirework(firework);
+
+                        fireworkOrderNumber++;
                     }
 
                     rowIndex++;
-                }
-
-                GenerateGanttDataSource();
+                }                
             }
             catch
             {
@@ -482,6 +528,7 @@ namespace Guiet.kQuatre.Business.Firework
             return true;
         }
 
+        
         private void Line_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             _isDirty = true;
@@ -694,7 +741,7 @@ namespace Guiet.kQuatre.Business.Firework
         }
 
         //TODO : !!! Delete Dispatcher UI from here, 
-        private void GenerateGanttDataSource()
+        /*private void GenerateGanttDataSource()
         {
             DateTime startTime = DateTime.Today.ToUniversalTime();
 
@@ -767,7 +814,7 @@ namespace Guiet.kQuatre.Business.Firework
             }
 
             GanttDataSource = ganttDataSource;
-        }
+        }*/
 
         private void Firework_FireworkStateChanged(object sender, FireworkStateChangedEventArgs e)
         {

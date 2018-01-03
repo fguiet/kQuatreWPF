@@ -34,25 +34,11 @@ namespace Guiet.kQuatre.UI.Views
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            this._viewModel = new MainWindowViewModel(_fireworkGantt);
+            this._viewModel = new MainWindowViewModel(_fireworkTimeline);
             this.DataContext = _viewModel;
 
             //Datagrid
-            _fireworkDatagrid.InitializeRecord += FireworkDatagrid_InitializeRecord;
-
-            //Gantt
-            _fireworkGantt.VisibleDateRange = new Infragistics.DateRange(DateTime.Today.AddDays(+1).ToUniversalTime(), DateTime.Today.AddSeconds(30).ToUniversalTime());
-
-            Timescale ts = (this._fireworkGantt.TimescaleResolved as Timescale);
-            //ts.Bands[0].IsVisible = false;
-            ts.Bands[0].Unit = TimescaleUnit.Minutes;
-            ts.Bands[1].DisplayFormat = "mm";
-
-            ts.Bands[1].Unit = TimescaleUnit.Seconds;
-            ts.Bands[1].DisplayFormat = "ss";
-
-            _fireworkGantt.ViewSettings = new ProjectViewSettings();
-            _fireworkGantt.ViewSettings.Timescale = ts;                        
+            _fireworkDatagrid.InitializeRecord += FireworkDatagrid_InitializeRecord;                        
         }
 
         /// <summary>
@@ -196,6 +182,11 @@ namespace Guiet.kQuatre.UI.Views
             _viewModel.SelectedTestReceptor.TestResistance(ra);
 
 
+        }
+
+        private void _btnTest_Click(object sender, RoutedEventArgs e)
+        {
+            _viewModel.OpenTestRadTimeline();
         }
     }
 }

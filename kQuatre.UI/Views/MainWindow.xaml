@@ -8,8 +8,17 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:views="clr-namespace:Guiet.kQuatre.UI.ViewModel"
         xmlns:igDP="http://infragistics.com/DataPresenter"
+        xmlns:kQuatreUI="clr-namespace:Guiet.kQuatre.UI.Timeline"                
+        xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
         mc:Ignorable="d"
         Title="kQuatre" WindowState="Maximized" WindowStartupLocation="CenterScreen" >
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Resources/TimelineDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -54,10 +63,11 @@
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="97*"/>
-                        <ColumnDefinition Width="653*"/>
+                        <ColumnDefinition Width="67*"/>
+                        <ColumnDefinition Width="586*"/>
                     </Grid.ColumnDefinitions>
 
-                    <Grid Grid.Row="0" Grid.ColumnSpan="2">
+                    <Grid Grid.Row="0" Grid.ColumnSpan="3">
                         <Grid.RowDefinitions>
                             <RowDefinition />
                         </Grid.RowDefinitions>
@@ -78,7 +88,7 @@
 
 
                     <igDP:XamDataGrid Name="_fireworkDatagrid" Theme="IGTheme"
-                           DataSource="{Binding FireworkManager.Lines}" Grid.Row="1" Grid.ColumnSpan="2" SelectedDataItemsScope="RecordsOnly" GroupByAreaLocation="None">
+                           DataSource="{Binding FireworkManager.Lines}" Grid.Row="1" Grid.ColumnSpan="3" SelectedDataItemsScope="RecordsOnly" GroupByAreaLocation="None">
                         <igDP:XamDataGrid.Resources>
                             <Style x:Key="lineRowColorStyle" TargetType="igDP:DataRecordCellArea">
                                 <Setter Property="Background" Value="Gray"/>
@@ -272,72 +282,73 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="3*"/>
-                        <ColumnDefinition Width="91*"/>
-                    </Grid.ColumnDefinitions>
 
-                    <ig:ListBackedProject x:Name="ListBackedProjectDataProvider" TaskItemsSource="{Binding FireworkManager.GanttDataSource}" Grid.ColumnSpan="2" >
-                        <ig:ListBackedProject.TaskPropertyMappings>
-                            <ig:ProjectTaskPropertyMappingCollection UseDefaultMappings="True">
-                                <ig:ProjectTaskPropertyMapping TaskProperty="Duration" DataObjectProperty="Length"/>
-                                <ig:ProjectTaskPropertyMapping TaskProperty="Start" DataObjectProperty="StartTime"/>
-                                <ig:ProjectTaskPropertyMapping TaskProperty="TaskName" DataObjectProperty="Name"/>
-                                <ig:ProjectTaskPropertyMapping TaskProperty="Tasks" DataObjectProperty="ChildTasks"/>
-                                <ig:ProjectTaskPropertyMapping TaskProperty="DurationFormat" DataObjectProperty="Format"/>
-                                <ig:ProjectTaskPropertyMapping TaskProperty="DataItemId" DataObjectProperty="TaskID"/>
-                                <ig:ProjectTaskPropertyMapping TaskProperty="Predecessors" DataObjectProperty="Preds"/>
-                                <ig:ProjectTaskPropertyMapping TaskProperty="Finish" DataObjectProperty="EndTime"/>
-                                <ig:ProjectTaskPropertyMapping TaskProperty="IsManual" DataObjectProperty="IsManualTask"/>
-                                <ig:ProjectTaskPropertyMapping TaskProperty="Resources" DataObjectProperty="TaskResources"/>
-                                <ig:ProjectTaskPropertyMapping TaskProperty="PercentComplete" DataObjectProperty="PercentComplete"/>
-                            </ig:ProjectTaskPropertyMappingCollection>
-                        </ig:ListBackedProject.TaskPropertyMappings>
-                    </ig:ListBackedProject>
-
-                    <Grid Grid.Row="0" Height="100" VerticalAlignment="Top" Grid.ColumnSpan="2">
+                    <Grid Grid.Row="0">
                         <Grid.RowDefinitions>
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <GroupBox Grid.Row="0" Grid.Column="0" Margin="2,2,2,2" Header="Durée totale">
-                            <ig:XamSegmentedDisplay Text="{Binding FireworkManager.TotalDuration}" Name="_segTotalTime" SegmentMode="SevenSegment"
+                        <GroupBox Grid.Row="0" Grid.Column="0" Margin="2,2,2,2" Header="Durée totale du feu">
+                            <ig:XamSegmentedDisplay VerticalAlignment="Center" Margin="10,10,10,10" Text="{Binding FireworkManager.TotalDurationUI}" Name="_segTotalTime" SegmentMode="SevenSegment"
                                     Digits="6" Width="150" Height="50" />
                         </GroupBox>
-                        <GroupBox Grid.Row="0" Grid.Column="1" Margin="2,2,2,2" Header="Chrono">
-                            <ig:XamSegmentedDisplay Text="{Binding FireworkManager.ElapsedTimeString}" Name="_segChrono" SegmentMode="SevenSegment"
+                        <GroupBox Grid.Row="0" Grid.Column="1" Margin="2,2,2,2" Header="Temps écoulé">
+                            <ig:XamSegmentedDisplay VerticalAlignment="Center" Margin="10,10,10,10" Text="{Binding FireworkManager.ElapsedTimeString}" Name="_segChrono" SegmentMode="SevenSegment"
                                     Digits="6" Width="150" Height="50" />
                         </GroupBox>
-                        <Button Content="Button" Height="100" Width="75" Grid.Row="0" Grid.Column="2" Name="_btnStart" Click="_btnStart_Click" />
+                        <GroupBox Grid.Row="0" Grid.Column="2" Margin="2,2,2,2" Header="Panneau de contrôle">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                    <!--    <ColumnDefinition Width="Auto"/>-->
+                                    </Grid.ColumnDefinitions>
+                                    <Button Grid.Column="0" Margin="5,5,5,5" Content="Button" Height="50" Width="75" Name="_btnStart" Click="_btnStart_Click" />
+                                    <!--<Button  Grid.Column="1" Margin="5,5,5,5" Content="Test RadTimeline" Height="50" Width="75" Name="_btnTest" Click="_btnTest_Click" />-->
+                                </Grid>
+                                <CheckBox Grid.Row="1" IsChecked="{Binding Path=AutomaticTimelineScroll}" Content="Défilement automatique de la ligne de temps du feu" />
+                            </Grid>
+                        </GroupBox>
+                    </Grid>
+                    <Grid Grid.Row="1" VerticalAlignment="Stretch">
+                        <telerik:RadTimeline                              
+                             VerticalScrollBarVisibility="Auto"
+                             Name="_fireworkTimeline" 
+                             Content="Firework Timeline" 
+                             HorizontalAlignment="Stretch"
+                             VerticalAlignment="Stretch"
+                             ItemsSource="{Binding FireworkManager.AllFireworks}"
+                             PeriodStart= "{Binding FireworkManager.PeriodStartUI}"
+                             PeriodEnd="{Binding FireworkManager.PeriodEndUI}"
+                             StartPath="RadStart"
+                             DurationPath="Duration"                             
+                             VisiblePeriodStart="{Binding FireworkManager.DefaultPeriodStartUI}" 
+							 VisiblePeriodEnd="{Binding FireworkManager.DefaultPeriodEndUI}"                            
+                             TimelineItemTemplate="{StaticResource FireworkLinesTemplate}"
+                             SelectionMode="Single"
+                             IsSelectionEnabled="True"
+                             ScrollMode="ScrollOnly"
+                             AutoSort="False">
+
+                            <telerik:RadTimeline.ItemRowIndexGenerator>
+                                <kQuatreUI:NewLineRowIndexGenerator />
+                            </telerik:RadTimeline.ItemRowIndexGenerator>
+
+                            <telerik:RadTimeline.Intervals>
+                                <telerik:MinuteInterval FormatterProvider="{StaticResource MinuteIntervalFormatter}"></telerik:MinuteInterval>
+                                <telerik:SecondInterval></telerik:SecondInterval>
+                            </telerik:RadTimeline.Intervals>
+                        </telerik:RadTimeline>
                     </Grid>
 
-                    <ig:XamGantt Grid.Row="1" GridWidth="350"  x:Name="_fireworkGantt" Project="{Binding ElementName=ListBackedProjectDataProvider}"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.ColumnSpan="2">
-                        <ig:XamGantt.ViewProvider>
-                            <ig:ListBackedProjectViewProvider>
-                                <ig:ListBackedProjectViewProvider.ViewItemsSource>
-                                    <views:ProjectViewCollection>
-                                        <ig:ProjectView Key="GanttChart" TableKey="Basic" />
-                                    </views:ProjectViewCollection>
-                                </ig:ListBackedProjectViewProvider.ViewItemsSource>
-                                <ig:ListBackedProjectViewProvider.TableItemsSource>
-                                    <views:ProjectTableCollection>
-                                        <ig:ProjectTable Key="Basic">
-                                            <ig:ProjectTable.Columns>
-                                                <ig:ProjectColumn Key="TaskName" />
-                                                <ig:ProjectColumn Key="PercentComplete" />
-                                                <!--<ig:ProjectColumn Key="Indicators" />-->
-                                                <ig:ProjectColumn Key="Notes" />
-                                            </ig:ProjectTable.Columns>
-                                        </ig:ProjectTable>
-                                    </views:ProjectTableCollection>
-                                </ig:ListBackedProjectViewProvider.TableItemsSource>
-                            </ig:ListBackedProjectViewProvider>
-                        </ig:XamGantt.ViewProvider>
-                    </ig:XamGantt>
                 </Grid>
             </Custom:TabItemEx>
 

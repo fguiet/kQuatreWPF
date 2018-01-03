@@ -1,26 +1,30 @@
 ﻿using Guiet.kQuatre.Business.Configuration;
-using Guiet.kQuatre.Business.Transceiver;
 using Guiet.kQuatre.Business.Firework;
-using Guiet.kQuatre.Business.Gantt;
+using Guiet.kQuatre.Business.Receptor;
+using Guiet.kQuatre.Business.Transceiver;
 using Guiet.kQuatre.UI.Views;
-using Infragistics.Controls.Schedules;
-using Infragistics.Windows.DataPresenter;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Media;
 using System.Windows.Threading;
-using Guiet.kQuatre.Business.Receptor;
+using Telerik.Windows.Controls;
+using Telerik.Windows.Controls.Timeline;
 
 namespace Guiet.kQuatre.UI.ViewModel
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
-        #region Private Members        
+        #region Private Members  
+
+        private bool _automaticTimelineScroll = true;
+
+        /// <summary>
+        /// Timeline control
+        /// </summary>
+        private RadTimeline _fireworkTimeline = null;
 
         private Receptor _selectedTestReceptor = null;
 
@@ -32,8 +36,6 @@ namespace Guiet.kQuatre.UI.ViewModel
 
         private Dispatcher _dispatcher = null;
 
-        private XamGantt _fireworkGantt = null;        
-
         private const string DEFAULT_NOT_TRANSCEIVER_CONNECTED_MESSAGE = "Aucun émetteur connecté...";
         private const string DEFAULT_TRANSCEIVER_CONNECTED_MESSAGE = "Emetteur connecté sur le port {0}";
         private const string DEFAULT_ERROR_TRANSCEIVER_WHEN_CONNECTING_MESSAGE = "Connexion avec l'émetteur impossible (erreur : {0}) - Essayer de relancer l'application";
@@ -43,8 +45,23 @@ namespace Guiet.kQuatre.UI.ViewModel
 
         #endregion
 
-        #region Public Members 
-        
+        #region Public Members
+
+        public bool AutomaticTimelineScroll
+        {
+            get
+            {
+                return _automaticTimelineScroll;
+            }
+
+            set
+            {
+                _automaticTimelineScroll = value;
+            }
+
+        }
+
+
         public Receptor SelectedTestReceptor
         {
             get
@@ -97,11 +114,11 @@ namespace Guiet.kQuatre.UI.ViewModel
 
         #region Constructor 
 
-        public MainWindowViewModel(XamGantt fireworkGantt)
+        public MainWindowViewModel(RadTimeline fireworkTimeline)
         {
-            _fireworkGantt = fireworkGantt;            
-
             _dispatcher = Dispatcher.CurrentDispatcher;
+
+            _fireworkTimeline = fireworkTimeline;
 
             //Software configuration
             _configuration = new SoftwareConfiguration();
@@ -111,7 +128,7 @@ namespace Guiet.kQuatre.UI.ViewModel
             _deviceManager.DeviceDisconnected += DeviceManager_DeviceDisconnected;
             _deviceManager.DeviceErrorWhenConnecting += DeviceManager_DeviceErrorWhenConnecting;
             _deviceManager.USBConnection += DeviceManager_USBConnection;
-            
+
             FireworkManager = InstantiateNewFirework();
 
             //Device already plugged?
@@ -123,89 +140,86 @@ namespace Guiet.kQuatre.UI.ViewModel
         {
             if (_fireworkManager != null)
             {
-                _fireworkManager.FireworkStateChanged -= FireworkManager_FireworkStateChanged;
+                //_fireworkManager.FireworkStateChanged -= FireworkManager_FireworkStateChanged;
                 _fireworkManager = null;
             }
 
             FireworkManager fm = new FireworkManager(_configuration, _deviceManager);
-            fm.FireworkStateChanged += FireworkManager_FireworkStateChanged;
+            //fm.FireworkStateChanged += FireworkManager_FireworkStateChanged;
             fm.LineStarted += FireworkManager_LineStarted;
+            fm.LineFailed += FireworkManager_LineFailed;
 
             return fm;
         }
 
-        private void FireworkManager_LineStarted(object sender, EventArgs e)
-        {
-            Line line = sender as Line;
-
-            //Firework firework = line.FirstFirework;
-            ProjectTask pt = new ProjectTask();
-
-            _dispatcher.BeginInvoke((Action)(() =>
-            {
-                _fireworkGantt.ActiveRow = null;
-                _fireworkGantt.SelectedRows.Clear();
-
-                foreach (Firework firework in line.Fireworks)
-                {
-                    pt = GetProjectTask(_fireworkGantt.Project.RootTask.Tasks, firework.TaskModel);
-
-                    if (pt != null)
-                    {
-                        GanttGridRow ggr = new GanttGridRow(pt);                        
-                        _fireworkGantt.ActiveRow = ggr;                        
-                        _fireworkGantt.SelectedRows.Add(ggr);                        
-                    }
-                }
-
-                _fireworkGantt.ExecuteCommand(GanttCommandId.ScrollToTaskStart, pt);
-            }));          
-        }
-
-        private ProjectTask GetProjectTask(IList<ProjectTask> listPt, TaskModel tm)
-        {
-            ProjectTask found = null;
-            foreach (ProjectTask p in listPt)
-            {
-                if ((TaskModel)p.DataItem == tm)
-                {
-                    return p;
-                }
-                found = GetProjectTask(p.Tasks, tm);
-                if (found != null) { break; }
-            }
-            return found;
-        }
-
         /// <summary>
-        /// Refresh GUI with firework change state
+        /// Compute visible timeline automatically (based on current line started)
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void FireworkManager_FireworkStateChanged(object sender, FireworkStateChangedEventArgs e)
+        /// <param name="line"></param>
+        private void ComputeVisiblePeriod(Business.Firework.Line line)
         {
-            //Alternatives solutions
-            //http://blog.benoitblanchon.fr/wpf-high-speed-mvvm/            
+            if (!_automaticTimelineScroll) return;
 
-            if (e.PropertyName == "PercentComplete")
+            TimeSpan lineIgnition = line.Ignition;
+
+            DateTime visiblePeriodStart = DateTime.Now.Date.Add(line.Ignition).Subtract(new TimeSpan(0, 0, 20));
+            DateTime visiblePeriodEnd = DateTime.Now.Date.Add(line.Ignition).Add(new TimeSpan(0, 0, 40));
+
+            //Horizontal part
+
+            //Change visible port view only if new visible period start - 20 s > period start ui
+            if (visiblePeriodStart.CompareTo(_fireworkManager.PeriodStartUI) > 0)
             {
                 _dispatcher.BeginInvoke((Action)(() =>
                 {
-                    e.Firework.TaskModel.PercentComplete = e.Firework.PercentComplete;
+                    _fireworkTimeline.VisiblePeriod = new Telerik.Windows.Controls.SelectionRange<DateTime>(visiblePeriodStart, visiblePeriodEnd);
                 }));
             }
 
-
-            if (e.PropertyName == "ColorPresentation")
+            _dispatcher.BeginInvoke((Action)(() =>
             {
-                e.Firework.TaskModel.TaskBrush = e.Firework.ColorPresentation;
-                e.Firework.TaskModel.TaskBrush.Freeze();
-            }
+                TimelineScrollBar verticalSlider = _fireworkTimeline.FindChildByType<TimelineScrollBar>();
+                //Vertical part
+                if (verticalSlider != null)
+                {
+                    int nbOfElementVisiblePerRange = Convert.ToInt32(Math.Truncate((_fireworkManager.AllFireworks.Count * verticalSlider.SelectionRange)));
+                    double range = (line.Fireworks[0].RadRowIndex * verticalSlider.SelectionRange / nbOfElementVisiblePerRange);
+
+                    //End?
+                    if (range + verticalSlider.SelectionRange - (verticalSlider.SelectionRange / 4) > 1)
+                    {
+                        verticalSlider.Selection = new SelectionRange<double>(1 - verticalSlider.SelectionRange, 1);
+                        return;
+                    }
+
+                    //Mid screen reached?
+                    if (range > (verticalSlider.SelectionRange / 4))
+                    {
+                        var newStart = range - (verticalSlider.SelectionRange / 4);
+                        var newEnd = range + verticalSlider.SelectionRange - (verticalSlider.SelectionRange / 4);
+                        verticalSlider.Selection = new SelectionRange<double>(newStart, newEnd);
+                    }
+                }
+            }));
         }
 
         #endregion
 
         #region Event
+
+        private void FireworkManager_LineFailed(object sender, EventArgs e)
+        {
+            Business.Firework.Line line = sender as Business.Firework.Line;
+
+            ComputeVisiblePeriod(line);
+        }
+
+        private void FireworkManager_LineStarted(object sender, EventArgs e)
+        {
+            Business.Firework.Line line = sender as Business.Firework.Line;
+
+            ComputeVisiblePeriod(line);
+        }
 
         //TODO : Put this in base class
         public event PropertyChangedEventHandler PropertyChanged;
@@ -227,12 +241,12 @@ namespace Guiet.kQuatre.UI.ViewModel
         }
 
         private void DeviceManager_DeviceDisconnected(object sender, EventArgs e)
-        {            
+        {
             DeviceConnectionInfo = DEFAULT_NOT_TRANSCEIVER_CONNECTED_MESSAGE;
         }
 
         private void DeviceManager_DeviceConnected(object sender, ConnectionEventArgs e)
-        {            
+        {
             DeviceConnectionInfo = string.Format(DEFAULT_TRANSCEIVER_CONNECTED_MESSAGE, e.Port);
         }
 
@@ -262,7 +276,7 @@ namespace Guiet.kQuatre.UI.ViewModel
         /// Lets start firework!!
         /// </summary>
         public void StartFirework()
-        {            
+        {
             //TODO : Sanity check
             _fireworkManager.Start();
         }
@@ -329,13 +343,19 @@ namespace Guiet.kQuatre.UI.ViewModel
             window.ShowDialog();
         }
 
+        public void OpenTestRadTimeline()
+        {
+            RadTimelineTest window = new RadTimelineTest(_fireworkManager);
+            window.ShowDialog();
+        }
+
         /// <summary>
         /// Returns true/false whether line has been deleted or not
         /// </summary>
         /// <param name="line"></param>
         /// <returns></returns>
         public bool DeleteLine(Line line)
-        {            
+        {
             if (line == null)
             {
                 ShowWarningMessage("Veuillez sélectionner une ligne à supprimer.");
@@ -346,13 +366,13 @@ namespace Guiet.kQuatre.UI.ViewModel
 
                 if (line.Fireworks.Count > 0)
                 {
-                    message = string.Format("La ligne {0} est associée à des artifices. Les associations seront supprimées et les lignes seront réordonnées.{1}Voulez-vous continuer ?", line.Number, Environment.NewLine);                                                             
+                    message = string.Format("La ligne {0} est associée à des artifices. Les associations seront supprimées et les lignes seront réordonnées.{1}Voulez-vous continuer ?", line.Number, Environment.NewLine);
                 }
 
                 if (ShowQuestionMessage(message) == MessageBoxResult.Yes)
                 {
                     //Delete line!!
-                    _fireworkManager.DeleteLine(line);                    
+                    _fireworkManager.DeleteLine(line);
                     return true;
                 }
             }
@@ -371,7 +391,7 @@ namespace Guiet.kQuatre.UI.ViewModel
 
         private void ShowWarningMessage(string message)
         {
-            MessageBox.Show(message, "Information", MessageBoxButton.OK, MessageBoxImage.Exclamation, MessageBoxResult.OK);            
+            MessageBox.Show(message, "Information", MessageBoxButton.OK, MessageBoxImage.Exclamation, MessageBoxResult.OK);
         }
 
         #endregion
