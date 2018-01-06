@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Guiet.kQuatre.Business.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO.Ports;
@@ -31,8 +32,10 @@ namespace Guiet.kQuatre.Business.Transceiver
 
         private Timer _timerHelper = null;
 
-        private string _transceiverAddress = null;
-        
+        //private string _transceiverAddress = null;
+
+        private SoftwareConfiguration _softwareConfiguration = null;
+
         #endregion
 
         #region Public Members
@@ -57,9 +60,9 @@ namespace Guiet.kQuatre.Business.Transceiver
 
         #region Constructor
 
-        public DeviceManager(String transceiverAddress)
+        public DeviceManager(SoftwareConfiguration softwareConfiguration)
         {
-            _transceiverAddress = transceiverAddress;
+            _softwareConfiguration = softwareConfiguration;
 
             //WMI Query
             WqlEventQuery deviceArrivalQuery = new WqlEventQuery("SELECT * FROM Win32_DeviceChangeEvent WHERE EventType = 2");
@@ -70,8 +73,7 @@ namespace Guiet.kQuatre.Business.Transceiver
             _deviceWatcher.EventArrived += DeviceWatcher_EventArrived;
 
             // Start monitoring the WMI tree for changes in SerialPort devices.
-            _deviceWatcher.Start();
-            
+            _deviceWatcher.Start();            
         }            
 
         #endregion
@@ -119,6 +121,21 @@ namespace Guiet.kQuatre.Business.Transceiver
 
         #region Public Methods
 
+        public void Close()
+        {
+            if (_deviceWatcher != null)
+            {
+                _deviceWatcher.EventArrived -= DeviceWatcher_EventArrived;
+                _deviceWatcher.Stop();
+                _deviceWatcher= null;
+            }
+
+            if (_emitter != null)
+            {
+                _emitter.CloseDevice();
+            }
+        }
+
         /// <summary>
         /// Try to connect to device
         /// </summary>
@@ -132,7 +149,7 @@ namespace Guiet.kQuatre.Business.Transceiver
                 {
                     try
                     {                       
-                        _emitter = new TransceiverManager(port, _transceiverAddress);                        
+                        _emitter = new TransceiverManager(port, _softwareConfiguration);                        
                         if (_emitter != null)
                         {
                             ex = null;
@@ -205,7 +222,7 @@ namespace Guiet.kQuatre.Business.Transceiver
         /// Remove emitter instance
         /// </summary>
         private void SuppressDevice()
-        {
+        {            
             _emitter.DeviceDisconnected-=Emitter_DeviceDisconnected;
             _emitter = null;
             _singleton.Reset();

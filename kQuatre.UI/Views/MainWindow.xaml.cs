@@ -83,6 +83,16 @@ namespace Guiet.kQuatre.UI.Views
             _viewModel.SaveFirework();
         }
 
+        private void _miSaveAs_Click(object sender, EventArgs e)
+        {
+            _viewModel.SaveAsFirework();
+        }
+
+        private void _miNewFirework_Click(object sender, EventArgs e)
+        {
+            _viewModel.NewFirework();
+        }
+
         /// <summary>
         /// Add new firework to a line
         /// </summary>
@@ -180,13 +190,39 @@ namespace Guiet.kQuatre.UI.Views
             ReceptorAddress ra = dataRecord.DataItem as ReceptorAddress;
 
             _viewModel.SelectedTestReceptor.TestResistance(ra);
-
-
         }
 
         private void _btnTest_Click(object sender, RoutedEventArgs e)
         {
             _viewModel.OpenTestRadTimeline();
+        }                      
+
+        private void _miQuit_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void _mainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (_viewModel.QuitApplication())
+            {
+                Application.Current.Shutdown();
+            }            
+            else
+            {
+                //User does not want to quit
+                e.Cancel = true;
+            }
+        }
+
+        private void _btnStop_Click(object sender, RoutedEventArgs e)
+        {
+            _viewModel.StopFirework();
+        }
+
+        private void _btnCheck_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

@@ -10,6 +10,7 @@ using Guiet.kQuatre.Business.Transceiver.Frames;
 using Guiet.kQuatre.Business.Exceptions;
 using NLog;
 using System.Diagnostics;
+using Guiet.kQuatre.Business.Configuration;
 
 namespace Guiet.kQuatre.Business.Transceiver
 {
@@ -21,11 +22,12 @@ namespace Guiet.kQuatre.Business.Transceiver
 
         private static Logger _logger = LogManager.GetCurrentClassLogger();
 
-        private const int DEFAULT_BAUD_RATE = 115200;
-        private const int DEFAULT_ACKTIMEOUT = 500;
+        //public const int DEFAULT_BAUD_RATE = 115200;
+        //private const int DEFAULT_ACKTIMEOUT = 500;
 
         //Max number of timeout authorized for main node communication
-        private const int MAX_TIMEOUT_OCCURENCES_FROM_TRANSCEIVER_ALLOWED = 3;
+        //TODO : A mettre dans fichier de configuration
+        //private const int MAX_TIMEOUT_OCCURENCES_FROM_TRANSCEIVER_ALLOWED = 3;
 
         private int _currentFrameId = 255;
 
@@ -45,9 +47,11 @@ namespace Guiet.kQuatre.Business.Transceiver
         /// <summary>
         /// Total time before timeout after a frame has been sent and ack has been received
         /// </summary>
-        private int _sendReceiveFrameAckTimeOut;
+        //private int _sendReceiveFrameAckTimeOut;
 
-        private string _transceiverAddress;
+        //private string _transceiverAddress;
+
+        private SoftwareConfiguration _softwareConfiguration = null;
 
         #endregion
 
@@ -67,7 +71,7 @@ namespace Guiet.kQuatre.Business.Transceiver
         {
             try
             {
-                FrameBase db = new PingFrame(_transceiverAddress, _transceiverAddress);
+                FrameBase db = new PingFrame(_softwareConfiguration.TransceiverAddress, _softwareConfiguration.TransceiverAddress);
                 FrameBase receivedFrame = SendPacketSynchronously(db);
                
                 if (receivedFrame is AckFrame)
@@ -85,7 +89,7 @@ namespace Guiet.kQuatre.Business.Transceiver
             {
                 _timeoutCounter++;
 
-                if (_timeoutCounter >= MAX_TIMEOUT_OCCURENCES_FROM_TRANSCEIVER_ALLOWED)
+                if (_timeoutCounter >=  _softwareConfiguration.TranceiverRetryPing)
                 {
                     _logger.Error(tpe,"Cannot communicate with device connected to serial...too much timeout");
 
@@ -141,29 +145,24 @@ namespace Guiet.kQuatre.Business.Transceiver
         {
             get
             {
-                return _transceiverAddress;
+                return _softwareConfiguration.TransceiverAddress;
             }
         }
 
         #endregion
 
         #region Constructeur
-
-        public TransceiverManager(string port, string transceiverAddress) : this(port, DEFAULT_BAUD_RATE, transceiverAddress, DEFAULT_ACKTIMEOUT)
+        
+        public TransceiverManager(string port, SoftwareConfiguration sofwareConfiguration)
         {
 
-        }
+            _softwareConfiguration = sofwareConfiguration;
 
-        public TransceiverManager(string port, int baud, string transceiverAddress, int sendReceiveFrameAckTimeout)
-        {
-
-            _serialPortHelper = new SerialPortHelper(port, baud);
+            _serialPortHelper = new SerialPortHelper(port, _softwareConfiguration.TranceiverBaudrate);
             _serialPortDataListener = new SerialPortDataListener(_serialPortHelper);
             _serialPortDataListener.Start();
 
-            _port = port;
-            _sendReceiveFrameAckTimeOut = sendReceiveFrameAckTimeout;
-            _transceiverAddress = transceiverAddress;
+            _port = port;            
 
             //Start Ping Timer to ensure device is still connected
             _pingTimer = new System.Timers.Timer();
@@ -198,7 +197,7 @@ namespace Guiet.kQuatre.Business.Transceiver
         /// <summary>
         /// Close device properly
         /// </summary>
-        private void CloseDevice()
+        public void CloseDevice()
         {
             if (_pingTimer != null)
             {
@@ -235,7 +234,7 @@ namespace Guiet.kQuatre.Business.Transceiver
         #endregion
 
         #region Public Methods
-
+        
         /// <summary>
         /// Send Packet and waits for response, overrinding default timeout parameter
         /// </summary>
@@ -250,7 +249,7 @@ namespace Guiet.kQuatre.Business.Transceiver
             //Wait for sending data that current sent is finished
             lock (_lockDataSend)
             {
-                while (retry < 2)
+                while (retry < _softwareConfiguration.TransceiverRetryMessageEmission)
                 {
 
                     object lockObject = new object();
@@ -294,7 +293,7 @@ namespace Guiet.kQuatre.Business.Transceiver
                         if (prl.PacketReceived == null)
                         {
                             retry++;
-                            _logger.Warn(string.Format("Timeout occured sending packet with frame id {0} to address : {1}. Waited for {2} ms for ACK but nothing came out. try number : {3}", prl.PacketSent.FrameId, prl.PacketSent.ReceiverId, timeOut, retry));
+                            _logger.Warn(string.Format("Timeout occured sending packet with frame id {0} to address : {1}. Waited for {2} ms for ACK but nothing came out. try number : {3} out of {4}", prl.PacketSent.FrameId, prl.PacketSent.ReceiverAddress, timeOut, retry, _softwareConfiguration.TransceiverRetryMessageEmission));
                         }
                         else
                         {
@@ -314,7 +313,7 @@ namespace Guiet.kQuatre.Business.Transceiver
 
             if (null == prl || prl.PacketReceived == null)
             {
-                throw new TimeoutPacketException(string.Format("Send packet to address : {0}, and waited for {1} ms for ACK but nothing came out. Retried to send message : {2}", prl.PacketSent.ReceiverId, timeOut, retry));
+                throw new TimeoutPacketException(string.Format("Send packet to address : {0}, and waited for {1} ms for ACK but nothing came out. Retried to send message : {2}", prl.PacketSent.ReceiverAddress, timeOut, retry));
             }
             else
             {
@@ -328,7 +327,7 @@ namespace Guiet.kQuatre.Business.Transceiver
         /// <param name="loraPacket"></param>
         public FrameBase SendPacketSynchronously(FrameBase frame)
         {
-            return SendPacketSynchronously(frame, _sendReceiveFrameAckTimeOut);
+            return SendPacketSynchronously(frame, _softwareConfiguration.TransceiverACKTimeout);
         }
 
         #endregion

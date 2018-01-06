@@ -6,7 +6,9 @@
     <FireworkSheetNumber>0</FireworkSheetNumber>
   </ExcelFile>
   <Transceiver>
-    <ACKReceptionTimeout>250</ACKReceptionTimeout>
+    <Baudrate>115200</Baudrate>
+    <RetryPingTransceiver>3</RetryPingTransceiver>
+    <ACKReceptionTimeout>500</ACKReceptionTimeout>
     <RetryMessageEmission>2</RetryMessageEmission>    
     <Address>0</Address>    
   </Transceiver>

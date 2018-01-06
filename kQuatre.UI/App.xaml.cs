@@ -22,6 +22,7 @@ namespace kQuatre.UI
         public App()
         {
             this.MainWindow = new Guiet.kQuatre.UI.Views.MainWindow();
+            this.ShutdownMode = ShutdownMode.OnMainWindowClose;
         }
 
         protected override void OnStartup(StartupEventArgs e)
@@ -33,9 +34,7 @@ namespace kQuatre.UI
             this.MainWindow.Show();
 
             _splashScreen.Close();
-            _splashScreen = null;
-
-           
+            _splashScreen = null;           
         }
     }
 }

@@ -24,18 +24,17 @@ namespace Guiet.kQuatre.Business.Transceiver.Frames
         public const char FRAME_SEPARATOR = ';';
         protected FrameOrder _frameOrder = FrameOrder.UNKNOWN;
         private string _frameId = null;
-        private string _senderId = null;
-        private string _receiverId = null;
-        private string _address = null;
+        private string _senderAddress = null;
+        private string _receiverAddress = null;
         protected string _frameComplement = null;
 
         //Time that the sender has to wait for ack before timing out
         private int _ackTimeOut = - 1;
 
-        protected FrameBase(string senderId, string receiverId)
+        protected FrameBase(string senderAddress, string receiverAddress)
         {
-            _senderId = senderId;
-            _receiverId = receiverId;            
+            _senderAddress = senderAddress;
+            _receiverAddress = receiverAddress;            
         }
 
         public int SetAckTimeOut
@@ -67,25 +66,25 @@ namespace Guiet.kQuatre.Business.Transceiver.Frames
             }
         }
 
-        public string SenderId
+        public string SenderAddress
         {
             get
             {
-                return _senderId;
+                return _senderAddress;
             }
         }
 
-        public string ReceiverId
+        public string ReceiverAddress
         {
             get
             {
-                return _receiverId;
+                return _receiverAddress;
             }
         }
 
         public String GetFrame()
         {
-            if (null == _frameId || null == _senderId || null == _receiverId || _frameOrder == FrameOrder.UNKNOWN)
+            if (null == _frameId || null == _senderAddress || null == _receiverAddress || _frameOrder == FrameOrder.UNKNOWN)
                 throw new Exception("Frame instance is not fully completed");
 
             string frameOrder = _frameOrder.ToString();
@@ -94,7 +93,7 @@ namespace Guiet.kQuatre.Business.Transceiver.Frames
                 frameOrder = string.Format("{0}+{1}", frameOrder, _ackTimeOut);
 
             //Frame sample is @;251;1;2;FIRE;3+1+2+3;OD;|
-            string frame = string.Format("{0};{1};{2};{3};{4};{5};", FRAME_START_DELIMITER, _frameId, _senderId, _receiverId, frameOrder, _frameComplement);
+            string frame = string.Format("{0};{1};{2};{3};{4};{5};", FRAME_START_DELIMITER, _frameId, _senderAddress, _receiverAddress, frameOrder, _frameComplement);
 
             //Calcule checksum
             string checkSum = CalculateChecksum(frame);

@@ -32,7 +32,7 @@ namespace Guiet.kQuatre.UI.Views
         private DateTime _start = new DateTime(2018, 01, 01);
         private Dispatcher _dispatcher = null;
         private TimelineScrollBar _verticalSlider;
-        private int _oldDecalage = 0;
+       // private int _oldDecalage = 0;
 
         public object RadTimelineDataItem { get; private set; }
 

@@ -49,8 +49,15 @@ namespace Guiet.kQuatre.UI.ViewModel
 
         public void Save()
         {
-            _configuration.Save();
-            IsDirty = false;
+            try
+            {
+                _configuration.Save();
+                IsDirty = false;
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show("Une erreur est apparue lors de la sauvegarde de la configuration" + Environment.NewLine + "Erreur : " + e.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         public void ShowErrorMessage(object propertyNode)

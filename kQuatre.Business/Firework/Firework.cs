@@ -268,6 +268,28 @@ namespace Guiet.kQuatre.Business.Firework
 
         #region Public Method 
 
+        public void Reset()
+        {
+            State = FireworkState.Standby;
+            PercentComplete = 100;
+        }
+
+        public void Stop()
+        {
+            //first timer help!!! it has importance here because elaptime time is used 
+            if (_timerHelper != null)
+            {
+                _timerHelper.Stop();
+                _timerHelper = null;
+            }
+
+            if (_elapsedTime != null)
+            {
+                _elapsedTime.Stop();
+                _elapsedTime = null;
+            }            
+        }
+
         public void Start()
         {         
             // Start timer

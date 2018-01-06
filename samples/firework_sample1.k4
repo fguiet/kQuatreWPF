@@ -7,7 +7,7 @@
   </Receptors>
   <Lines>
     <Line number="1" ignition="00:00:00">
-      <ReceptorAddress address="3" channel="1" />
+      <ReceptorAddress address="1" channel="15" />
       <Fireworks>
         <Firework designation="MARRON AIR 50MM TITANE LOGE EN MORTIER" duration="00:00:03" />
       </Fireworks>

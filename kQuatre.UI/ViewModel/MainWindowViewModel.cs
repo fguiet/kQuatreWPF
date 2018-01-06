@@ -43,9 +43,24 @@ namespace Guiet.kQuatre.UI.ViewModel
 
         private string _deviceConnectionInfo = DEFAULT_NOT_TRANSCEIVER_CONNECTED_MESSAGE;
 
+        private const string SOFTWARE_TITLE = "kQuatre";
+
+        private string _windowTitle = string.Empty;
+
         #endregion
 
         #region Public Members
+        
+        public string Title
+        {
+            get
+            {
+                if (FireworkManager.IsDirty)
+                    return string.Format("{0} - {1} {2}", SOFTWARE_TITLE, FireworkManager.FireworkFullFileName, "*");
+                else
+                    return string.Format("{0} - {1}", SOFTWARE_TITLE, FireworkManager.FireworkFullFileName);
+            }            
+        }
 
         public bool AutomaticTimelineScroll
         {
@@ -123,33 +138,52 @@ namespace Guiet.kQuatre.UI.ViewModel
             //Software configuration
             _configuration = new SoftwareConfiguration();
 
-            _deviceManager = new DeviceManager(_configuration.TransceiverAddress);
+            _deviceManager = new DeviceManager(_configuration);
             _deviceManager.DeviceConnected += DeviceManager_DeviceConnected; ;
             _deviceManager.DeviceDisconnected += DeviceManager_DeviceDisconnected;
             _deviceManager.DeviceErrorWhenConnecting += DeviceManager_DeviceErrorWhenConnecting;
             _deviceManager.USBConnection += DeviceManager_USBConnection;
 
-            FireworkManager = InstantiateNewFirework();
+            FireworkManager = InstantiateNewFirework();            
 
             //Device already plugged?
             _deviceManager.DiscoverDevice();
-
         }
 
         private FireworkManager InstantiateNewFirework()
-        {
-            if (_fireworkManager != null)
-            {
-                //_fireworkManager.FireworkStateChanged -= FireworkManager_FireworkStateChanged;
-                _fireworkManager = null;
-            }
-
+        {            
             FireworkManager fm = new FireworkManager(_configuration, _deviceManager);
             //fm.FireworkStateChanged += FireworkManager_FireworkStateChanged;
             fm.LineStarted += FireworkManager_LineStarted;
             fm.LineFailed += FireworkManager_LineFailed;
+            fm.PropertyChanged += FireworkManager_PropertyChanged;                     
 
-            return fm;
+            OnPropertyChanged("Title");
+
+            return fm;            
+        }
+
+        private void FireworkManager_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "IsDirty")
+            {
+                //Update window title
+                OnPropertyChanged("Title");
+            }            
+        }
+
+        private void ResetScrollBar()
+        {
+            //Horizontal
+            _fireworkTimeline.VisiblePeriodStart = FireworkManager.DefaultPeriodStartUI;
+            _fireworkTimeline.VisiblePeriodEnd = FireworkManager.DefaultPeriodEndUI;
+
+            //Vertical
+            TimelineScrollBar verticalSlider = _fireworkTimeline.FindChildByType<TimelineScrollBar>();
+            var newStart = 0;
+            var newEnd = verticalSlider.SelectionRange;
+
+            verticalSlider.Selection = new SelectionRange<double>(newStart, newEnd);
         }
 
         /// <summary>
@@ -262,6 +296,29 @@ namespace Guiet.kQuatre.UI.ViewModel
 
         #region Public Members
 
+        public bool QuitApplication()
+        {
+            if (FireworkManager.IsDirty)
+            {
+                MessageBoxResult result = MessageBox.Show("Le feu actuellement en cours d'édition comporte des modifications non enregistrées, voulez-vous continuer et perdre les modifications ?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (result == MessageBoxResult.No) return false;
+            }
+
+            if (FireworkManager.State == FireworkManagerState.FireInProgress)
+            {
+                MessageBoxResult result = MessageBox.Show("Un feu d'artifice est actuellement tiré !! Voulez-vous stopper ?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.No) return false;
+            }
+
+            if (FireworkManager.State == FireworkManagerState.FireInProgress)
+                FireworkManager.Stop();
+
+            if (_deviceManager != null)
+                _deviceManager.Close();            
+
+            return true;
+        }
+
         public void StopTestingReceptor()
         {
             _selectedTestReceptor.StopTest();
@@ -273,12 +330,46 @@ namespace Guiet.kQuatre.UI.ViewModel
         }
 
         /// <summary>
+        /// Lets stop firework!!
+        /// </summary>
+        public void StopFirework()
+        {
+            MessageBoxResult result = MessageBox.Show("Attention, vous êtes sur le point d'arrêter le feu d'artifice, voulez-vous continuer ?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result == MessageBoxResult.No) return;
+
+            _fireworkManager.Stop();
+        }
+
+        /// <summary>
         /// Lets start firework!!
         /// </summary>
         public void StartFirework()
         {
+            //Reset scroll so user can see begin of firework
+            ResetScrollBar();
             //TODO : Sanity check
             _fireworkManager.Start();
+        }
+
+        /// <summary>
+        /// Make a new firework
+        /// </summary>
+        public void NewFirework()
+        {
+
+            //TODO : Vérifier qu'un feu n'est en cours ici
+
+            if (FireworkManager.IsDirty)
+            {
+                MessageBoxResult result = MessageBox.Show("Le feu actuellement en cours d'édition comporte des modifications non enregistrées, voulez-vous continuer et perdre les modifications ?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (result == MessageBoxResult.No) return;
+            }
+
+            //InstantiateNewFirework();
+            FireworkManager fm = InstantiateNewFirework();
+            this.FireworkManager = fm;
+            //Update window title :)
+            //OnPropertyChanged("Title");
         }
 
         /// <summary>
@@ -286,31 +377,65 @@ namespace Guiet.kQuatre.UI.ViewModel
         /// </summary>
         public void LoadFireWork(bool fromExcelFile)
         {
-            //TODO : Check if another firework is not already loaded!
+            //TODO : Vérifier qu'un feu n'est en cours ici
 
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Multiselect = false;
-
-            if (fromExcelFile)
-                ofd.Filter = "Fichier Excel (*.xlsx)|*.xlsx";
-            else
-                ofd.Filter = "Fichier kQuatre (*.k4)|*.k4";
-
-
-            if (ofd.ShowDialog() == true)
+            if (FireworkManager.IsDirty)
             {
-                FireworkManager fm = InstantiateNewFirework();
+                MessageBoxResult result = MessageBox.Show("Le feu actuellement en cours d'édition comporte des modifications non enregistrées, voulez-vous continuer et perdre les modifications ?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (result == MessageBoxResult.No) return;
+            }
+
+            try
+            {
+
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.Multiselect = false;
 
                 if (fromExcelFile)
-                    fm.LoadFireworkFromExcel(ofd.FileName);
+                    ofd.Filter = "Fichier Excel (*.xlsx)|*.xlsx";
                 else
-                    fm.LoadFirework(ofd.FileName);
+                    ofd.Filter = "Fichier kQuatre (*.k4)|*.k4";
 
-                this.FireworkManager = fm;
+
+                if (ofd.ShowDialog() == true)
+                {
+                    FireworkManager fm = InstantiateNewFirework();
+                    //InstantiateNewFirework();
+
+                    if (fromExcelFile)
+                        fm.LoadFireworkFromExcel(ofd.FileName);
+                    else
+                        fm.LoadFirework(ofd.FileName);
+
+                   this.FireworkManager = fm;
+
+                    //Update window title :)
+                    //OnPropertyChanged("Title");
+                }
+            }
+            catch(Exception e)
+            {
+                //TODO : Faire un helper pour présenter les erreurs de manière uniforme
+                MessageBox.Show("Une erreur est apparue lors du chargement du fichier de définition du feu" + Environment.NewLine + "Erreur : " +e.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
+        /// <summary>
+        /// Saves firework with current name
+        /// </summary>
         public void SaveFirework()
+        {
+            if (FireworkManager.IsNew)
+            {
+                SaveAsFirework();
+            }
+            else
+            {
+                _fireworkManager.SaveFirework();
+            }            
+        }
+
+        public void SaveAsFirework()
         {
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.Filter = "Fichier kQuatre (*.k4)|*.k4";
@@ -318,10 +443,16 @@ namespace Guiet.kQuatre.UI.ViewModel
 
             if (sfd.ShowDialog() == true)
             {
-                //TODO : Handle error here
-                _fireworkManager.SaveFirework(sfd.FileName);
+                try
+                {
+                    _fireworkManager.SaveFirework(sfd.FileName);
 
-                MessageBox.Show("Le feu d'artifice a été sauvegardé avec succès", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Le feu d'artifice a été sauvegardé avec succès", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch(Exception e)
+                {
+                    MessageBox.Show("Une erreur est apparue lors de la sauvegarde du feu d'artifice" + Environment.NewLine + "Erreur : " + e.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                }                
             }
         }
 

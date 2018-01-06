@@ -74,7 +74,7 @@ namespace Guiet.kQuatre.Business.Firework
         /// <summary>
         /// Elapsed time since line has been fired
         /// </summary>
-        private Stopwatch _elapsedTime = null;
+        //private Stopwatch _elapsedTime = null;
 
         #endregion
 
@@ -273,12 +273,28 @@ namespace Guiet.kQuatre.Business.Firework
             }
         }
 
+        public void Reset()
+        {
+            _state = LineState.Standby;
+
+            foreach (Firework firework in _fireworks)
+            {
+                firework.Reset();
+            }
+        }
+
+        public void Stop()
+        {
+        
+            //Start firework
+            foreach (Firework firework in _fireworks)
+            {
+                firework.Stop();
+            }
+        }
+
         public void Start()
-        {            
-            //Start timer
-            _elapsedTime = new Stopwatch();
-            _elapsedTime.Start();
-     
+        {                         
             OnLineStartedEvent();
 
             //Change line state

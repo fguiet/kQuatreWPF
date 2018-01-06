@@ -11,7 +11,7 @@
         xmlns:kQuatreUI="clr-namespace:Guiet.kQuatre.UI.Timeline"                
         xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
         mc:Ignorable="d"
-        Title="kQuatre" WindowState="Maximized" WindowStartupLocation="CenterScreen" >
+        Title="{Binding Title}" WindowState="Maximized" WindowStartupLocation="CenterScreen" Closing="_mainWindow_Closing" >
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -30,14 +30,15 @@
         </Grid.ColumnDefinitions>
         <ig:XamMenu Grid.Row="0" x:Name="MainMenu" MenuOrientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,1,0.4,0">
             <ig:XamMenuItem Header="Fichier">
-                <ig:XamMenuItem Header="Nouveau..."/>
+                <ig:XamMenuItem Header="Nouveau..." Click="_miNewFirework_Click"/>
                 <ig:XamMenuItem x:Name="_miOpenExcel" Header="Ouvrir un fichier Excel..." Click="_miOpenExcel_Click"  />
                 <ig:XamMenuItem Name="_miOpenK4" Header="Ouvrir un fichier k4..." Click="_miOpenK4_Click" />
                 <ig:XamMenuItem Name="_miSave" Header="Enregistrer..." Click="_miSave_Click" />
+                <ig:XamMenuItem Name="_miSaveAs" Header="Enregistrer sous..." Click="_miSaveAs_Click" />
                 <ig:XamMenuSeparator/>
                 <ig:XamMenuItem Header="Configuration..." Click="XamMenuItem_Click"/>
                 <ig:XamMenuSeparator/>
-                <ig:XamMenuItem Header="Quitter"/>
+                <ig:XamMenuItem Header="Quitter" Click="_miQuit_Click"/>
             </ig:XamMenuItem>
             <ig:XamMenuItem Header="Artifices">
                 <ig:XamMenuItem Name="_miFireworkManagement" Header="Gestion..." Click="_miFireworkManagement_Click"  />
@@ -58,16 +59,25 @@
             <Custom:TabItemEx x:Name="_tabDesign" Header="Conception">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="97*"/>
-                        <ColumnDefinition Width="67*"/>
-                        <ColumnDefinition Width="586*"/>
-                    </Grid.ColumnDefinitions>
 
-                    <Grid Grid.Row="0" Grid.ColumnSpan="3">
+                    <Grid Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Column="0" Content="Nom du feu : " />
+                        <TextBox Grid.Column="1" Height="20" Width="400" Text="{Binding Path=FireworkManager.Name, UpdateSourceTrigger=PropertyChanged}" />
+                    </Grid>
+
+                    <Grid Grid.Row="1">
                         <Grid.RowDefinitions>
                             <RowDefinition />
                         </Grid.RowDefinitions>
@@ -86,75 +96,81 @@
                         <Button Name="_btnDeleteLine" Width="120" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2" Content="Supprimer une ligne" Click="_btnDeleteLine_Click" ></Button>
                     </Grid>
 
+                    <Grid Grid.Row="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition  />
+                        </Grid.RowDefinitions>
 
-                    <igDP:XamDataGrid Name="_fireworkDatagrid" Theme="IGTheme"
-                           DataSource="{Binding FireworkManager.Lines}" Grid.Row="1" Grid.ColumnSpan="3" SelectedDataItemsScope="RecordsOnly" GroupByAreaLocation="None">
-                        <igDP:XamDataGrid.Resources>
-                            <Style x:Key="lineRowColorStyle" TargetType="igDP:DataRecordCellArea">
-                                <Setter Property="Background" Value="Gray"/>
-                            </Style>
-                            <Style x:Key="fireworkRowColorStyle" TargetType="igDP:DataRecordCellArea">
-                                <Setter Property="Background" Value="LightGray"/>
-                            </Style>
+                        <igDP:XamDataGrid Name="_fireworkDatagrid" Theme="IGTheme"
+                           DataSource="{Binding FireworkManager.Lines}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" SelectedDataItemsScope="RecordsOnly" GroupByAreaLocation="None">
+                            <igDP:XamDataGrid.Resources>
+                                <Style x:Key="lineRowColorStyle" TargetType="igDP:DataRecordCellArea">
+                                    <Setter Property="Background" Value="Gray"/>
+                                </Style>
+                                <Style x:Key="fireworkRowColorStyle" TargetType="igDP:DataRecordCellArea">
+                                    <Setter Property="Background" Value="LightGray"/>
+                                </Style>
 
-                            <Style x:Key="lineRecordStyle" TargetType="{x:Type igDP:DataRecordPresenter}">
-                                <Setter Property="Margin" Value="0,40,0,0"/>
-                                <Setter Property="FontSize" Value="14"/>
-                                <Setter Property="FontWeight" Value="Bold"/>
-                            </Style>
+                                <Style x:Key="lineRecordStyle" TargetType="{x:Type igDP:DataRecordPresenter}">
+                                    <Setter Property="Margin" Value="0,40,0,0"/>
+                                    <Setter Property="FontSize" Value="14"/>
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                </Style>
 
-                            <Style x:Key="fireworkRecordStyle" TargetType="{x:Type igDP:DataRecordPresenter}">
-                                <Setter Property="Margin" Value="30,0,0,0"/>
-                            </Style>
+                                <Style x:Key="fireworkRecordStyle" TargetType="{x:Type igDP:DataRecordPresenter}">
+                                    <Setter Property="Margin" Value="30,0,0,0"/>
+                                </Style>
 
-                            <Style x:Key="buttonInCellStyle" TargetType="{x:Type igDP:CellValuePresenter}">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="{x:Type igDP:CellValuePresenter}">
-                                            <Button Name="_btnAddFirework" Content="Ajouter" Click="_btnAddFirework_Click" FontStyle="Normal" />
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </igDP:XamDataGrid.Resources>
-                        <igDP:XamDataGrid.ViewSettings>
-                            <igDP:GridViewSettings/>
-                        </igDP:XamDataGrid.ViewSettings>
+                                <Style x:Key="buttonInCellStyle" TargetType="{x:Type igDP:CellValuePresenter}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="{x:Type igDP:CellValuePresenter}">
+                                                <Button Name="_btnAddFirework" Content="Ajouter" Click="_btnAddFirework_Click" FontStyle="Normal" />
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </igDP:XamDataGrid.Resources>
+                            <igDP:XamDataGrid.ViewSettings>
+                                <igDP:GridViewSettings/>
+                            </igDP:XamDataGrid.ViewSettings>
 
-                        <igDP:XamDataGrid.FieldLayoutSettings>
-                            <igDP:FieldLayoutSettings AutoGenerateFields="False"/>
-                        </igDP:XamDataGrid.FieldLayoutSettings>
+                            <igDP:XamDataGrid.FieldLayoutSettings>
+                                <igDP:FieldLayoutSettings AutoGenerateFields="False"/>
+                            </igDP:XamDataGrid.FieldLayoutSettings>
 
-                        <igDP:XamDataGrid.FieldLayouts>
-                            <igDP:FieldLayout Key="Line">
-                                <igDP:FieldLayout.Settings>
-                                    <igDP:FieldLayoutSettings DataRecordPresenterStyle="{StaticResource lineRecordStyle}" DataRecordCellAreaStyle="{StaticResource lineRowColorStyle}"/>
-                                </igDP:FieldLayout.Settings>
-                                <igDP:FieldLayout.Fields>
-                                    <igDP:Field IsReadOnly="True" Width="Auto" Label="Numéro de ligne" Name="NumberUI" />
-                                    <igDP:Field IsReadOnly="True" Label="Mise à feu" Name="Ignition" >
-                                    </igDP:Field>
-                                    <igDP:Field IsReadOnly="True" Label="Liaison" Name="ReceptorAddressUI" Width="250"/>
-                                    <igDP:UnboundField Label="Action">
-                                        <igDP:Field.Settings>
-                                            <igDP:FieldSettings CellValuePresenterStyle="{StaticResource buttonInCellStyle}" />
-                                        </igDP:Field.Settings>
-                                    </igDP:UnboundField>
-                                    <igDP:Field IsReadOnly="True" Name="Fireworks" />
-                                </igDP:FieldLayout.Fields>
-                            </igDP:FieldLayout>
-                            <igDP:FieldLayout Key="Firework" >
-                                <igDP:FieldLayout.Settings>
-                                    <igDP:FieldLayoutSettings  DataRecordPresenterStyle="{StaticResource fireworkRecordStyle}" DataRecordCellAreaStyle="{StaticResource fireworkRowColorStyle}"/>
-                                </igDP:FieldLayout.Settings>
-                                <igDP:FieldLayout.Fields>
-                                    <igDP:Field IsReadOnly="True" Label="Référence" Name="Reference" Width="Auto" />
-                                    <igDP:Field IsReadOnly="True" Label="Désignation" Name="Designation" Width="Auto" />
-                                    <igDP:Field IsReadOnly="True" Label="Durée" Name="Duration" />
-                                </igDP:FieldLayout.Fields>
-                            </igDP:FieldLayout>
-                        </igDP:XamDataGrid.FieldLayouts>
-                    </igDP:XamDataGrid>
+                            <igDP:XamDataGrid.FieldLayouts>
+                                <igDP:FieldLayout Key="Line">
+                                    <igDP:FieldLayout.Settings>
+                                        <igDP:FieldLayoutSettings DataRecordPresenterStyle="{StaticResource lineRecordStyle}" DataRecordCellAreaStyle="{StaticResource lineRowColorStyle}"/>
+                                    </igDP:FieldLayout.Settings>
+                                    <igDP:FieldLayout.Fields>
+                                        <igDP:Field IsReadOnly="True" Width="Auto" Label="Numéro de ligne" Name="NumberUI" />
+                                        <igDP:Field IsReadOnly="True" Label="Mise à feu" Name="Ignition" >
+                                        </igDP:Field>
+                                        <igDP:Field IsReadOnly="True" Label="Liaison" Name="ReceptorAddressUI" Width="250"/>
+                                        <igDP:UnboundField Label="Action">
+                                            <igDP:Field.Settings>
+                                                <igDP:FieldSettings CellValuePresenterStyle="{StaticResource buttonInCellStyle}" />
+                                            </igDP:Field.Settings>
+                                        </igDP:UnboundField>
+                                        <igDP:Field IsReadOnly="True" Name="Fireworks" />
+                                    </igDP:FieldLayout.Fields>
+                                </igDP:FieldLayout>
+                                <igDP:FieldLayout Key="Firework" >
+                                    <igDP:FieldLayout.Settings>
+                                        <igDP:FieldLayoutSettings  DataRecordPresenterStyle="{StaticResource fireworkRecordStyle}" DataRecordCellAreaStyle="{StaticResource fireworkRowColorStyle}"/>
+                                    </igDP:FieldLayout.Settings>
+                                    <igDP:FieldLayout.Fields>
+                                        <igDP:Field IsReadOnly="True" Label="Référence" Name="Reference" Width="Auto" />
+                                        <igDP:Field IsReadOnly="True" Label="Désignation" Name="Designation" Width="Auto" />
+                                        <igDP:Field IsReadOnly="True" Label="Durée" Name="Duration" />
+                                    </igDP:FieldLayout.Fields>
+                                </igDP:FieldLayout>
+                            </igDP:XamDataGrid.FieldLayouts>
+                        </igDP:XamDataGrid>
+                    </Grid>
+
                 </Grid>
             </Custom:TabItemEx>
             <Custom:TabItemEx x:Name="_tabTest" Header="Tests">
@@ -309,9 +325,16 @@
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
-                                    <!--    <ColumnDefinition Width="Auto"/>-->
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <Button Grid.Column="0" Margin="5,5,5,5" Content="Button" Height="50" Width="75" Name="_btnStart" Click="_btnStart_Click" />
+                                    <Button Grid.Column="0" Margin="5,5,5,5" IsEnabled="{Binding Path=FireworkManager.IsFireworkEditing}" Width="75" Height="50" Name="_btnCheck" Click="_btnCheck_Click" >
+                                        <Button.Content>
+                                            <TextBlock Text="Vérifier" TextWrapping="Wrap"/>
+                                        </Button.Content>
+                                    </Button>
+                                    <Button Grid.Column="1" Margin="5,5,5,5" Content="Armer" IsEnabled="{Binding Path=FireworkManager.IsFireworkEditing}" Height="50" Width="75" Name="_btnStart" Click="_btnStart_Click" />
+                                    <Button Grid.Column="2" Margin="5,5,5,5" Content="Arrêter" IsEnabled="{Binding Path=FireworkManager.IsFireworkInProgress}" Height="50" Width="75" Name="_btnStop" Click="_btnStop_Click" />
                                     <!--<Button  Grid.Column="1" Margin="5,5,5,5" Content="Test RadTimeline" Height="50" Width="75" Name="_btnTest" Click="_btnTest_Click" />-->
                                 </Grid>
                                 <CheckBox Grid.Row="1" IsChecked="{Binding Path=AutomaticTimelineScroll}" Content="Défilement automatique de la ligne de temps du feu" />

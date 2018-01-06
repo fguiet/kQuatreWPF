@@ -26,6 +26,10 @@ namespace Guiet.kQuatre.Business.Configuration
 
         private string _transceiverAddress;
 
+        private int _transceiverBaudrate;
+
+        private int _tranceiverRetryPing;
+
         List<ConfigFolderNode> _treeViewDataSource = null;
 
         private const string KQUATRE_CONFIGURATION_NAME = "kQuatreConfiguration.xml";
@@ -90,13 +94,30 @@ namespace Guiet.kQuatre.Business.Configuration
             }
         }
 
+        public int TranceiverBaudrate
+        {
+            get
+            {
+                return _transceiverBaudrate;
+            }
+        }
+
+        public int TranceiverRetryPing
+        {
+            get
+            {
+                return _tranceiverRetryPing;
+            }
+        }
+
         public const string EXCEL_FIRST_ROW_DATA_PROP_ID = "1";
         public const string EXCEL_FIREWORK_NAME_PROP_ID = "2";
         public const string EXCEL_SHEET_NB_PROP_ID = "5";
         public const string TRANSCEIVER_ACK_TIMEOUT_PROP_ID = "3";
         public const string TRANSCEIVER_RETRY_MESSAGE_EMISSION_PROP_ID = "4";
-        public const string TRANSCEIVER_ADDRESS = "6";
-
+        public const string TRANSCEIVER_ADDRESS_PROP_ID = "6";
+        public const string TRANSCEIVER_BAUDRATE_PROP_ID = "7";
+        public const string TRANSCEIVER_RETRYPING_PROP_ID = "8";
 
         public List<ConfigFolderNode> TreeViewDataSource
         {
@@ -146,8 +167,14 @@ namespace Guiet.kQuatre.Business.Configuration
             cpn = GetPropertyNodeById(SoftwareConfiguration.TRANSCEIVER_RETRY_MESSAGE_EMISSION_PROP_ID);
             transceiver.Element("RetryMessageEmission").Value = cpn.PropertyValue;
 
-            cpn = GetPropertyNodeById(SoftwareConfiguration.TRANSCEIVER_ADDRESS);
-            transceiver.Element("address").Value = cpn.PropertyValue;
+            cpn = GetPropertyNodeById(SoftwareConfiguration.TRANSCEIVER_ADDRESS_PROP_ID);
+            transceiver.Element("Address").Value = cpn.PropertyValue;
+
+            cpn = GetPropertyNodeById(SoftwareConfiguration.TRANSCEIVER_BAUDRATE_PROP_ID);
+            transceiver.Element("Baudrate").Value = cpn.PropertyValue;
+
+            cpn = GetPropertyNodeById(SoftwareConfiguration.TRANSCEIVER_RETRYPING_PROP_ID);
+            transceiver.Element("RetryPingTransceiver").Value = cpn.PropertyValue;
 
             confFile.Save(GetConfigFileName());
 
@@ -184,6 +211,9 @@ namespace Guiet.kQuatre.Business.Configuration
             _transceiverACKTimeout = Convert.ToInt32(transceiver.Element("ACKReceptionTimeout").Value.ToString());
             _transceiverRetryMessageEmission = Convert.ToInt32(transceiver.Element("RetryMessageEmission").Value.ToString());
             _transceiverAddress = transceiver.Element("Address").Value.ToString();
+            _transceiverBaudrate = Convert.ToInt32(transceiver.Element("Baudrate").Value.ToString());
+            _tranceiverRetryPing = Convert.ToInt32(transceiver.Element("RetryPingTransceiver").Value.ToString());
+
         }
 
         private void GenerateTreeViewDataSource()
@@ -212,7 +242,11 @@ namespace Guiet.kQuatre.Business.Configuration
             fn.AddNode(cpn);
             cpn = new ConfigPropertyNode(TRANSCEIVER_RETRY_MESSAGE_EMISSION_PROP_ID, "Nb de renvoie du message en cas d'échec", _transceiverRetryMessageEmission.ToString());
             fn.AddNode(cpn);
-            cpn = new ConfigPropertyNode(TRANSCEIVER_ADDRESS, "Adresse de l'émetteur/récepteur", _transceiverRetryMessageEmission.ToString());
+            cpn = new ConfigPropertyNode(TRANSCEIVER_ADDRESS_PROP_ID, "Adresse de l'émetteur/récepteur", _transceiverAddress.ToString());
+            fn.AddNode(cpn);
+            cpn = new ConfigPropertyNode(TRANSCEIVER_BAUDRATE_PROP_ID, "Baudrate", _transceiverBaudrate.ToString());
+            fn.AddNode(cpn);
+            cpn = new ConfigPropertyNode(TRANSCEIVER_RETRYPING_PROP_ID, "Nb de ping défectueux du transceiver tolérés", _tranceiverRetryPing.ToString());
             fn.AddNode(cpn);
 
             list.Add(fn);

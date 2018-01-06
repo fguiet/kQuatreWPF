@@ -32,6 +32,7 @@ namespace Guiet.kQuatre.Business.Transceiver
             _running = false;
 
             _listeningThread.Join(1000);
+
         }
 
         /// <summary>
@@ -99,6 +100,9 @@ namespace Guiet.kQuatre.Business.Transceiver
                 {
                     Monitor.Wait(_serialPortHelper);
                 }
+
+                if (!_running)
+                    break;
 
                 //Here SerialPortHelper indicates us it received data
                 if (_serialPortHelper.SerialPort != null)

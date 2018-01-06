@@ -66,9 +66,21 @@ namespace Guiet.kQuatre.Business.Firework
 
         private string _elapsedTimeString = null;
 
+        private bool _isLoadingFromFile = false;
+
         private ObservableCollection<Firework> _allFireworks = new ObservableCollection<Firework>();
 
+        /// <summary>
+        /// Tells whether firework has been edited by user
+        /// </summary>
         private bool _isDirty = false;
+
+        private FireworkManagerState _state = FireworkManagerState.Editing;
+
+        private string _fireworkFullFileName = DEFAULT_FIREWORK_NAME;
+
+        private const string DEFAULT_K4_EXTENSION = ".k4";
+        private const string DEFAULT_FIREWORK_NAME = "NouveauFeu";
 
         #endregion
 
@@ -104,6 +116,81 @@ namespace Guiet.kQuatre.Business.Firework
         }
 
         #endregion
+
+        public bool IsDirty
+        {
+            get
+            {
+                return _isDirty;
+            }
+
+            set
+            {
+                if (_isDirty != value)
+                {
+                    _isDirty = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public bool IsNew
+        {
+            get
+            {
+                return (_fireworkFullFileName == DEFAULT_FIREWORK_NAME);
+            }
+        }
+
+        public string FireworkFullFileName
+        {
+            get
+            {                
+                return _fireworkFullFileName;                
+            }
+
+            set
+            {
+                if (_fireworkFullFileName != value)
+                {
+                    _fireworkFullFileName = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public bool IsFireworkEditing
+        {
+            get
+            {
+                return (State == FireworkManagerState.Editing);
+            }
+        }
+
+        public bool IsFireworkInProgress
+        {
+            get
+            {
+                return (State == FireworkManagerState.FireInProgress);
+            }
+        }
+
+        public FireworkManagerState State
+        {
+            get
+            {
+                return _state;
+            }
+
+            set
+            {
+                _state = value;
+                OnPropertyChanged();
+                //So Gui is aware of changement...
+                OnPropertyChanged("IsFireworkInProgress");
+                OnPropertyChanged("IsFireworkEditing");
+            }
+        }
 
         public ObservableCollection<Firework> AllFireworks
         {
@@ -204,6 +291,16 @@ namespace Guiet.kQuatre.Business.Firework
             get
             {
                 return _name;
+            }
+
+            set
+            {
+                if (_name != value)
+                {
+                    _name = value;
+                    MakeItDirty(true);
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -307,11 +404,33 @@ namespace Guiet.kQuatre.Business.Firework
         }
 
         /// <summary>
+        /// Stops firework !!
+        /// </summary>
+        public void Stop()
+        {       
+            //User ask to stop firework in this case...So stop it properly
+            //Stop firework and line properly
+            foreach(Line l in _lines)
+            {
+                l.Stop();
+            }
+
+            if (_fireworkWorker.IsBusy)
+                _fireworkWorker.CancelAsync();
+        }
+
+        /// <summary>
         /// Start firework !!!
         /// </summary>
         public void Start()
         {
+            //begins by reseting line and firework (case when user stop and restart firework)
+            Reset();
+
+            State = FireworkManagerState.FireInProgress;
+
             _fireworkWorker = new BackgroundWorker();
+            _fireworkWorker.WorkerSupportsCancellation = true;
             _fireworkWorker.DoWork += FireworkWorker_DoWork;
             _fireworkWorker.RunWorkerCompleted += FireworkWorker_RunWorkerCompleted;
             _fireworkWorker.RunWorkerAsync();
@@ -343,7 +462,7 @@ namespace Guiet.kQuatre.Business.Firework
                 else
                     _lines.Insert(int.Parse(line.Number), line);
 
-                _isDirty = true;
+                MakeItDirty(true);
             }
             else
             {
@@ -355,7 +474,7 @@ namespace Guiet.kQuatre.Business.Firework
                 if (oldIndex != newIndex)
                 {
                     _lines.Move(oldIndex - 1, newIndex);
-                    _isDirty = true;
+                    MakeItDirty(true);
                 }
             }
 
@@ -369,87 +488,101 @@ namespace Guiet.kQuatre.Business.Firework
         /// <param name="fullFileName"></param>
         public void LoadFirework(string fullFilename)
         {
-            //TODO : Surround with try/catch
-
-            //Clear default loaded receptors
-            _receptors.Clear();
-
-            _lines = new ObservableCollection<Line>();
-
-            //Load a new firework xml definition file
-            XDocument fireworkDefinition = XDocument.Load(fullFilename);
-
-            //Firework name
-            _name = fireworkDefinition.Element("FireworkDefinition").Attribute("fireworkName").Value.ToString();
-
-            //Load firework receptors definition
-            List<XElement> receptors = (from r in fireworkDefinition.Descendants("Receptor")
-                                        select r).ToList();
-
-
-            foreach (XElement r in receptors)
+            
+            try
             {
-                Guiet.kQuatre.Business.Receptor.Receptor recep = new Guiet.kQuatre.Business.Receptor.Receptor(r.Attribute("name").Value, r.Attribute("address").Value.ToString(), Convert.ToInt32(r.Attribute("nbOfChannels").Value.ToString()));
-                _receptors.Add(recep);
+                _isLoadingFromFile = true;
+                                
+                //Clear default loaded receptors
+                _receptors.Clear();
+
+                _lines = new ObservableCollection<Line>();
+
+                //Load a new firework xml definition file
+                XDocument fireworkDefinition = XDocument.Load(fullFilename);
+
+                //Firework name
+                _name = fireworkDefinition.Element("FireworkDefinition").Attribute("fireworkName").Value.ToString();
+
+                //Load firework receptors definition
+                List<XElement> receptors = (from r in fireworkDefinition.Descendants("Receptor")
+                                            select r).ToList();
+
+
+                foreach (XElement r in receptors)
+                {
+                    Guiet.kQuatre.Business.Receptor.Receptor recep = new Guiet.kQuatre.Business.Receptor.Receptor(r.Attribute("name").Value, r.Attribute("address").Value.ToString(), Convert.ToInt32(r.Attribute("nbOfChannels").Value.ToString()));
+                    _receptors.Add(recep);
+                }
+
+                //Parcours des lignes et création des artifices
+                List<XElement> lines = (from l in fireworkDefinition.Descendants("Line")
+                                        select l).ToList();
+
+                int fireworkNumber = 0;
+                foreach (XElement l in lines)
+                {
+                    int lineNumber = Convert.ToInt32(l.Attribute("number").Value.ToString());
+                    Line line = new Line(lineNumber);
+
+                    line.LineStarted += Line_LineStarted;
+                    line.LineFailed += Line_LineFailed;
+                    line.PropertyChanged += Line_PropertyChanged;
+
+                    if (l.Attribute("ignition") != null)
+                    {
+                        TimeSpan ignition = TimeSpan.Parse(l.Attribute("ignition").Value.ToString());
+                        line.Ignition = ignition;
+                    }
+
+                    if (l.Element("ReceptorAddress") != null)
+                    {
+                        string address = l.Element("ReceptorAddress").Attribute("address").Value.ToString();
+                        string channelNumber = l.Element("ReceptorAddress").Attribute("channel").Value.ToString();
+
+                        Guiet.kQuatre.Business.Receptor.Receptor receptor = GetReceptor(address);
+                        Guiet.kQuatre.Business.Receptor.ReceptorAddress ra = receptor.GetAddress(Convert.ToInt32(channelNumber));
+
+                        //TODO : A revoir
+                        receptor.SetDeviceManager(_deviceManager);
+
+                        line.AssignReceptorAddress(ra);
+                    }
+
+                    List<XElement> fireworks = (from f in l.Descendants("Firework")
+                                                select f).ToList();
+                    foreach (XElement f in fireworks)
+                    {
+                        //TODO : reactivate !!
+                        //string reference = f.Attribute("reference").Value.ToString();
+                        string reference = "";
+                        string designation = f.Attribute("designation").Value.ToString();
+                        TimeSpan duration = TimeSpan.Parse(f.Attribute("duration").Value.ToString());
+
+                        Firework firework = new Firework(fireworkNumber, reference, designation, duration, line);
+
+                        _allFireworks.Add(firework);
+                        line.AddFirework(firework);
+
+                        fireworkNumber++;
+
+                    }
+
+                    _lines.Add(line);
+                }
+
+            }
+            catch(Exception e)
+            {
+                throw e;
+            }
+            finally
+            {
+                _isLoadingFromFile = false;
             }
 
-            //Parcours des lignes et création des artifices
-            List<XElement> lines = (from l in fireworkDefinition.Descendants("Line")
-                                    select l).ToList();
-
-            int fireworkNumber = 0;
-            foreach (XElement l in lines)
-            {
-                int lineNumber = Convert.ToInt32(l.Attribute("number").Value.ToString());
-                Line line = new Line(lineNumber);
-
-                line.LineStarted += Line_LineStarted;
-                line.LineFailed += Line_LineFailed;
-                line.PropertyChanged += Line_PropertyChanged;
-
-                if (l.Attribute("ignition") != null)
-                {
-                    TimeSpan ignition = TimeSpan.Parse(l.Attribute("ignition").Value.ToString());
-                    line.Ignition = ignition;
-                }
-
-                if (l.Element("ReceptorAddress") != null)
-                {
-                    string address = l.Element("ReceptorAddress").Attribute("address").Value.ToString();
-                    string channelNumber = l.Element("ReceptorAddress").Attribute("channel").Value.ToString();
-
-                    Guiet.kQuatre.Business.Receptor.Receptor receptor = GetReceptor(address);
-                    Guiet.kQuatre.Business.Receptor.ReceptorAddress ra = receptor.GetAddress(Convert.ToInt32(channelNumber));
-
-                    //TODO : A revoir
-                    receptor.SetDeviceManager(_deviceManager);
-
-                    line.AssignReceptorAddress(ra);
-                }
-
-                List<XElement> fireworks = (from f in l.Descendants("Firework")
-                                            select f).ToList();
-                foreach (XElement f in fireworks)
-                {
-                    //TODO : reactivate !!
-                    //string reference = f.Attribute("reference").Value.ToString();
-                    string reference = "";
-                    string designation = f.Attribute("designation").Value.ToString();
-                    TimeSpan duration = TimeSpan.Parse(f.Attribute("duration").Value.ToString());
-
-                    Firework firework = new Firework(fireworkNumber, reference, designation, duration, line);
-
-                    _allFireworks.Add(firework);
-                    line.AddFirework(firework);
-
-                    fireworkNumber++;
-
-                }
-
-                _lines.Add(line);
-            }
-
-            //GenerateGanttDataSource();
+            //Set new name here !
+            _fireworkFullFileName = fullFilename;            
         }
 
         private void Line_LineFailed(object sender, EventArgs e)
@@ -468,10 +601,12 @@ namespace Guiet.kQuatre.Business.Firework
         /// <param name="fullFileName"></param>
         /// <param name="ui"></param>
         /// <returns></returns>
-        public bool LoadFireworkFromExcel(string fullFileName)
-        {
+        public void LoadFireworkFromExcel(string fullFileName)
+        {            
             try
             {
+                _isLoadingFromFile = true;
+                
                 _lines = new ObservableCollection<Line>();
 
                 Workbook fireworkDefWb = Workbook.Load(fullFileName);
@@ -520,18 +655,35 @@ namespace Guiet.kQuatre.Business.Firework
                     rowIndex++;
                 }                
             }
-            catch
+            catch(Exception e)
             {
-                return false;
+                throw e;
+            }
+            finally
+            {
+                _isLoadingFromFile = false;
             }
 
-            return true;
+            //Set new name here !
+            _fireworkFullFileName = String.Format("{0}{1}", System.IO.Path.GetFileNameWithoutExtension(fullFileName), DEFAULT_K4_EXTENSION);                     
         }
 
         
         private void Line_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            _isDirty = true;
+            MakeItDirty(true);
+        }
+
+        private void MakeItDirty(bool isDirty)
+        {
+            if (_isLoadingFromFile) return;            
+
+            IsDirty = isDirty;
+        }
+
+        public void SaveFirework()
+        {
+            SaveFirework(_fireworkFullFileName);
         }
 
         /// <summary>
@@ -541,68 +693,86 @@ namespace Guiet.kQuatre.Business.Firework
         public void SaveFirework(string fullFilename)
         {
 
-            //TODO : Surround with try/catch and handle it!!
-
-            XDocument doc = new XDocument();
-
-            //Firework name
-            XElement fd = new XElement("FireworkDefinition", new XAttribute("fireworkName", _name));
-
-            //Receptors
-            XElement r = new XElement("Receptors",
-                        _receptors.Select(x => new XElement("Receptor", new XAttribute("name", x.Name), new XAttribute("address", x.Address), new XAttribute("nbOfChannels", x.NbOfChannel)))
-                     );
-
-            //Lines
-            XElement lines = new XElement("Lines");
-
-            foreach (Line l in _lines)
+            try
             {
-                XElement line = new XElement("Line",
-                                            new XAttribute("number", l.Number),
-                                            new XAttribute("ignition", $"{l.Ignition:hh\\:mm\\:ss}")
-                                            );
 
-                //Receptor if any...
-                if (l.ReceptorAddress != null)
+                XDocument doc = new XDocument();
+
+                //Firework name
+                XElement fd = new XElement("FireworkDefinition", new XAttribute("fireworkName", _name));
+
+                //Receptors
+                XElement r = new XElement("Receptors",
+                            _receptors.Select(x => new XElement("Receptor", new XAttribute("name", x.Name), new XAttribute("address", x.Address), new XAttribute("nbOfChannels", x.NbOfChannel)))
+                         );
+
+                //Lines
+                XElement lines = new XElement("Lines");
+
+                foreach (Line l in _lines)
                 {
-                    line.Add(new XElement("ReceptorAddress", new XAttribute("address", l.ReceptorAddress.Address), new XAttribute("channel", l.ReceptorAddress.Channel.ToString())));
+                    XElement line = new XElement("Line",
+                                                new XAttribute("number", l.Number),
+                                                new XAttribute("ignition", $"{l.Ignition:hh\\:mm\\:ss}")
+                                                );
+
+                    //Receptor if any...
+                    if (l.ReceptorAddress != null)
+                    {
+                        line.Add(new XElement("ReceptorAddress", new XAttribute("address", l.ReceptorAddress.Address), new XAttribute("channel", l.ReceptorAddress.Channel.ToString())));
+                    }
+
+                    //Fireworks
+                    XElement fireworks = new XElement("Fireworks");
+
+                    foreach (Firework la in l.Fireworks)
+                    {
+                        XElement firework = new XElement("Firework",
+                                new XAttribute("designation", la.Designation),
+                                new XAttribute("duration", $"{la.Duration:hh\\:mm\\:ss}")
+                                );
+
+
+                        fireworks.Add(firework);
+                    }
+
+                    line.Add(fireworks);
+
+                    lines.Add(line);
                 }
 
-                //Fireworks
-                XElement fireworks = new XElement("Fireworks");
+                //add receptors
+                fd.Add(r);
 
-                foreach (Firework la in l.Fireworks)
-                {
-                    XElement firework = new XElement("Firework",
-                            new XAttribute("designation", la.Designation),
-                            new XAttribute("duration", $"{la.Duration:hh\\:mm\\:ss}")
-                            );
+                //add lines
+                fd.Add(lines);
 
+                //add to xml doc
+                doc.Add(fd);
 
-                    fireworks.Add(firework);
-                }
+                doc.Save(fullFilename);
 
-                line.Add(fireworks);
-
-                lines.Add(line);
+                //No more dirty here
+                MakeItDirty(false);
             }
-
-            //add receptors
-            fd.Add(r);
-
-            //add lines
-            fd.Add(lines);
-
-            //add to xml doc
-            doc.Add(fd);
-
-            doc.Save(fullFilename);
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
         #endregion
 
         #region Private Methods
+
+        private void Reset()
+        {
+            //begins by reseting line and firework (case when user stop and restart firework)
+            foreach (Line l in _lines)
+            {
+                l.Reset();
+            }
+        }
 
         private void ReorderLines()
         {
@@ -666,6 +836,13 @@ namespace Guiet.kQuatre.Business.Firework
             bool prepareNextLines = true;
             while (!IsAllLineFinished())
             {
+                //Cancel pending?
+                if (_fireworkWorker.CancellationPending)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+
                 if (prepareNextLines)
                 {
                     prepareNextLines = false;
@@ -717,7 +894,8 @@ namespace Guiet.kQuatre.Business.Firework
                     }
                 }
 
-                Thread.Sleep(250);
+                //Dunno why it is here...
+                //Thread.Sleep(250);
             }
         }
 
@@ -733,6 +911,8 @@ namespace Guiet.kQuatre.Business.Firework
         /// <param name="e"></param>
         private void FireworkWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            State = FireworkManagerState.Editing;
+
             _elapsedTime.Stop();
             _elapsedTime = null;
 
@@ -740,82 +920,7 @@ namespace Guiet.kQuatre.Business.Firework
             _timerHelper = null;
         }
 
-        //TODO : !!! Delete Dispatcher UI from here, 
-        /*private void GenerateGanttDataSource()
-        {
-            DateTime startTime = DateTime.Today.ToUniversalTime();
-
-            ObservableCollection<TaskModel> ganttDataSource = new ObservableCollection<TaskModel>();
-
-            int idTask = 0;
-
-            TaskModel rootTask = new TaskModel();
-
-            idTask++;
-            rootTask.TaskID = idTask;
-            rootTask.Name = _name;
-            ganttDataSource.Add(rootTask);
-
-            foreach (Line line in _lines)
-            {
-                DateTime lineStartTime = startTime.Add(line.Ignition);
-
-                TaskModel tmLine = new TaskModel();
-
-                idTask++;
-                tmLine.TaskID = idTask;
-                tmLine.Name = line.NumberUI;
-                tmLine.IsManualTask = true;
-                tmLine.StartTime = lineStartTime;
-
-                tmLine.Format = ProjectDurationFormat.Seconds;
-
-                if (line.LongestFireworkDuration.HasValue)
-                {
-                    tmLine.Length = line.LongestFireworkDuration.Value;
-                }
-
-                string childTask = string.Empty;
-                foreach (Firework firework in line.Fireworks)
-                {
-                    idTask++;
-                    TaskModel tm = new TaskModel();
-                    tm.TaskID = idTask;
-                    tm.IsManualTask = true;
-                    tm.Name = firework.Designation;
-                    tm.StartTime = lineStartTime;
-
-                    tm.Length = firework.Duration;
-                    tm.Format = ProjectDurationFormat.Seconds;
-                    tm.TaskBrush = new SolidColorBrush(Colors.Gray);
-                    firework.SetTaskModel(tm);
-                    firework.FireworkStateChanged += Firework_FireworkStateChanged;
-
-                    if (string.IsNullOrEmpty(childTask))
-                    {
-                        childTask = idTask.ToString();
-                    }
-                    else
-                    {
-                        childTask = childTask + "," + idTask.ToString();
-                    }
-
-                    ganttDataSource.Add(tm);
-
-                }
-
-                tmLine.ChildTasks = childTask;
-                ganttDataSource.Add(tmLine);
-
-                if (string.IsNullOrEmpty(rootTask.ChildTasks))
-                    rootTask.ChildTasks = tmLine.TaskID.ToString();
-                else
-                    rootTask.ChildTasks = rootTask.ChildTasks + "," + tmLine.TaskID.ToString();
-            }
-
-            GanttDataSource = ganttDataSource;
-        }*/
-
+       
         private void Firework_FireworkStateChanged(object sender, FireworkStateChangedEventArgs e)
         {
             OnFireworkStateChanged(e.Firework, e.PropertyName);

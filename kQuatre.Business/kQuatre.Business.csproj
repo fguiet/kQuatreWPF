@@ -59,6 +59,7 @@
     <Compile Include="Configuration\SoftwareConfiguration.cs" />
     <Compile Include="Exceptions\InvalidPacketReceivedException.cs" />
     <Compile Include="Exceptions\TimeoutPacketException.cs" />
+    <Compile Include="Firework\FireworkManagerState.cs" />
     <Compile Include="Transceiver\ConnectionErrorEventArgs.cs" />
     <Compile Include="Transceiver\DeviceManager.cs" />
     <Compile Include="Transceiver\Frames\AckFrame.cs" />
