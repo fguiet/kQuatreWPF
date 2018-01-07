@@ -15,9 +15,19 @@ using Telerik.Windows.Controls.Timeline;
 
 namespace Guiet.kQuatre.UI.ViewModel
 {
+
     public class MainWindowViewModel : INotifyPropertyChanged
     {
         #region Private Members  
+
+        public enum RefreshControlPanelEventType
+        {
+            FireworkStateChangedEvent,
+            FireworkLoadedEvent,
+            FireworkModifiedEvent,
+            DeviceConnectionChangedEvent,
+            FireworkArmedEvent
+        }
 
         private bool _automaticTimelineScroll = true;
 
@@ -47,10 +57,62 @@ namespace Guiet.kQuatre.UI.ViewModel
 
         private string _windowTitle = string.Empty;
 
+        private bool _isFireworkArmed = false;
+
         #endregion
 
         #region Public Members
-        
+
+        public bool IsStopFireworkEnable
+        {
+            get
+            {
+                return (FireworkManager.State == FireworkManagerState.FireInProgress);
+            }
+        }
+
+        public bool IsFireFireworkEnable
+        {
+            get
+            {
+                if (_isFireworkArmed && FireworkManager.State == FireworkManagerState.Editing)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        public bool IsArmingEnable
+        {
+            get
+            {
+                if (FireworkManager.State == FireworkManagerState.Editing && FireworkManager.IsSanityCheckOk) return true;
+                else return false;
+            }
+        }
+
+        public bool IsFireworkArmed
+        {
+            get
+            {
+                return _isFireworkArmed;
+            }
+
+            set
+            {
+                if (_isFireworkArmed != value)
+                {
+                    _isFireworkArmed = value;
+                    OnPropertyChanged();
+                }
+
+            }
+        }
+
         public string Title
         {
             get
@@ -59,7 +121,7 @@ namespace Guiet.kQuatre.UI.ViewModel
                     return string.Format("{0} - {1} {2}", SOFTWARE_TITLE, FireworkManager.FireworkFullFileName, "*");
                 else
                     return string.Format("{0} - {1}", SOFTWARE_TITLE, FireworkManager.FireworkFullFileName);
-            }            
+            }
         }
 
         public bool AutomaticTimelineScroll
@@ -144,33 +206,97 @@ namespace Guiet.kQuatre.UI.ViewModel
             _deviceManager.DeviceErrorWhenConnecting += DeviceManager_DeviceErrorWhenConnecting;
             _deviceManager.USBConnection += DeviceManager_USBConnection;
 
-            FireworkManager = InstantiateNewFirework();            
+            FireworkManager = InstantiateNewFirework();
 
             //Device already plugged?
             _deviceManager.DiscoverDevice();
         }
 
         private FireworkManager InstantiateNewFirework()
-        {            
+        {
             FireworkManager fm = new FireworkManager(_configuration, _deviceManager);
-            //fm.FireworkStateChanged += FireworkManager_FireworkStateChanged;
+            
             fm.LineStarted += FireworkManager_LineStarted;
             fm.LineFailed += FireworkManager_LineFailed;
-            fm.PropertyChanged += FireworkManager_PropertyChanged;                     
+            fm.PropertyChanged += FireworkManager_PropertyChanged;
+            fm.StateChanged += FireworkManager_StateChanged;
 
             OnPropertyChanged("Title");
 
-            return fm;            
+            return fm;
+        }
+
+        private void FireworkManager_StateChanged(object sender, EventArgs e)
+        {
+            RefreshControlPanelUI(RefreshControlPanelEventType.FireworkStateChangedEvent);
         }
 
         private void FireworkManager_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "IsDirty")
-            {
-                //Update window title
-                OnPropertyChanged("Title");
-            }            
+            {               
+                //Firework has changed so control panel must be reset
+                RefreshControlPanelUI(RefreshControlPanelEventType.FireworkModifiedEvent);
+            }
         }
+
+        /// <summary>
+        /// Refresh control panel when
+        ///     - Firemanager state changed (start/stop)
+        ///     - Load firework
+        ///     - Device connect
+        ///     - Device disconnect
+        ///     - Arming changed
+        /// </summary>
+        public void RefreshControlPanelUI(RefreshControlPanelEventType eventType)
+        {
+            switch (eventType)
+            {
+                case RefreshControlPanelEventType.DeviceConnectionChangedEvent:
+                    //Reset firework armed toggle
+                    IsFireworkArmed = false;                    
+                    OnPropertyChanged("IsArmingEnable");
+                    OnPropertyChanged("IsFireFireworkEnable");
+                    OnPropertyChanged("IsStopFireworkEnable");                    
+                    break;
+
+                case RefreshControlPanelEventType.FireworkArmedEvent:
+                    OnPropertyChanged("IsArmingEnable");
+                    OnPropertyChanged("IsFireFireworkEnable");
+                    OnPropertyChanged("IsStopFireworkEnable");
+                    break;
+
+                case RefreshControlPanelEventType.FireworkLoadedEvent:
+                    IsFireworkArmed = false;
+                    OnPropertyChanged("IsArmingEnable");
+                    OnPropertyChanged("IsFireFireworkEnable");
+                    OnPropertyChanged("IsStopFireworkEnable");
+                    //Update window title
+                    OnPropertyChanged("Title");
+                    break;
+
+                case RefreshControlPanelEventType.FireworkModifiedEvent:
+                    IsFireworkArmed = false;
+                    OnPropertyChanged("IsArmingEnable");
+                    OnPropertyChanged("IsFireFireworkEnable");
+                    OnPropertyChanged("IsStopFireworkEnable");
+                    //Update window title
+                    OnPropertyChanged("Title");
+                    break;
+
+                case RefreshControlPanelEventType.FireworkStateChangedEvent:                    
+
+                    if (FireworkManager.State == FireworkManagerState.Editing)
+                    {
+                        IsFireworkArmed = false;
+                    }
+
+                    OnPropertyChanged("IsFireFireworkEnable");
+                    OnPropertyChanged("IsArmingEnable");                    
+                    OnPropertyChanged("IsStopFireworkEnable");
+                    break;
+            }
+        }        
 
         private void ResetScrollBar()
         {
@@ -277,11 +403,19 @@ namespace Guiet.kQuatre.UI.ViewModel
         private void DeviceManager_DeviceDisconnected(object sender, EventArgs e)
         {
             DeviceConnectionInfo = DEFAULT_NOT_TRANSCEIVER_CONNECTED_MESSAGE;
+
+            //TODO : What happen if a firework is launched?
+
+            //Device is connected...so let's refresh control bar
+            RefreshControlPanelUI(RefreshControlPanelEventType.DeviceConnectionChangedEvent);
         }
 
         private void DeviceManager_DeviceConnected(object sender, ConnectionEventArgs e)
         {
             DeviceConnectionInfo = string.Format(DEFAULT_TRANSCEIVER_CONNECTED_MESSAGE, e.Port);
+
+            //Device is connected...so let's refresh control bar
+            RefreshControlPanelUI(RefreshControlPanelEventType.DeviceConnectionChangedEvent);
         }
 
         private void DeviceManager_DeviceErrorWhenConnecting(object sender, ConnectionErrorEventArgs e)
@@ -295,6 +429,12 @@ namespace Guiet.kQuatre.UI.ViewModel
         #endregion
 
         #region Public Members
+
+        public void ResetUI()
+        {
+            ResetScrollBar();
+            FireworkManager.Reset();
+        }
 
         public bool QuitApplication()
         {
@@ -314,7 +454,7 @@ namespace Guiet.kQuatre.UI.ViewModel
                 FireworkManager.Stop();
 
             if (_deviceManager != null)
-                _deviceManager.Close();            
+                _deviceManager.Close();
 
             return true;
         }
@@ -347,8 +487,9 @@ namespace Guiet.kQuatre.UI.ViewModel
         {
             //Reset scroll so user can see begin of firework
             ResetScrollBar();
+
             //TODO : Sanity check
-            _fireworkManager.Start();
+            _fireworkManager.Start();            
         }
 
         /// <summary>
@@ -368,8 +509,7 @@ namespace Guiet.kQuatre.UI.ViewModel
             //InstantiateNewFirework();
             FireworkManager fm = InstantiateNewFirework();
             this.FireworkManager = fm;
-            //Update window title :)
-            //OnPropertyChanged("Title");
+            
         }
 
         /// <summary>
@@ -400,23 +540,21 @@ namespace Guiet.kQuatre.UI.ViewModel
                 if (ofd.ShowDialog() == true)
                 {
                     FireworkManager fm = InstantiateNewFirework();
-                    //InstantiateNewFirework();
 
                     if (fromExcelFile)
                         fm.LoadFireworkFromExcel(ofd.FileName);
                     else
                         fm.LoadFirework(ofd.FileName);
 
-                   this.FireworkManager = fm;
+                    this.FireworkManager = fm;
 
-                    //Update window title :)
-                    //OnPropertyChanged("Title");
+                    RefreshControlPanelUI(RefreshControlPanelEventType.FireworkLoadedEvent);
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 //TODO : Faire un helper pour présenter les erreurs de manière uniforme
-                MessageBox.Show("Une erreur est apparue lors du chargement du fichier de définition du feu" + Environment.NewLine + "Erreur : " +e.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Une erreur est apparue lors du chargement du fichier de définition du feu" + Environment.NewLine + "Erreur : " + e.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -432,7 +570,7 @@ namespace Guiet.kQuatre.UI.ViewModel
             else
             {
                 _fireworkManager.SaveFirework();
-            }            
+            }
         }
 
         public void SaveAsFirework()
@@ -449,10 +587,10 @@ namespace Guiet.kQuatre.UI.ViewModel
 
                     MessageBox.Show("Le feu d'artifice a été sauvegardé avec succès", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     MessageBox.Show("Une erreur est apparue lors de la sauvegarde du feu d'artifice" + Environment.NewLine + "Erreur : " + e.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
-                }                
+                }
             }
         }
 

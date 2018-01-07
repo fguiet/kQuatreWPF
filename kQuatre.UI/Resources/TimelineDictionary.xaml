@@ -3,6 +3,7 @@
                     xmlns:local="clr-namespace:Guiet.kQuatre.UI.Resources"
                     xmlns:kQuatreUI="clr-namespace:Guiet.kQuatre.UI.Timeline"
                     xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation">
+    
     <SolidColorBrush x:Key="FireworkLineItem_Background" Color="#66D6D4D4" />
     <SolidColorBrush x:Key="FireworkLineItem_Background_MouseOver" Color="#CCD6D4D4" />
     <SolidColorBrush x:Key="AccentBrush" Color="#4CBBE6" />

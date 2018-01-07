@@ -68,6 +68,8 @@ namespace Guiet.kQuatre.Business.Firework
 
         private bool _isLoadingFromFile = false;
 
+        private bool _isSanityCheckOk = false;
+
         private ObservableCollection<Firework> _allFireworks = new ObservableCollection<Firework>();
 
         /// <summary>
@@ -88,6 +90,7 @@ namespace Guiet.kQuatre.Business.Firework
 
         public event EventHandler LineStarted;
         public event EventHandler LineFailed;
+        public event EventHandler StateChanged;
 
         private void OnLineFailedEvent(object sender)
         {
@@ -105,17 +108,23 @@ namespace Guiet.kQuatre.Business.Firework
             }
         }
 
-        public event EventHandler<FireworkStateChangedEventArgs> FireworkStateChanged;
-
-        private void OnFireworkStateChanged(Firework firework, string propertyName)
+        private void OnStateChangedEvent(object sender)
         {
-            if (FireworkStateChanged != null)
+            if (StateChanged != null)
             {
-                FireworkStateChanged(this, new FireworkStateChangedEventArgs(firework, propertyName));
+                StateChanged(sender, new EventArgs());
             }
         }
-
+        
         #endregion
+
+        public bool IsSanityCheckOk
+        {
+            get
+            {
+                return _isSanityCheckOk;
+            }
+        }
 
         public bool IsDirty
         {
@@ -125,12 +134,15 @@ namespace Guiet.kQuatre.Business.Firework
             }
 
             set
-            {
+            {              
                 if (_isDirty != value)
                 {
-                    _isDirty = value;
-                    OnPropertyChanged();
+                    _isDirty = value;                
                 }
+
+                //Launch each time because if sanity check is ok 
+                //with one modification it may not be the case with the second one...
+                OnPropertyChanged();
             }
         }
 
@@ -145,8 +157,8 @@ namespace Guiet.kQuatre.Business.Firework
         public string FireworkFullFileName
         {
             get
-            {                
-                return _fireworkFullFileName;                
+            {
+                return _fireworkFullFileName;
             }
 
             set
@@ -157,23 +169,7 @@ namespace Guiet.kQuatre.Business.Firework
                     OnPropertyChanged();
                 }
             }
-        }
-
-        public bool IsFireworkEditing
-        {
-            get
-            {
-                return (State == FireworkManagerState.Editing);
-            }
-        }
-
-        public bool IsFireworkInProgress
-        {
-            get
-            {
-                return (State == FireworkManagerState.FireInProgress);
-            }
-        }
+        }        
 
         public FireworkManagerState State
         {
@@ -184,11 +180,13 @@ namespace Guiet.kQuatre.Business.Firework
 
             set
             {
-                _state = value;
-                OnPropertyChanged();
-                //So Gui is aware of changement...
-                OnPropertyChanged("IsFireworkInProgress");
-                OnPropertyChanged("IsFireworkEditing");
+                if (_state != value)
+                {
+                    _state = value;
+
+                    OnPropertyChanged();
+                    OnStateChangedEvent(this);                    
+                }
             }
         }
 
@@ -223,7 +221,7 @@ namespace Guiet.kQuatre.Business.Firework
                 return DateTime.Now.Date;
             }
         }
-        
+
         public DateTime PeriodEndUI
         {
             get
@@ -324,9 +322,8 @@ namespace Guiet.kQuatre.Business.Firework
                 }
 
                 return ra;
-
             }
-        }       
+        }
 
         public ObservableCollection<Line> Lines
         {
@@ -363,6 +360,9 @@ namespace Guiet.kQuatre.Business.Firework
             {
                 r.SetDeviceManager(null);
             }
+
+            //Sanity check
+            SanityCheck();
         }
 
         private void DeviceManager_DeviceConnected(object sender, ConnectionEventArgs e)
@@ -371,6 +371,9 @@ namespace Guiet.kQuatre.Business.Firework
             {
                 r.SetDeviceManager(_deviceManager);
             }
+
+            //Sanity check
+            SanityCheck();
         }
 
         #endregion
@@ -391,26 +394,13 @@ namespace Guiet.kQuatre.Business.Firework
         #region Public Methods
 
         /// <summary>
-        /// TODO : Implement this
-        /// </summary>
-        /// <returns></returns>
-        public bool SanityCheck()
-        {
-            //check no line with no fireworks!!
-            //check line ignition time order!!
-            //check line with no receptor address!!
-
-            return false;
-        }
-
-        /// <summary>
         /// Stops firework !!
         /// </summary>
         public void Stop()
-        {       
+        {
             //User ask to stop firework in this case...So stop it properly
             //Stop firework and line properly
-            foreach(Line l in _lines)
+            foreach (Line l in _lines)
             {
                 l.Stop();
             }
@@ -423,12 +413,9 @@ namespace Guiet.kQuatre.Business.Firework
         /// Start firework !!!
         /// </summary>
         public void Start()
-        {
-            //begins by reseting line and firework (case when user stop and restart firework)
-            Reset();
-
+        {         
             State = FireworkManagerState.FireInProgress;
-
+            
             _fireworkWorker = new BackgroundWorker();
             _fireworkWorker.WorkerSupportsCancellation = true;
             _fireworkWorker.DoWork += FireworkWorker_DoWork;
@@ -445,6 +432,8 @@ namespace Guiet.kQuatre.Business.Firework
 
             //Reorder lines!!
             ReorderLines();
+
+            MakeItDirty(true);
         }
 
         public void AddOrUpdateLine(bool isAdd, Line line, Line lineClone)
@@ -460,9 +449,7 @@ namespace Guiet.kQuatre.Business.Firework
                 if (index > _lines.Count)
                     _lines.Add(line);
                 else
-                    _lines.Insert(int.Parse(line.Number), line);
-
-                MakeItDirty(true);
+                    _lines.Insert(int.Parse(line.Number), line);                
             }
             else
             {
@@ -473,13 +460,14 @@ namespace Guiet.kQuatre.Business.Firework
 
                 if (oldIndex != newIndex)
                 {
-                    _lines.Move(oldIndex - 1, newIndex);
-                    MakeItDirty(true);
+                    _lines.Move(oldIndex - 1, newIndex);                    
                 }
             }
 
             //Reorder lines!!
             ReorderLines();
+
+            MakeItDirty(true);
         }
 
         /// <summary>
@@ -488,11 +476,11 @@ namespace Guiet.kQuatre.Business.Firework
         /// <param name="fullFileName"></param>
         public void LoadFirework(string fullFilename)
         {
-            
+
             try
             {
                 _isLoadingFromFile = true;
-                                
+
                 //Clear default loaded receptors
                 _receptors.Clear();
 
@@ -572,7 +560,7 @@ namespace Guiet.kQuatre.Business.Firework
                 }
 
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw e;
             }
@@ -582,7 +570,10 @@ namespace Guiet.kQuatre.Business.Firework
             }
 
             //Set new name here !
-            _fireworkFullFileName = fullFilename;            
+            _fireworkFullFileName = fullFilename;
+
+            //Check sanity of firework
+            SanityCheck();
         }
 
         private void Line_LineFailed(object sender, EventArgs e)
@@ -602,11 +593,11 @@ namespace Guiet.kQuatre.Business.Firework
         /// <param name="ui"></param>
         /// <returns></returns>
         public void LoadFireworkFromExcel(string fullFileName)
-        {            
+        {
             try
             {
                 _isLoadingFromFile = true;
-                
+
                 _lines = new ObservableCollection<Line>();
 
                 Workbook fireworkDefWb = Workbook.Load(fullFileName);
@@ -653,9 +644,9 @@ namespace Guiet.kQuatre.Business.Firework
                     }
 
                     rowIndex++;
-                }                
+                }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw e;
             }
@@ -665,10 +656,13 @@ namespace Guiet.kQuatre.Business.Firework
             }
 
             //Set new name here !
-            _fireworkFullFileName = String.Format("{0}{1}", System.IO.Path.GetFileNameWithoutExtension(fullFileName), DEFAULT_K4_EXTENSION);                     
+            _fireworkFullFileName = String.Format("{0}{1}", System.IO.Path.GetFileNameWithoutExtension(fullFileName), DEFAULT_K4_EXTENSION);
+
+            //Check sanity of firework
+            SanityCheck();
         }
 
-        
+
         private void Line_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             MakeItDirty(true);
@@ -676,7 +670,10 @@ namespace Guiet.kQuatre.Business.Firework
 
         private void MakeItDirty(bool isDirty)
         {
-            if (_isLoadingFromFile) return;            
+            if (_isLoadingFromFile) return;
+
+            //Check sanity of firework, this must be done before changing isdirty property
+            SanityCheck();
 
             IsDirty = isDirty;
         }
@@ -765,7 +762,58 @@ namespace Guiet.kQuatre.Business.Firework
 
         #region Private Methods
 
-        private void Reset()
+        /// <summary>
+        /// Check sanity of firework definition
+        /// </summary>
+        /// <returns></returns>
+        private void SanityCheck()
+        {
+            bool isSanityCheckOk = true;
+
+            //Check if device is connected
+            if (!_deviceManager.IsEmitterConnected)
+            {
+                isSanityCheckOk = false;
+            }
+
+            //Check firework has got at least one line
+            if (_lines != null && _lines.Count == 0)
+            {
+                isSanityCheckOk = false;
+            }
+
+            Line previousLine = null;
+            foreach (Line l in _lines)
+            {
+                //Checking lines with no firework
+                if (l.Fireworks.Count == 0)
+                {
+
+                    isSanityCheckOk = false;
+                }
+
+                if (l.ReceptorAddress == null)
+                {
+                    isSanityCheckOk = false;
+                }
+
+                //check line ignition time order!!
+                if (previousLine != null)
+                {
+
+                    if (l.Ignition.CompareTo(previousLine.Ignition) < 0)
+                    {
+                        isSanityCheckOk = false;
+                    }
+                }
+
+                previousLine = l;
+            }
+
+            _isSanityCheckOk = isSanityCheckOk;
+        }
+
+        public void Reset()
         {
             //begins by reseting line and firework (case when user stop and restart firework)
             foreach (Line l in _lines)
@@ -918,13 +966,7 @@ namespace Guiet.kQuatre.Business.Firework
 
             _timerHelper.Stop();
             _timerHelper = null;
-        }
-
-       
-        private void Firework_FireworkStateChanged(object sender, FireworkStateChangedEventArgs e)
-        {
-            OnFireworkStateChanged(e.Firework, e.PropertyName);
-        }
+        }       
 
         /// <summary>
         /// Get line by its number

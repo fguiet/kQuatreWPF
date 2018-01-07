@@ -16,6 +16,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Resources/TimelineDictionary.xaml"/>
+                <ResourceDictionary Source="../Resources/ToggleButton.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -51,15 +52,28 @@
             </ig:XamMenuItem>
         </ig:XamMenu>
         <StatusBar Grid.Row="3" Height="20">
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
             <StatusBarItem>
                 <TextBlock x:Name="_deviceConnectionInfo" Text="{Binding DeviceConnectionInfo}"/>
             </StatusBarItem>
+            <!--<Separator Grid.Column="1" />
+            <StatusBarItem Grid.Column="2" HorizontalAlignment="Left">
+                <TextBlock x:Name="_fireworkSanityStatus" Text="{Binding DeviceConnectionInfo}"/>
+            </StatusBarItem>-->
         </StatusBar>
         <Custom:XamTabControl  Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <Custom:TabItemEx x:Name="_tabDesign" Header="Conception">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
@@ -79,7 +93,7 @@
 
                     <Grid Grid.Row="1">
                         <Grid.RowDefinitions>
-                            <RowDefinition />
+                            <RowDefinition/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="130"/>
@@ -91,9 +105,10 @@
                         <Border Grid.Row="0" Grid.Column="1"  Background="LightGray" />
                         <Border Grid.Row="0" Grid.Column="2"  Background="LightGray" />
                         <Border Grid.Row="0" Grid.Column="3"  Background="LightGray" />
-                        <Button x:Name="_btnAddLine" Width="120" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0" Content="Ajouter une ligne" Click="_btnAddLine_Click" ></Button>
-                        <Button x:Name="_btnAlterLine" Width="120" HorizontalAlignment="Center" VerticalAlignment="Center"  Grid.Column="1" Content="Modifier une ligne" Click="_btnAlterLine_Click" ></Button>
-                        <Button Name="_btnDeleteLine" Width="120" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2" Content="Supprimer une ligne" Click="_btnDeleteLine_Click" ></Button>
+                        <Button x:Name="_btnAddLine" Width="120" Margin="5,5,5,5" HorizontalAlignment="left" VerticalAlignment="Center" Grid.Column="0" Content="Ajouter une ligne" Click="_btnAddLine_Click" ></Button>
+                        <Button x:Name="_btnAlterLine" Width="120" Margin="5,5,5,5" HorizontalAlignment="left" VerticalAlignment="Center"  Grid.Column="1" Content="Modifier une ligne" Click="_btnAlterLine_Click" ></Button>
+                        <Button Name="_btnDeleteLine" Width="120" Margin="5,5,5,5" HorizontalAlignment="left" VerticalAlignment="Center" Grid.Column="2" Content="Supprimer une ligne" Click="_btnDeleteLine_Click" ></Button>
+                        <Button Name="_btnCheckFirework" Width="120" Margin="5,5,5,5" HorizontalAlignment="left" VerticalAlignment="Center" Grid.Column="3" Content="Vérifier la validité" Click="_btnCheckFirework_Click" ></Button>
                     </Grid>
 
                     <Grid Grid.Row="2">
@@ -328,13 +343,20 @@
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <Button Grid.Column="0" Margin="5,5,5,5" IsEnabled="{Binding Path=FireworkManager.IsFireworkEditing}" Width="75" Height="50" Name="_btnCheck" Click="_btnCheck_Click" >
-                                        <Button.Content>
-                                            <TextBlock Text="Vérifier" TextWrapping="Wrap"/>
-                                        </Button.Content>
+                                    <telerik:RadToggleButton x:Name="_chkArming" IsChecked="{Binding Path=IsFireworkArmed}" IsEnabled="{Binding Path=IsArmingEnable}" VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="45"  Margin="10" Style="{StaticResource RadToggleButtonStyle_OB2}" Content="Armer" Checked="_chkArming_Checked" Unchecked="_chkArming_Unchecked" />
+                                    <Button IsEnabled="{Binding Path=IsFireFireworkEnable}" Grid.Column="1" Margin="5,5,5,5" Content="Tirer"  Height="50" Width="75" Name="_btnStart" Click="_btnStart_Click" 
+                                             telerik:RadToolTipService.Placement="Center"
+                                             telerik:RadToolTipService.VerticalOffset="-63"
+                                             telerik:RadToolTipService.ToolTipContent="RadToolTip enables you to specify&#x0a;tooltips on various UI controls.">
+                                        <telerik:RadToolTipService.ToolTipContentTemplate>
+                                            <DataTemplate>
+                                                <telerik:RadToolTipContentView>
+                                                    <TextBlock Text="{Binding}" />
+                                                </telerik:RadToolTipContentView>
+                                            </DataTemplate>
+                                        </telerik:RadToolTipService.ToolTipContentTemplate>
                                     </Button>
-                                    <Button Grid.Column="1" Margin="5,5,5,5" Content="Armer" IsEnabled="{Binding Path=FireworkManager.IsFireworkEditing}" Height="50" Width="75" Name="_btnStart" Click="_btnStart_Click" />
-                                    <Button Grid.Column="2" Margin="5,5,5,5" Content="Arrêter" IsEnabled="{Binding Path=FireworkManager.IsFireworkInProgress}" Height="50" Width="75" Name="_btnStop" Click="_btnStop_Click" />
+                                    <Button Grid.Column="3" Margin="5,5,5,5" Content="Arrêter" IsEnabled="{Binding Path=IsStopFireworkEnable}" Height="50" Width="75" Name="_btnStop" Click="_btnStop_Click" />
                                     <!--<Button  Grid.Column="1" Margin="5,5,5,5" Content="Test RadTimeline" Height="50" Width="75" Name="_btnTest" Click="_btnTest_Click" />-->
                                 </Grid>
                                 <CheckBox Grid.Row="1" IsChecked="{Binding Path=AutomaticTimelineScroll}" Content="Défilement automatique de la ligne de temps du feu" />
