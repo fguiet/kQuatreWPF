@@ -18,6 +18,16 @@
                 <ResourceDictionary Source="../Resources/TimelineDictionary.xaml"/>
                 <ResourceDictionary Source="../Resources/ToggleButton.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
+            <Style x:Key = "TriggerStyle" TargetType = "Button">
+                <Setter Property = "Foreground" Value = "Black" />
+                <Style.Triggers>
+                    <Trigger Property = "IsEnabled" Value = "True">
+                        <Setter Property = "Background" Value = "Red" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
@@ -116,8 +126,7 @@
                             <RowDefinition  />
                         </Grid.RowDefinitions>
 
-                        <igDP:XamDataGrid Name="_fireworkDatagrid" Theme="IGTheme"
-                           DataSource="{Binding FireworkManager.Lines}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" SelectedDataItemsScope="RecordsOnly" GroupByAreaLocation="None">
+                        <igDP:XamDataGrid Name="_fireworkDatagrid" Theme="IGTheme" DataSource="{Binding FireworkManager.Lines}" HorizontalAlignment="Stretch" SelectedDataItemsScope="RecordsOnly" GroupByAreaLocation="None">
                             <igDP:XamDataGrid.Resources>
                                 <Style x:Key="lineRowColorStyle" TargetType="igDP:DataRecordCellArea">
                                     <Setter Property="Background" Value="Gray"/>
@@ -344,10 +353,10 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <telerik:RadToggleButton x:Name="_chkArming" IsChecked="{Binding Path=IsFireworkArmed}" IsEnabled="{Binding Path=IsArmingEnable}" VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="45"  Margin="10" Style="{StaticResource RadToggleButtonStyle_OB2}" Content="Armer" Checked="_chkArming_Checked" Unchecked="_chkArming_Unchecked" />
-                                    <Button IsEnabled="{Binding Path=IsFireFireworkEnable}" Grid.Column="1" Margin="5,5,5,5" Content="Tirer"  Height="50" Width="75" Name="_btnStart" Click="_btnStart_Click" 
+                                    <Button Style="{StaticResource TriggerStyle}" IsEnabled="{Binding Path=IsFireFireworkEnable}" Grid.Column="1" Margin="5,5,5,5" Content="Tirer"  Height="50" Width="75" Name="_btnStart" Click="_btnStart_Click" 
                                              telerik:RadToolTipService.Placement="Center"
                                              telerik:RadToolTipService.VerticalOffset="-63"
-                                             telerik:RadToolTipService.ToolTipContent="RadToolTip enables you to specify&#x0a;tooltips on various UI controls.">
+                                             telerik:RadToolTipService.ToolTipContent="RadToolTip enables you to specify&#x0a;tooltips on various UI controls." >
                                         <telerik:RadToolTipService.ToolTipContentTemplate>
                                             <DataTemplate>
                                                 <telerik:RadToolTipContentView>

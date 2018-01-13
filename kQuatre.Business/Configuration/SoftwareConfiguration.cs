@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Guiet.kQuatre.Business.Transceiver;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Configuration;
 using System.IO;
 using System.Linq;
@@ -34,9 +36,24 @@ namespace Guiet.kQuatre.Business.Configuration
 
         private const string KQUATRE_CONFIGURATION_NAME = "kQuatreConfiguration.xml";
 
+        private const string KQUATRE_FIREWORKS_NAME = "kQuatreFireworks.xml";
+
         private List<Guiet.kQuatre.Business.Receptor.Receptor> _receptors = new List<Receptor.Receptor>();
-        
+
+        /// <summary>
+        /// Fireworks available to create a new firework plan (dunno how to say this in English)
+        /// </summary>
+        private ObservableCollection<Guiet.kQuatre.Business.Firework.Firework> _fireworks = new ObservableCollection<Guiet.kQuatre.Business.Firework.Firework>();
+
         #endregion
+
+        public ObservableCollection<Guiet.kQuatre.Business.Firework.Firework> Fireworks
+        {
+            get
+            {
+                return _fireworks;
+            }
+        }
 
         public List<Guiet.kQuatre.Business.Receptor.Receptor> DefaultReceptors
         {
@@ -138,6 +155,42 @@ namespace Guiet.kQuatre.Business.Configuration
 
         #region Public Methods
 
+        public void TryAddFireworksReference(Firework.Firework firework)
+        {
+            Firework.Firework f = (from fw in _fireworks
+                                   where fw.Reference == firework.Reference
+                                   select fw).FirstOrDefault();
+
+            if (f == null)
+            {
+                Firework.Firework newFirework = new Firework.Firework(firework.Reference, firework.Designation, firework.Duration);
+                _fireworks.Add(newFirework);
+                SaveFireworks();
+            }
+        }
+
+        /// <summary>
+        /// Saves fireworks list 
+        /// </summary>
+        public void SaveFireworks()
+        {            
+            XDocument doc = new XDocument();
+
+            //Firework name
+            XElement fd = new XElement("kQuatreConfiguration");
+
+            //Receptors
+            XElement r = new XElement("Fireworks",
+                        _fireworks.Select(x => new XElement("Firework", new XAttribute("reference", x.Reference), new XAttribute("designation", x.Designation), new XAttribute("duration", $"{x.Duration:hh\\:mm\\:ss}")))
+                     );
+
+            fd.Add(r);
+
+            doc.Add(fd);
+
+            doc.Save(GetFireworksFileName());
+        }
+
         /// <summary>
         /// Save software configuration
         /// </summary>
@@ -183,9 +236,10 @@ namespace Guiet.kQuatre.Business.Configuration
             
         }
 
-        private void Load()
+        public void Load()
         {
             //TODO : Handle exeption  if conf. file does not exists
+            //TODO : Handle exeption  if fireworks file does not exists
 
             //Load config file
             XDocument confFile = XDocument.Load(GetConfigFileName());
@@ -214,6 +268,20 @@ namespace Guiet.kQuatre.Business.Configuration
             _transceiverBaudrate = Convert.ToInt32(transceiver.Element("Baudrate").Value.ToString());
             _tranceiverRetryPing = Convert.ToInt32(transceiver.Element("RetryPingTransceiver").Value.ToString());
 
+            //*** Fireworks
+            XDocument fireworksFile = XDocument.Load(GetFireworksFileName());
+
+            List<XElement> fireworks = (from r in fireworksFile.Descendants("Firework")
+                                        select r).ToList();
+
+            foreach(XElement fw in fireworks)
+            {
+                TimeSpan duration = TimeSpan.Parse(fw.Attribute("duration").Value.ToString());
+                Firework.Firework f = new Firework.Firework(fw.Attribute("reference").Value.ToString(), fw.Attribute("designation").Value.ToString(), duration);
+
+                _fireworks.Add(f);
+            }
+
         }
 
         private void GenerateTreeViewDataSource()
@@ -230,7 +298,7 @@ namespace Guiet.kQuatre.Business.Configuration
 
             fn.AddNode(cpn);
 
-            cpn = new ConfigPropertyNode(EXCEL_SHEET_NB_PROP_ID, "Numéro de la feuille EXcel", _excelSheetNumber.ToString());
+            cpn = new ConfigPropertyNode(EXCEL_SHEET_NB_PROP_ID, "Numéro de la feuille Excel", _excelSheetNumber.ToString());
 
             fn.AddNode(cpn);
 
@@ -256,7 +324,15 @@ namespace Guiet.kQuatre.Business.Configuration
 
         #endregion
 
-        private string  GetConfigFileName()
+        private string GetFireworksFileName()
+        {
+            //Exe directory
+            string directory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+
+            return Path.Combine(directory, KQUATRE_FIREWORKS_NAME);
+        }
+
+        private string GetConfigFileName()
         {
             //Exe directory
             string directory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);

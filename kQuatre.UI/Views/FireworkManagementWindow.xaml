@@ -33,7 +33,7 @@
             <Button Content="Modifier" Grid.Column="2" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="75" x:Name="_btnModify" />
             <Button x:Name="_btnClose" Content="Fermer" Grid.Column="3" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="75" />
         </Grid>
-        <igDP:XamDataGrid DataSource="{Binding FireworkManager.AllFireworks}" 
+        <igDP:XamDataGrid DataSource="{Binding SoftwareConfiguration.Fireworks}" 
                           Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" 
                           SelectedDataItemsScope="RecordsOnly" GroupByAreaLocation="None"
                           VerticalAlignment="Stretch">

@@ -245,7 +245,7 @@ namespace Guiet.kQuatre.UI.Views
 
         private void _btnCheckFirework_Click(object sender, RoutedEventArgs e)
         {
-            //TODO : Sanity check summary here
+            _viewModel.OpenSanityCheckWindow();
         }
     }
 }

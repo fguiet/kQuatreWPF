@@ -236,7 +236,12 @@ namespace Guiet.kQuatre.Business.Receptor
 
         #region Constructor 
 
-        public Receptor(string name, string address, int nbOfChannel)
+        public Receptor(string name, string address, int nbOfChannel) : this(name, address, nbOfChannel, null)
+        {
+
+        }
+
+        public Receptor(string name, string address, int nbOfChannel, DeviceManager deviceManager)
         {
             _name = name;
             _address = address;
@@ -245,7 +250,27 @@ namespace Guiet.kQuatre.Business.Receptor
             {
                 _receptorAddresses.Add(new ReceptorAddress(this, i));
             }
+
+            SetDeviceManager(deviceManager);
         }
+
+        private void DeviceManager_DeviceConnected(object sender, ConnectionEventArgs e)
+        {
+            //Refresh GUI
+            OnPropertyChanged("IsTestLaunchAllowed");
+        }
+
+        private void DeviceManager_DeviceDisconnected(object sender, EventArgs e)
+        {
+            //Stop test in case transceiver has been dettached..
+            if (_receptorWorker != null && _receptorWorker.IsBusy)
+            {
+                _receptorWorker.CancelAsync();
+            }            
+
+            //Refresh GUI
+            OnPropertyChanged("IsTestLaunchAllowed");
+        }        
 
         #endregion
 
@@ -273,18 +298,14 @@ namespace Guiet.kQuatre.Business.Receptor
 
         public void SetDeviceManager(DeviceManager dm)
         {
-            //Stop test in case transceiver has been dettached..
-            if (dm == null && _receptorWorker != null && _receptorWorker.IsBusy)
+            if (dm != null)
             {
-                _receptorWorker.CancelAsync();
+                _deviceManager = dm;
+                _deviceManager.DeviceDisconnected += DeviceManager_DeviceDisconnected;
+                _deviceManager.DeviceConnected += DeviceManager_DeviceConnected;
             }
-
-            _deviceManager = dm;
-
-            //Refresh GUI
-            OnPropertyChanged("IsTestLaunchAllowed");
         }
-
+        
         /// <summary>
         /// Get resiste of receptor address
         /// </summary>
@@ -378,27 +399,29 @@ namespace Guiet.kQuatre.Business.Receptor
                         return;
                     }
 
-                    MessageSentCounter = (messageSentCounter++).ToString();
+                    MessageSentCounter = (messageSentCounter++).ToString();                    
 
-                    FrameBase db = new PingFrame(_deviceManager.Transceiver.Address, _address);
-                    FrameBase receivedFrame = _deviceManager.Transceiver.SendPacketSynchronously(db);
-
-                    if (receivedFrame is AckFrame)
+                    if (_deviceManager.IsEmitterConnected)
                     {
-                        AckFrame af = (AckFrame)receivedFrame;
+                        FrameBase db = new PingFrame(_deviceManager.Transceiver.Address, _address);
+                        FrameBase receivedFrame = _deviceManager.Transceiver.SendPacketSynchronously(db);
 
-                        if (af.IsAckOk)
+                        if (receivedFrame is AckFrame)
                         {
-                            MessageRssi = af.Rssi;
-                            MessageReceivedCounter = (messageReceivedCounter++).ToString();
-                        }
+                            AckFrame af = (AckFrame)receivedFrame;
 
-                        if (!af.IsAckOk)
-                        {
-                            MessageLostCounter = (messageLostCounter++).ToString();
+                            if (af.IsAckOk)
+                            {
+                                MessageRssi = af.Rssi;
+                                MessageReceivedCounter = (messageReceivedCounter++).ToString();
+                            }
+
+                            if (!af.IsAckOk)
+                            {
+                                MessageLostCounter = (messageLostCounter++).ToString();
+                            }
                         }
                     }
-
                     //Pause for 1s
                     Thread.Sleep(1000);
                 }

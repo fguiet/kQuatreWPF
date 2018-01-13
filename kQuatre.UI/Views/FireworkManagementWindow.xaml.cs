@@ -1,4 +1,5 @@
-﻿using Guiet.kQuatre.Business.Firework;
+﻿using Guiet.kQuatre.Business.Configuration;
+using Guiet.kQuatre.Business.Firework;
 using Guiet.kQuatre.UI.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -23,20 +24,20 @@ namespace Guiet.kQuatre.UI.Views
     {
         private FireworkManagementViewModel _viewModel = null;
 
-        private FireworkManager _fireworkManager = null;
+        private SoftwareConfiguration _softwareConfiguration = null;
 
-        public FireworkManagementWindow(FireworkManager fireworkManager)
+        public FireworkManagementWindow(SoftwareConfiguration softwareConfiguration)
         {
             InitializeComponent();
 
-            _fireworkManager = fireworkManager;
+            _softwareConfiguration = softwareConfiguration;
 
             this.Loaded += FireworkManagementWindow_Loaded;
         }
 
         private void FireworkManagementWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            this._viewModel = new FireworkManagementViewModel(_fireworkManager);
+            this._viewModel = new FireworkManagementViewModel(_softwareConfiguration);
             this.DataContext = _viewModel;
         }
     }

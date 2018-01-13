@@ -17,7 +17,7 @@ namespace Guiet.kQuatre.Business.Firework
         /// <summary>
         /// Firework order number
         /// </summary>
-        private int _number;
+        private int? _number;
 
         /// <summary>
         /// 
@@ -73,13 +73,18 @@ namespace Guiet.kQuatre.Business.Firework
 
         #region Constructor
 
-        public Firework(int orderNumber, string reference, string designation, TimeSpan duration, Line line)
+        public Firework(int? orderNumber, string reference, string designation, TimeSpan duration, Line line)
         {
             _reference = reference;
             _designation = designation;
             _duration = duration;
             _assignedLine = line;
             _number = orderNumber;
+
+        }
+
+        public Firework(string reference, string designation, TimeSpan duration) : this(null, reference, designation, duration, null)
+        {
 
         }
 
@@ -235,7 +240,7 @@ namespace Guiet.kQuatre.Business.Firework
         {
             get
             {
-                return _number;
+                return _number.Value;
             }
         }
 

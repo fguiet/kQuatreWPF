@@ -72,6 +72,8 @@ namespace Guiet.kQuatre.Business.Firework
 
         private ObservableCollection<Firework> _allFireworks = new ObservableCollection<Firework>();
 
+        private List<string> _sanityCheckErrorsList = null;
+
         /// <summary>
         /// Tells whether firework has been edited by user
         /// </summary>
@@ -97,6 +99,14 @@ namespace Guiet.kQuatre.Business.Firework
             if (LineFailed != null)
             {
                 LineFailed(sender, new EventArgs());
+            }
+        }
+
+        public List<string> SanityCheckErrorsList
+        {
+            get
+            {
+                return _sanityCheckErrorsList;
             }
         }
 
@@ -340,41 +350,19 @@ namespace Guiet.kQuatre.Business.Firework
                                DeviceManager deviceManager)
         {
             _configuration = configuration;
-            _deviceManager = deviceManager;
-
-            _deviceManager.DeviceConnected += DeviceManager_DeviceConnected;
-            _deviceManager.DeviceDisconnected += DeviceManager_DeviceDisconnected;
+            _deviceManager = deviceManager;            
 
             //Set default receptors
             _receptors = new ObservableCollection<Receptor.Receptor>();
 
             foreach (Receptor.Receptor r in _configuration.DefaultReceptors)
             {
+                //Set Device manager
+                r.SetDeviceManager(_deviceManager);
+
                 _receptors.Add(r);
             }
-        }
-
-        private void DeviceManager_DeviceDisconnected(object sender, EventArgs e)
-        {
-            foreach (Receptor.Receptor r in _receptors)
-            {
-                r.SetDeviceManager(null);
-            }
-
-            //Sanity check
-            SanityCheck();
-        }
-
-        private void DeviceManager_DeviceConnected(object sender, ConnectionEventArgs e)
-        {
-            foreach (Receptor.Receptor r in _receptors)
-            {
-                r.SetDeviceManager(_deviceManager);
-            }
-
-            //Sanity check
-            SanityCheck();
-        }
+        }       
 
         #endregion
 
@@ -476,7 +464,6 @@ namespace Guiet.kQuatre.Business.Firework
         /// <param name="fullFileName"></param>
         public void LoadFirework(string fullFilename)
         {
-
             try
             {
                 _isLoadingFromFile = true;
@@ -499,7 +486,7 @@ namespace Guiet.kQuatre.Business.Firework
 
                 foreach (XElement r in receptors)
                 {
-                    Guiet.kQuatre.Business.Receptor.Receptor recep = new Guiet.kQuatre.Business.Receptor.Receptor(r.Attribute("name").Value, r.Attribute("address").Value.ToString(), Convert.ToInt32(r.Attribute("nbOfChannels").Value.ToString()));
+                    Guiet.kQuatre.Business.Receptor.Receptor recep = new Guiet.kQuatre.Business.Receptor.Receptor(r.Attribute("name").Value, r.Attribute("address").Value.ToString(), Convert.ToInt32(r.Attribute("nbOfChannels").Value.ToString()), _deviceManager);
                     _receptors.Add(recep);
                 }
 
@@ -529,10 +516,7 @@ namespace Guiet.kQuatre.Business.Firework
                         string channelNumber = l.Element("ReceptorAddress").Attribute("channel").Value.ToString();
 
                         Guiet.kQuatre.Business.Receptor.Receptor receptor = GetReceptor(address);
-                        Guiet.kQuatre.Business.Receptor.ReceptorAddress ra = receptor.GetAddress(Convert.ToInt32(channelNumber));
-
-                        //TODO : A revoir
-                        receptor.SetDeviceManager(_deviceManager);
+                        Guiet.kQuatre.Business.Receptor.ReceptorAddress ra = receptor.GetAddress(Convert.ToInt32(channelNumber));                        
 
                         line.AssignReceptorAddress(ra);
                     }
@@ -541,10 +525,10 @@ namespace Guiet.kQuatre.Business.Firework
                                                 select f).ToList();
                     foreach (XElement f in fireworks)
                     {
-                        //TODO : reactivate !!
-                        //string reference = f.Attribute("reference").Value.ToString();
-                        string reference = "";
-                        string designation = f.Attribute("designation").Value.ToString();
+                        
+                        string reference = f.Attribute("reference").Value.ToString();                                                
+                        string designation = f.Attribute("designation").Value.ToString();                      
+
                         TimeSpan duration = TimeSpan.Parse(f.Attribute("duration").Value.ToString());
 
                         Firework firework = new Firework(fireworkNumber, reference, designation, duration, line);
@@ -570,10 +554,7 @@ namespace Guiet.kQuatre.Business.Firework
             }
 
             //Set new name here !
-            _fireworkFullFileName = fullFilename;
-
-            //Check sanity of firework
-            SanityCheck();
+            _fireworkFullFileName = fullFilename;           
         }
 
         private void Line_LineFailed(object sender, EventArgs e)
@@ -605,8 +586,7 @@ namespace Guiet.kQuatre.Business.Firework
                 Worksheet fireworkDefWs = fireworkDefWb.Worksheets[_configuration.ExcelSheetNumber];
 
                 _name = fireworkDefWs.GetCell(_configuration.ExcelFireworkName).GetText();
-
-                //TODO : Column number should be parameterized!!
+                
                 int firstRowDataIndex = _configuration.ExcelFirstRowData;
                 int rowIndex = 1;
                 Line line = null;
@@ -632,10 +612,13 @@ namespace Guiet.kQuatre.Business.Firework
                         }
 
                         //Get Data for firework
-                        string reference = row.GetCellText(4);
-                        string designation = row.GetCellText(7);
+                        string reference = row.GetCellText(7);
+                        string designation = row.GetCellText(4);
                         TimeSpan duration = TimeSpan.Parse(row.GetCellText(5));
                         Firework firework = new Firework(fireworkOrderNumber, reference, designation, duration, line);
+
+                        //Add firework reference if it does not exists in the fireworks reference list
+                        _configuration.TryAddFireworksReference(firework);
 
                         _allFireworks.Add(firework);
                         line.AddFirework(firework);
@@ -656,10 +639,7 @@ namespace Guiet.kQuatre.Business.Firework
             }
 
             //Set new name here !
-            _fireworkFullFileName = String.Format("{0}{1}", System.IO.Path.GetFileNameWithoutExtension(fullFileName), DEFAULT_K4_EXTENSION);
-
-            //Check sanity of firework
-            SanityCheck();
+            _fireworkFullFileName = String.Format("{0}{1}", System.IO.Path.GetFileNameWithoutExtension(fullFileName), DEFAULT_K4_EXTENSION);            
         }
 
 
@@ -673,7 +653,7 @@ namespace Guiet.kQuatre.Business.Firework
             if (_isLoadingFromFile) return;
 
             //Check sanity of firework, this must be done before changing isdirty property
-            SanityCheck();
+            //SanityCheck();
 
             IsDirty = isDirty;
         }
@@ -725,6 +705,7 @@ namespace Guiet.kQuatre.Business.Firework
                     foreach (Firework la in l.Fireworks)
                     {
                         XElement firework = new XElement("Firework",
+                                new XAttribute("reference", la.Reference),
                                 new XAttribute("designation", la.Designation),
                                 new XAttribute("duration", $"{la.Duration:hh\\:mm\\:ss}")
                                 );
@@ -766,19 +747,22 @@ namespace Guiet.kQuatre.Business.Firework
         /// Check sanity of firework definition
         /// </summary>
         /// <returns></returns>
-        private void SanityCheck()
+        public void SanityCheck()
         {
+            _sanityCheckErrorsList = new List<string>();
             bool isSanityCheckOk = true;
 
             //Check if device is connected
             if (!_deviceManager.IsEmitterConnected)
             {
+                _sanityCheckErrorsList.Add("Le logiciel ne détecte aucune connection avec l'émetteur");
                 isSanityCheckOk = false;
             }
 
             //Check firework has got at least one line
             if (_lines != null && _lines.Count == 0)
             {
+                _sanityCheckErrorsList.Add("Aucun plan de tir définit pour le feu d'artifice en cours d'édition");
                 isSanityCheckOk = false;
             }
 
@@ -788,12 +772,13 @@ namespace Guiet.kQuatre.Business.Firework
                 //Checking lines with no firework
                 if (l.Fireworks.Count == 0)
                 {
-
+                    _sanityCheckErrorsList.Add(string.Format("La ligne n°{0} est définie sans feu d'artifice associé", l.Number));
                     isSanityCheckOk = false;
                 }
 
                 if (l.ReceptorAddress == null)
                 {
+                    _sanityCheckErrorsList.Add(string.Format("La ligne n°{0} est définie sans adresse de récepteur associée", l.Number));
                     isSanityCheckOk = false;
                 }
 
@@ -803,6 +788,7 @@ namespace Guiet.kQuatre.Business.Firework
 
                     if (l.Ignition.CompareTo(previousLine.Ignition) < 0)
                     {
+                        _sanityCheckErrorsList.Add(string.Format("La mise à feu de la ligne n°{0} est incohérent avec la mise à feu de la ligne n°{1} ", l.Number, previousLine.Number));
                         isSanityCheckOk = false;
                     }
                 }

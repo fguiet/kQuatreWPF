@@ -204,7 +204,7 @@ namespace Guiet.kQuatre.UI.ViewModel
             _deviceManager.DeviceConnected += DeviceManager_DeviceConnected; ;
             _deviceManager.DeviceDisconnected += DeviceManager_DeviceDisconnected;
             _deviceManager.DeviceErrorWhenConnecting += DeviceManager_DeviceErrorWhenConnecting;
-            _deviceManager.USBConnection += DeviceManager_USBConnection;
+            _deviceManager.USBConnection += DeviceManager_USBConnection;            
 
             FireworkManager = InstantiateNewFirework();
 
@@ -250,6 +250,9 @@ namespace Guiet.kQuatre.UI.ViewModel
         /// </summary>
         public void RefreshControlPanelUI(RefreshControlPanelEventType eventType)
         {
+
+            FireworkManager.SanityCheck();
+
             switch (eventType)
             {
                 case RefreshControlPanelEventType.DeviceConnectionChangedEvent:
@@ -594,6 +597,12 @@ namespace Guiet.kQuatre.UI.ViewModel
             }
         }
 
+        public void OpenSanityCheckWindow()
+        {
+            SanityCheckWindow window = new SanityCheckWindow(_fireworkManager);
+            window.ShowDialog();
+        }
+
         public void OpenConfigurationWindow()
         {
             ConfigurationWindow window = new ConfigurationWindow(_configuration);
@@ -602,7 +611,7 @@ namespace Guiet.kQuatre.UI.ViewModel
 
         public void OpenFireworkManagementWindow()
         {
-            FireworkManagementWindow window = new FireworkManagementWindow(_fireworkManager);
+            FireworkManagementWindow window = new FireworkManagementWindow(_configuration);
             window.ShowDialog();
         }
 
