@@ -1,0 +1,35 @@
+﻿<Window x:Class="Guiet.kQuatre.UI.Views.SanityCheckWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Guiet.kQuatre.UI.Views"
+        mc:Ignorable="d"
+        Title="Vérification du feu d'artifice" Height="310.922" Width="463.107" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBox IsReadOnly="True" Height="Auto" Name="_tbxSanityCheckResult" TextWrapping="Wrap" Text="{Binding Path=SanityCheckResult}" VerticalAlignment="Stretch" Width="Auto" HorizontalAlignment="Stretch" />
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="85"/>
+                <ColumnDefinition Width="85"/>
+            </Grid.ColumnDefinitions>
+            <Border  Grid.Column="0"  Background="LightGray" />
+            <Border  Grid.Column="1"  Background="LightGray" />
+            <Border  Grid.Column="2"  Background="LightGray" />
+            <Button x:Name="_btnClose" Content="Fermer" Grid.Column="2" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="75" Click="_btnClose_Click" />
+        </Grid>
+    </Grid>
+</Window>
