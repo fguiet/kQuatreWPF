@@ -9,6 +9,7 @@
     <SolidColorBrush x:Key="AccentBrush" Color="#4CBBE6" />
 	<SolidColorBrush x:Key="BasicBrush" Color="#FFD6D4D4" />
 	<kQuatreUI:MinuteIntervalFormatter x:Key="MinuteIntervalFormatter"/>
+    <kQuatreUI:SecondIntervalFormatter x:Key="SecondIntervalFormatter"/>
 
 	
     <Style x:Key="FireworkLinesStyle" TargetType="kQuatreUI:CustomTimelineControl">

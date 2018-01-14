@@ -112,8 +112,7 @@ namespace Guiet.kQuatre.Business.Firework
                 if (_number.ToString() != value)
                 {
                     _number = Convert.ToInt32(value);
-                    OnPropertyChanged();
-                   // OnPropertyChanged("NumberUI");
+                    OnPropertyChanged();                   
                 }
             }
         }
@@ -169,9 +168,7 @@ namespace Guiet.kQuatre.Business.Firework
                 if (_receptorAddress != value)
                 {
                     _receptorAddress = value;
-                    OnPropertyChanged();
-                    //OnPropertyChanged("ReceptorAddressUI");
-                    // ReceptorAddressUI = _receptorAddress.ReceptorAddressUI;
+                    OnPropertyChanged();                    
                 }
             }
         }
@@ -313,7 +310,8 @@ namespace Guiet.kQuatre.Business.Firework
         /// <param name="firework"></param>
         public void AddFirework(Firework firework)
         {
-            firework.FireworkFinished += Firework_FireworkFinished;            
+            firework.FireworkFinished += Firework_FireworkFinished;
+            firework.AssignLine(this);
             _fireworks.Add(firework);
         }
 

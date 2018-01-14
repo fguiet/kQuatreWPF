@@ -1,6 +1,7 @@
 ﻿using Guiet.kQuatre.Business.Configuration;
 using Guiet.kQuatre.Business.Firework;
 using Guiet.kQuatre.Business.Receptor;
+using Guiet.kQuatre.UI.Helpers;
 using Guiet.kQuatre.UI.ViewModel;
 using Infragistics.Controls.Schedules;
 using Infragistics.Windows.DataPresenter;
@@ -100,7 +101,9 @@ namespace Guiet.kQuatre.UI.Views
         /// <param name="e"></param>
         private void _btnAddFirework_Click(object sender, RoutedEventArgs e)
         {
+            Line line = _fireworkDatagrid.ActiveDataItem as Line;
 
+            _viewModel.OpenFireworkManagementWindow(line);
         }
         
         private void _miFireworkManagement_Click(object sender, EventArgs e)
@@ -154,7 +157,7 @@ namespace Guiet.kQuatre.UI.Views
             }
             else
             {
-                ShowWarningMessage("Veuillez sélectionner une ligne");
+                DialogBoxHelper.ShowWarningMessage("Veuillez sélectionner une ligne");
             }
 
         }
@@ -162,11 +165,8 @@ namespace Guiet.kQuatre.UI.Views
         private void _btnAddLine_Click(object sender, RoutedEventArgs e)
         {
             _viewModel.OpenLineWindow(null);
-        }
-
-        private void ShowWarningMessage(string message)
-        {
-            MessageBox.Show(message, "Information", MessageBoxButton.OK, MessageBoxImage.Exclamation, MessageBoxResult.OK);
+            RefreshDataGrid();
+            ExpandAllLine();
         }
         
         private void _btnStopTestReceptor_Click(object sender, RoutedEventArgs e)
@@ -246,6 +246,14 @@ namespace Guiet.kQuatre.UI.Views
         private void _btnCheckFirework_Click(object sender, RoutedEventArgs e)
         {
             _viewModel.OpenSanityCheckWindow();
+        }
+
+        private void XamTabControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (_tabFire.IsSelected)
+            {
+                _viewModel.RefreshFireTabUI();                
+            }
         }
     }
 }

@@ -163,7 +163,7 @@ namespace Guiet.kQuatre.Business.Configuration
 
             if (f == null)
             {
-                Firework.Firework newFirework = new Firework.Firework(firework.Reference, firework.Designation, firework.Duration);
+                Firework.Firework newFirework = firework.GetClone();
                 _fireworks.Add(newFirework);
                 SaveFireworks();
             }

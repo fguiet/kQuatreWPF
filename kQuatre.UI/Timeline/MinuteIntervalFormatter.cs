@@ -13,7 +13,7 @@ namespace Guiet.kQuatre.UI.Timeline
         {
             return new Func<DateTime, string>[]
             {
-            date => string.Format("Minute : {0}", date.ToString("mm"))
+                date => string.Format("Minute : {0}", date.ToString("mm"))
             };
         }
 

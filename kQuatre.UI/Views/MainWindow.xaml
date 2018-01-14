@@ -79,7 +79,7 @@
                 <TextBlock x:Name="_fireworkSanityStatus" Text="{Binding DeviceConnectionInfo}"/>
             </StatusBarItem>-->
         </StatusBar>
-        <Custom:XamTabControl  Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <Custom:XamTabControl   Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" SelectionChanged="XamTabControl_SelectionChanged">
             <Custom:TabItemEx x:Name="_tabDesign" Header="Conception">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -122,11 +122,12 @@
                     </Grid>
 
                     <Grid Grid.Row="2">
+                        
                         <Grid.RowDefinitions>
                             <RowDefinition  />
                         </Grid.RowDefinitions>
-
-                        <igDP:XamDataGrid Name="_fireworkDatagrid" Theme="IGTheme" DataSource="{Binding FireworkManager.Lines}" HorizontalAlignment="Stretch" SelectedDataItemsScope="RecordsOnly" GroupByAreaLocation="None">
+                        
+                        <igDP:XamDataGrid Background="Beige" Width="Auto" Height="Auto" ScrollingMode="Immediate" Name="_fireworkDatagrid"  DataSource="{Binding FireworkManager.Lines}" HorizontalAlignment="Stretch" SelectedDataItemsScope="RecordsOnly" GroupByAreaLocation="None"> 
                             <igDP:XamDataGrid.Resources>
                                 <Style x:Key="lineRowColorStyle" TargetType="igDP:DataRecordCellArea">
                                     <Setter Property="Background" Value="Gray"/>
@@ -136,7 +137,7 @@
                                 </Style>
 
                                 <Style x:Key="lineRecordStyle" TargetType="{x:Type igDP:DataRecordPresenter}">
-                                    <Setter Property="Margin" Value="0,40,0,0"/>
+                                    <Setter Property="Margin" Value="0,10,0,0"/>
                                     <Setter Property="FontSize" Value="14"/>
                                     <Setter Property="FontWeight" Value="Bold"/>
                                 </Style>
@@ -398,7 +399,7 @@
 
                             <telerik:RadTimeline.Intervals>
                                 <telerik:MinuteInterval FormatterProvider="{StaticResource MinuteIntervalFormatter}"></telerik:MinuteInterval>
-                                <telerik:SecondInterval></telerik:SecondInterval>
+                                <telerik:SecondInterval FormatterProvider="{StaticResource SecondIntervalFormatter}"></telerik:SecondInterval>
                             </telerik:RadTimeline.Intervals>
                         </telerik:RadTimeline>
                     </Grid>

@@ -1,5 +1,6 @@
 ﻿using Guiet.kQuatre.Business.Configuration;
 using Guiet.kQuatre.Business.Firework;
+using Guiet.kQuatre.UI.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,10 +12,22 @@ namespace Guiet.kQuatre.UI.ViewModel
     public class FireworkManagementViewModel
     {
         private SoftwareConfiguration _softwareConfiguration = null;
+        private FireworkManager _fireworkManager = null;
+        private Line _line = null;        
 
-        public FireworkManagementViewModel(SoftwareConfiguration softwareConfiguration)
+        public bool CanSelect
+        {
+            get
+            {
+                return (_line != null);
+            }
+        }
+
+        public FireworkManagementViewModel(FireworkManager fm, SoftwareConfiguration softwareConfiguration, Line line)
         {
             _softwareConfiguration = softwareConfiguration;
+            _fireworkManager = fm;
+            _line = line;
         }
 
         public SoftwareConfiguration SoftwareConfiguration
@@ -24,5 +37,7 @@ namespace Guiet.kQuatre.UI.ViewModel
                 return _softwareConfiguration;
             }           
         }
+
+       
     }
 }

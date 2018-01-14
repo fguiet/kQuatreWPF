@@ -1,2 +1,1 @@
 ﻿//TODO : Vérifier les inputs utilisateurs pour le fichier de configuration
-//TODO : vérifier renumérotation des fireworks lors d'un changement de line

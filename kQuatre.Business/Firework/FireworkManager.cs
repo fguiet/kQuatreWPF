@@ -125,7 +125,7 @@ namespace Guiet.kQuatre.Business.Firework
                 StateChanged(sender, new EventArgs());
             }
         }
-        
+
         #endregion
 
         public bool IsSanityCheckOk
@@ -144,10 +144,10 @@ namespace Guiet.kQuatre.Business.Firework
             }
 
             set
-            {              
+            {
                 if (_isDirty != value)
                 {
-                    _isDirty = value;                
+                    _isDirty = value;
                 }
 
                 //Launch each time because if sanity check is ok 
@@ -179,7 +179,7 @@ namespace Guiet.kQuatre.Business.Firework
                     OnPropertyChanged();
                 }
             }
-        }        
+        }
 
         public FireworkManagerState State
         {
@@ -195,7 +195,7 @@ namespace Guiet.kQuatre.Business.Firework
                     _state = value;
 
                     OnPropertyChanged();
-                    OnStateChangedEvent(this);                    
+                    OnStateChangedEvent(this);
                 }
             }
         }
@@ -204,7 +204,9 @@ namespace Guiet.kQuatre.Business.Firework
         {
             get
             {
-                return _allFireworks;
+                IOrderedEnumerable<Firework> allFireworks = (_lines.ToList().SelectMany(l => l.Fireworks).ToList()).OrderBy(y => y.RadRowIndex);
+
+                return new ObservableCollection<Firework>(allFireworks);
             }
         }
 
@@ -350,7 +352,7 @@ namespace Guiet.kQuatre.Business.Firework
                                DeviceManager deviceManager)
         {
             _configuration = configuration;
-            _deviceManager = deviceManager;            
+            _deviceManager = deviceManager;
 
             //Set default receptors
             _receptors = new ObservableCollection<Receptor.Receptor>();
@@ -362,7 +364,7 @@ namespace Guiet.kQuatre.Business.Firework
 
                 _receptors.Add(r);
             }
-        }       
+        }
 
         #endregion
 
@@ -379,7 +381,7 @@ namespace Guiet.kQuatre.Business.Firework
 
         #endregion
 
-        #region Public Methods
+        #region Public Methods       
 
         /// <summary>
         /// Stops firework !!
@@ -401,9 +403,9 @@ namespace Guiet.kQuatre.Business.Firework
         /// Start firework !!!
         /// </summary>
         public void Start()
-        {         
+        {
             State = FireworkManagerState.FireInProgress;
-            
+
             _fireworkWorker = new BackgroundWorker();
             _fireworkWorker.WorkerSupportsCancellation = true;
             _fireworkWorker.DoWork += FireworkWorker_DoWork;
@@ -419,7 +421,7 @@ namespace Guiet.kQuatre.Business.Firework
             _lines.Remove(line);
 
             //Reorder lines!!
-            ReorderLines();
+            ReorderLinesAndFireworks();
 
             MakeItDirty(true);
         }
@@ -437,7 +439,7 @@ namespace Guiet.kQuatre.Business.Firework
                 if (index > _lines.Count)
                     _lines.Add(line);
                 else
-                    _lines.Insert(int.Parse(line.Number), line);                
+                    _lines.Insert(int.Parse(line.Number), line);
             }
             else
             {
@@ -448,12 +450,12 @@ namespace Guiet.kQuatre.Business.Firework
 
                 if (oldIndex != newIndex)
                 {
-                    _lines.Move(oldIndex - 1, newIndex);                    
+                    _lines.Move(oldIndex - 1, newIndex);
                 }
             }
 
             //Reorder lines!!
-            ReorderLines();
+            ReorderLinesAndFireworks();
 
             MakeItDirty(true);
         }
@@ -494,7 +496,6 @@ namespace Guiet.kQuatre.Business.Firework
                 List<XElement> lines = (from l in fireworkDefinition.Descendants("Line")
                                         select l).ToList();
 
-                int fireworkNumber = 0;
                 foreach (XElement l in lines)
                 {
                     int lineNumber = Convert.ToInt32(l.Attribute("number").Value.ToString());
@@ -516,7 +517,7 @@ namespace Guiet.kQuatre.Business.Firework
                         string channelNumber = l.Element("ReceptorAddress").Attribute("channel").Value.ToString();
 
                         Guiet.kQuatre.Business.Receptor.Receptor receptor = GetReceptor(address);
-                        Guiet.kQuatre.Business.Receptor.ReceptorAddress ra = receptor.GetAddress(Convert.ToInt32(channelNumber));                        
+                        Guiet.kQuatre.Business.Receptor.ReceptorAddress ra = receptor.GetAddress(Convert.ToInt32(channelNumber));
 
                         line.AssignReceptorAddress(ra);
                     }
@@ -525,22 +526,18 @@ namespace Guiet.kQuatre.Business.Firework
                                                 select f).ToList();
                     foreach (XElement f in fireworks)
                     {
-                        
-                        string reference = f.Attribute("reference").Value.ToString();                                                
-                        string designation = f.Attribute("designation").Value.ToString();                      
+
+                        string reference = f.Attribute("reference").Value.ToString();
+                        string designation = f.Attribute("designation").Value.ToString();
 
                         TimeSpan duration = TimeSpan.Parse(f.Attribute("duration").Value.ToString());
 
-                        Firework firework = new Firework(fireworkNumber, reference, designation, duration, line);
+                        Firework firework = new Firework(reference, designation, duration);
 
-                        _allFireworks.Add(firework);
-                        line.AddFirework(firework);
-
-                        fireworkNumber++;
-
+                        AddFireworkToLine(firework, line);
                     }
 
-                    _lines.Add(line);
+                    AddLine(line);
                 }
 
             }
@@ -554,7 +551,7 @@ namespace Guiet.kQuatre.Business.Firework
             }
 
             //Set new name here !
-            _fireworkFullFileName = fullFilename;           
+            _fireworkFullFileName = fullFilename;
         }
 
         private void Line_LineFailed(object sender, EventArgs e)
@@ -586,11 +583,11 @@ namespace Guiet.kQuatre.Business.Firework
                 Worksheet fireworkDefWs = fireworkDefWb.Worksheets[_configuration.ExcelSheetNumber];
 
                 _name = fireworkDefWs.GetCell(_configuration.ExcelFireworkName).GetText();
-                
+
                 int firstRowDataIndex = _configuration.ExcelFirstRowData;
                 int rowIndex = 1;
                 Line line = null;
-                int fireworkOrderNumber = 0;
+                //int fireworkOrderNumber = 0;
                 foreach (WorksheetRow row in fireworkDefWs.Rows)
                 {
                     if (rowIndex >= firstRowDataIndex)
@@ -608,22 +605,19 @@ namespace Guiet.kQuatre.Business.Firework
                             line.PropertyChanged += Line_PropertyChanged;
 
                             line.Ignition = TimeSpan.Parse(row.GetCellText(1));
-                            _lines.Add(line);
+                            AddLine(line);
                         }
 
                         //Get Data for firework
                         string reference = row.GetCellText(7);
                         string designation = row.GetCellText(4);
                         TimeSpan duration = TimeSpan.Parse(row.GetCellText(5));
-                        Firework firework = new Firework(fireworkOrderNumber, reference, designation, duration, line);
+                        Firework firework = new Firework(reference, designation, duration);
 
                         //Add firework reference if it does not exists in the fireworks reference list
                         _configuration.TryAddFireworksReference(firework);
 
-                        _allFireworks.Add(firework);
-                        line.AddFirework(firework);
-
-                        fireworkOrderNumber++;
+                        AddFireworkToLine(firework, line);
                     }
 
                     rowIndex++;
@@ -639,7 +633,7 @@ namespace Guiet.kQuatre.Business.Firework
             }
 
             //Set new name here !
-            _fireworkFullFileName = String.Format("{0}{1}", System.IO.Path.GetFileNameWithoutExtension(fullFileName), DEFAULT_K4_EXTENSION);            
+            _fireworkFullFileName = String.Format("{0}{1}", System.IO.Path.GetFileNameWithoutExtension(fullFileName), DEFAULT_K4_EXTENSION);
         }
 
 
@@ -662,6 +656,27 @@ namespace Guiet.kQuatre.Business.Firework
         {
             SaveFirework(_fireworkFullFileName);
         }
+
+        /// <summary>
+        /// Add Fireworks to a line
+        /// </summary>
+        /// <param name="firework"></param>
+        /// <param name="line"></param>
+        public void AddFireworkToLine(Firework firework, Line line)
+        {
+            line.AddFirework(firework);
+
+            ReorderLinesAndFireworks();
+        }
+
+        public void AddLine(Line line)
+        {
+            _lines.Add(line);
+
+            ReorderLinesAndFireworks();
+        }
+
+        //public void 
 
         /// <summary>
         /// Save firework definition in XML format
@@ -808,15 +823,22 @@ namespace Guiet.kQuatre.Business.Firework
             }
         }
 
-        private void ReorderLines()
+        private void ReorderLinesAndFireworks()
         {
             int lineNumber = 1;
+            int fireworkNumber = 0;
 
             foreach (Line line in _lines)
             {
                 line.Reorder(lineNumber);
 
                 lineNumber++;
+
+                foreach (Firework f in line.Fireworks)
+                {
+                    f.Reorder(fireworkNumber);
+                    fireworkNumber++;
+                }
             }
         }
 
@@ -952,7 +974,7 @@ namespace Guiet.kQuatre.Business.Firework
 
             _timerHelper.Stop();
             _timerHelper = null;
-        }       
+        }
 
         /// <summary>
         /// Get line by its number

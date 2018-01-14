@@ -103,11 +103,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Converters\IsInAddModeToVisibilityConverter.cs" />
-    <Compile Include="Converters\IsInUpdateModeVisibilityConverter.cs" />
+    <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Helpers\DialogBoxHelper.cs" />
     <Compile Include="Timeline\CustomTimelineControl.cs" />
     <Compile Include="Timeline\MinuteIntervalFormatter.cs" />
     <Compile Include="Timeline\NewLineRowIndexGenerator.cs" />
+    <Compile Include="Timeline\SecondInternalFormatter.cs" />
     <Compile Include="ViewModel\ComboBoxItem.cs" />
     <Compile Include="ViewModel\ConfigurationWindowViewModel.cs" />
     <Compile Include="ViewModel\FireworkManagementViewModel.cs" />

@@ -204,7 +204,7 @@ namespace Guiet.kQuatre.UI.ViewModel
             _deviceManager.DeviceConnected += DeviceManager_DeviceConnected; ;
             _deviceManager.DeviceDisconnected += DeviceManager_DeviceDisconnected;
             _deviceManager.DeviceErrorWhenConnecting += DeviceManager_DeviceErrorWhenConnecting;
-            _deviceManager.USBConnection += DeviceManager_USBConnection;            
+            _deviceManager.USBConnection += DeviceManager_USBConnection;
 
             FireworkManager = InstantiateNewFirework();
 
@@ -215,7 +215,7 @@ namespace Guiet.kQuatre.UI.ViewModel
         private FireworkManager InstantiateNewFirework()
         {
             FireworkManager fm = new FireworkManager(_configuration, _deviceManager);
-            
+
             fm.LineStarted += FireworkManager_LineStarted;
             fm.LineFailed += FireworkManager_LineFailed;
             fm.PropertyChanged += FireworkManager_PropertyChanged;
@@ -234,7 +234,7 @@ namespace Guiet.kQuatre.UI.ViewModel
         private void FireworkManager_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "IsDirty")
-            {               
+            {
                 //Firework has changed so control panel must be reset
                 RefreshControlPanelUI(RefreshControlPanelEventType.FireworkModifiedEvent);
             }
@@ -257,10 +257,10 @@ namespace Guiet.kQuatre.UI.ViewModel
             {
                 case RefreshControlPanelEventType.DeviceConnectionChangedEvent:
                     //Reset firework armed toggle
-                    IsFireworkArmed = false;                    
+                    IsFireworkArmed = false;
                     OnPropertyChanged("IsArmingEnable");
                     OnPropertyChanged("IsFireFireworkEnable");
-                    OnPropertyChanged("IsStopFireworkEnable");                    
+                    OnPropertyChanged("IsStopFireworkEnable");
                     break;
 
                 case RefreshControlPanelEventType.FireworkArmedEvent:
@@ -287,7 +287,7 @@ namespace Guiet.kQuatre.UI.ViewModel
                     OnPropertyChanged("Title");
                     break;
 
-                case RefreshControlPanelEventType.FireworkStateChangedEvent:                    
+                case RefreshControlPanelEventType.FireworkStateChangedEvent:
 
                     if (FireworkManager.State == FireworkManagerState.Editing)
                     {
@@ -295,11 +295,11 @@ namespace Guiet.kQuatre.UI.ViewModel
                     }
 
                     OnPropertyChanged("IsFireFireworkEnable");
-                    OnPropertyChanged("IsArmingEnable");                    
+                    OnPropertyChanged("IsArmingEnable");
                     OnPropertyChanged("IsStopFireworkEnable");
                     break;
             }
-        }        
+        }
 
         private void ResetScrollBar()
         {
@@ -309,10 +309,14 @@ namespace Guiet.kQuatre.UI.ViewModel
 
             //Vertical
             TimelineScrollBar verticalSlider = _fireworkTimeline.FindChildByType<TimelineScrollBar>();
-            var newStart = 0;
-            var newEnd = verticalSlider.SelectionRange;
 
-            verticalSlider.Selection = new SelectionRange<double>(newStart, newEnd);
+            if (verticalSlider != null)
+            {
+                var newStart = 0;
+                var newEnd = verticalSlider.SelectionRange;
+
+                verticalSlider.Selection = new SelectionRange<double>(newStart, newEnd);
+            }
         }
 
         /// <summary>
@@ -492,7 +496,7 @@ namespace Guiet.kQuatre.UI.ViewModel
             ResetScrollBar();
 
             //TODO : Sanity check
-            _fireworkManager.Start();            
+            _fireworkManager.Start();
         }
 
         /// <summary>
@@ -512,7 +516,7 @@ namespace Guiet.kQuatre.UI.ViewModel
             //InstantiateNewFirework();
             FireworkManager fm = InstantiateNewFirework();
             this.FireworkManager = fm;
-            
+
         }
 
         /// <summary>
@@ -576,6 +580,15 @@ namespace Guiet.kQuatre.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Refresh fire tab ui when selected
+        /// </summary>
+        public void RefreshFireTabUI()
+        {
+            //Object FireworkManager may have changed so GUI must be updated
+            OnPropertyChanged("FireworkManager");            
+        }
+
         public void SaveAsFirework()
         {
             SaveFileDialog sfd = new SaveFileDialog();
@@ -609,9 +622,15 @@ namespace Guiet.kQuatre.UI.ViewModel
             window.ShowDialog();
         }
 
+        public void OpenFireworkManagementWindow(Line line)
+        {
+            FireworkManagementWindow window = new FireworkManagementWindow(_fireworkManager, _configuration, line);
+            window.ShowDialog();
+        }
+
         public void OpenFireworkManagementWindow()
         {
-            FireworkManagementWindow window = new FireworkManagementWindow(_configuration);
+            FireworkManagementWindow window = new FireworkManagementWindow(_fireworkManager, _configuration);
             window.ShowDialog();
         }
 
