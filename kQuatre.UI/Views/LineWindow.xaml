@@ -6,7 +6,7 @@
         xmlns:conv="clr-namespace:Guiet.kQuatre.UI.Converters"
         xmlns:Custom="http://infragistics.com/Editors" x:Class="Guiet.kQuatre.UI.Views.LineWindow"
         mc:Ignorable="d"
-        Title="Gestion d'une ligne" Height="210" Width="460" MinHeight="210" MinWidth="460" WindowStartupLocation="CenterScreen">
+        Title="Gestion d'une ligne" Height="210" Width="460" MinHeight="210" MinWidth="460" WindowStartupLocation="CenterScreen" Icon="/kQuatre;component/Resources/FireworksIcon.png">
     <Window.Resources>
         <conv:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"></conv:BooleanToVisibilityConverter>
     </Window.Resources>

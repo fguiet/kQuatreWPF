@@ -7,7 +7,7 @@
         xmlns:igDP="http://infragistics.com/DataPresenter" x:Class="Guiet.kQuatre.UI.Views.FireworkManagementWindow"
         xmlns:conv="clr-namespace:Guiet.kQuatre.UI.Converters"
         mc:Ignorable="d"
-        Title="Gestion des artifices" Height="500" Width="600" WindowStartupLocation="CenterScreen">
+        Title="Gestion des artifices" Height="500" Width="600" WindowStartupLocation="CenterScreen" Icon="/kQuatre;component/Resources/FireworksIcon.png">
     <Window.Resources>
         <conv:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"></conv:BooleanToVisibilityConverter>
     </Window.Resources>

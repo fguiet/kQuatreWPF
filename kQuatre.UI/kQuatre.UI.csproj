@@ -211,6 +211,10 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Resource Include="Resources\ExecutionIcon_32x32.png" />
+    <Resource Include="Resources\TestIcon_32x32.png" />
+    <Resource Include="Resources\IdeaIcon_32x32.png" />
+    <Resource Include="Resources\FireworksIcon.png" />
     <EmbeddedResource Include="Views\AboutBox1.resx">
       <DependentUpon>AboutBox1.cs</DependentUpon>
     </EmbeddedResource>

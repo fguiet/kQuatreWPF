@@ -11,7 +11,7 @@
         xmlns:kQuatreUI="clr-namespace:Guiet.kQuatre.UI.Timeline"                
         xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
         mc:Ignorable="d"
-        Title="{Binding Title}" WindowState="Maximized" WindowStartupLocation="CenterScreen" Closing="_mainWindow_Closing" >
+        Title="{Binding Title}" WindowState="Maximized" WindowStartupLocation="CenterScreen" Closing="_mainWindow_Closing" Icon="/kQuatre;component/Resources/FireworksIcon.png" >
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -80,7 +80,13 @@
             </StatusBarItem>-->
         </StatusBar>
         <Custom:XamTabControl   Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" SelectionChanged="XamTabControl_SelectionChanged">
-            <Custom:TabItemEx x:Name="_tabDesign" Header="Conception">
+            <Custom:TabItemEx x:Name="_tabDesign">
+                <Custom:TabItemEx.Header>
+                    <StackPanel Height="50" Width="60">
+                        <Image Source="/kQuatre;component/Resources/IdeaIcon_32x32.png" Height="32" Width="32" />
+                        <TextBlock Text="Conception"   HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Custom:TabItemEx.Header>
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -198,7 +204,13 @@
 
                 </Grid>
             </Custom:TabItemEx>
-            <Custom:TabItemEx x:Name="_tabTest" Header="Tests">
+            <Custom:TabItemEx x:Name="_tabTest">
+                <Custom:TabItemEx.Header>
+                    <StackPanel Height="50" Width="60">
+                        <Image Source="/kQuatre;component/Resources/TestIcon_32x32.png" Height="32" Width="32" />
+                        <TextBlock Text="Tests"   HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Custom:TabItemEx.Header>
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -317,7 +329,13 @@
                     </GroupBox>
                 </Grid>
             </Custom:TabItemEx>
-            <Custom:TabItemEx x:Name="_tabFire" Header="Exécution">
+            <Custom:TabItemEx x:Name="_tabFire">
+                <Custom:TabItemEx.Header>
+                    <StackPanel Height="50" Width="60">
+                        <Image Source="/kQuatre;component/Resources/ExecutionIcon_32x32.png" Height="32" Width="32" />
+                        <TextBlock Text="Exécution"   HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Custom:TabItemEx.Header>
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>

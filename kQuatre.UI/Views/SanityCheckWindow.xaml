@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Guiet.kQuatre.UI.Views"
         mc:Ignorable="d"
-        Title="Vérification du feu d'artifice" Height="310.922" Width="463.107" WindowStartupLocation="CenterScreen">
+        Title="Vérification du feu d'artifice" Height="310.922" Width="463.107" WindowStartupLocation="CenterScreen" Icon="/kQuatre;component/Resources/FireworksIcon.png">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>

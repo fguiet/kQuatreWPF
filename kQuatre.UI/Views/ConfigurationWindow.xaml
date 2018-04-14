@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Guiet.kQuatre.UI.Views"
         xmlns:ig="http://schemas.infragistics.com/xaml" xmlns:Custom="http://infragistics.com/DataPresenter" x:Class="Guiet.kQuatre.UI.Views.ConfigurationWindow"
         mc:Ignorable="d"
-        Title="Configuration" Height="500" Width="600" MinHeight="265" MinWidth="444" WindowStartupLocation="CenterScreen">
+        Title="Configuration" Height="500" Width="600" MinHeight="265" MinWidth="444" WindowStartupLocation="CenterScreen" Icon="/kQuatre;component/Resources/FireworksIcon.png">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
