@@ -32,7 +32,7 @@ const String ACK_OK_FRAME_RECEIVED = "OK_R1";
 /***
  * !!! Modify this !!!
  */
-const String MODULE_ADDRESS = "2";
+const String MODULE_ADDRESS = "1";
 
 void setup() {
   //Set Serial baudrate

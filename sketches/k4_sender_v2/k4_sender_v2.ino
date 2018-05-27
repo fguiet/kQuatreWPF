@@ -14,7 +14,7 @@ const int MIN_FRAME_LENGHT = 17;
 //** Sample ***
 
 //*** Test PING
-//*** @;33;0;0;PING;;96;|
+//*** @;14;0;0;PING+250;;57;|
 
 //*** Bad frame
 //*** @;34;0;0;PING;;91;|
@@ -24,7 +24,8 @@ const int MIN_FRAME_LENGHT = 17;
 //*** @;211;0;3;INIT;;CD;|
 
 //*** FIRE
-//*** @;251;0;3;FIRE;3+1+2+3;0D;|
+//*** @;12;0;1;FIRE+250;1+15;10;|
+//*** @;19;0;3;FIRE+250;1+13;17;|
 
 const int WAIT_FOR_FRAME_TIMEOUT = 200; //in ms
 

@@ -118,7 +118,7 @@ namespace Guiet.kQuatre.Business.Transceiver
                         while (packet[packet.Length - 1] != Encoding.ASCII.GetBytes(FrameBase.FRAME_END_DELIMITER)[0]
                             || sw.ElapsedMilliseconds <= 50)
                         {                        
-                            if (_serialPortHelper.SerialPort.BytesToRead > 0)
+                            if (_serialPortHelper.SerialPort.IsOpen && _serialPortHelper.SerialPort.BytesToRead > 0)
                             {
                                 byte[] endOfPacket = ReadBytes(_serialPortHelper.SerialPort.BytesToRead);
 
