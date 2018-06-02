@@ -16,5 +16,6 @@
 		<Receptor name="Boitier 1" address="1" nbOfChannels="16" />
 		<Receptor name="Boitier 2" address="2" nbOfChannels="16" />
 		<Receptor name="Boitier 3" address="3" nbOfChannels="16" />
+		<Receptor name="Boitier 4" address="4" nbOfChannels="16" />
   </Receptors>
 </kQuatreConfiguration>

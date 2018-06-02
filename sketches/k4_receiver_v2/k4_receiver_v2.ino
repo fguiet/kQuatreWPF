@@ -4,7 +4,7 @@
 //DEBUG MODE
 // 0 - Non debug mode
 // 1 - debug mode
-#define DEBUG 0
+#define DEBUG 1
 
 const long FREQ = 868E6;
 const int SF = 7;
@@ -14,8 +14,8 @@ const long BW = 125E3;
 #define STATUS_PIN 13
 #define OHMETER_PIN 0
 #define FIRST_RELAY_DIGITAL_PIN 29 //first digital relay pin minus 1
-#define RELAY1_TEST_PIN 52 //Relay pin (test mode)
-#define RELAY2_TEST_PIN 53 //Relay pin (test mode)
+#define RELAY1_TEST_PIN 22 //Relay pin (test mode)
+#define RELAY2_TEST_PIN 23 //Relay pin (test mode)
 
 const String ACK_OK = "ACK_OK";
 const String ACK_KO = "ACK_KO";
@@ -32,7 +32,7 @@ const String ACK_OK_FRAME_RECEIVED = "OK_R1";
 /***
  * !!! Modify this !!!
  */
-const String MODULE_ADDRESS = "1";
+const String MODULE_ADDRESS = "4";
 
 void setup() {
   //Set Serial baudrate
@@ -90,7 +90,7 @@ String GetResistance(String frame) {
   
   //Active test relay mode
   digitalWrite(RELAY1_TEST_PIN,HIGH);
-  digitalWrite(RELAY2_TEST_PIN,HIGH);
+  digitalWrite(RELAY2_TEST_PIN,HIGH); 
 
   //Wait a litlle
   delay(500);
@@ -110,7 +110,7 @@ String GetResistance(String frame) {
   delay(500);
        
   //Deactivate test mode
-  digitalWrite(RELAY1_TEST_PIN,LOW);
+  digitalWrite(RELAY1_TEST_PIN,LOW); 
   digitalWrite(RELAY2_TEST_PIN,LOW);    
       
   char valBuffer[10];
