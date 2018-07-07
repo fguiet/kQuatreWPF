@@ -220,10 +220,22 @@ namespace Guiet.kQuatre.UI.ViewModel
             fm.LineFailed += FireworkManager_LineFailed;
             fm.PropertyChanged += FireworkManager_PropertyChanged;
             fm.StateChanged += FireworkManager_StateChanged;
+            fm.FireworkFinished += FireworkManager_FireworkFinished;
 
             OnPropertyChanged("Title");
 
             return fm;
+        }
+
+        /// <summary>
+        /// Occurs when fireworks is finished
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FireworkManager_FireworkFinished(object sender, EventArgs e)
+        {
+            string message = "Le feu d'artifice est terminé !\r\n\r\n" + _fireworkManager.GetFireworkStatistics();
+            ShowInformationMessage(message);
         }
 
         private void FireworkManager_StateChanged(object sender, EventArgs e)
@@ -689,6 +701,11 @@ namespace Guiet.kQuatre.UI.ViewModel
         private void ShowWarningMessage(string message)
         {
             MessageBox.Show(message, "Information", MessageBoxButton.OK, MessageBoxImage.Exclamation, MessageBoxResult.OK);
+        }
+
+        private void ShowInformationMessage(string message)
+        {
+            MessageBox.Show(message, "Information", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
         }
 
         #endregion

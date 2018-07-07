@@ -13,5 +13,15 @@ namespace Guiet.kQuatre.UI.Helpers
         {
             MessageBox.Show(message, "Information", MessageBoxButton.OK, MessageBoxImage.Exclamation, MessageBoxResult.OK);
         }
+
+        public static void ShowInformationMessage(string message)
+        {
+            MessageBox.Show(message, "Information", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+        }
+
+        public static void ShowErrorMessage(string message)
+        {
+            MessageBox.Show(message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+        }
     }
 }

@@ -357,7 +357,5 @@ namespace Guiet.kQuatre.Business.Firework
        
 
         #endregion
-
-
     }
 }

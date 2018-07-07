@@ -93,6 +93,15 @@ namespace Guiet.kQuatre.Business.Firework
         public event EventHandler LineStarted;
         public event EventHandler LineFailed;
         public event EventHandler StateChanged;
+        public event EventHandler FireworkFinished;
+
+        private void OnFireworkFinishedEvent()
+        {
+            if (FireworkFinished != null)
+            {
+                FireworkFinished(this, new EventArgs());
+            }
+        }
 
         private void OnLineFailedEvent(object sender)
         {
@@ -877,6 +886,24 @@ namespace Guiet.kQuatre.Business.Firework
             return helper;
         }
 
+        public string GetFireworkStatistics()
+        {
+            int nbTotal = _lines.Count();
+
+            int nbLaunchOK = (from l in _lines
+                              where l.State == LineState.Finished
+                              select l).Count();
+
+            int nbLaunchKO = (from l in _lines
+                              where l.State == LineState.LaunchFailed
+                              select l).Count();
+
+            string stat = string.Format("Nombre de lignes OK : {0} sur {1}\r\nNombre de lignes KO : {2} sur {3}",
+                                        nbLaunchOK.ToString(), nbTotal.ToString(), nbLaunchKO.ToString(), nbTotal.ToString());
+
+            return stat;
+        }
+
         private void FireworkWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             _elapsedTime = new Stopwatch();
@@ -974,6 +1001,8 @@ namespace Guiet.kQuatre.Business.Firework
 
             _timerHelper.Stop();
             _timerHelper = null;
+
+            OnFireworkFinishedEvent();
         }
 
         /// <summary>

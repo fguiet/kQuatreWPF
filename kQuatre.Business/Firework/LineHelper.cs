@@ -53,7 +53,7 @@ namespace Guiet.kQuatre.Business.Firework
                 {
                     List<Line> linesSameAddress = (from l in _lines
                                                       where l.ReceptorAddress.Receptor.Address
-                                                      == l.ReceptorAddress.Receptor.Address
+                                                      == line.ReceptorAddress.Receptor.Address
                                                       select l).ToList();
 
                     //string channels = string.Join(";", linesSameAddress.Select(l => l.ReceptorAddress.Channel.ToString()));

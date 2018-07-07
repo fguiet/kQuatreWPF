@@ -81,7 +81,16 @@ namespace Guiet.kQuatre.UI.Views
         /// <param name="e"></param>
         private void _miSave_Click(object sender, EventArgs e)
         {
-            _viewModel.SaveFirework();
+            try
+            {
+                _viewModel.SaveFirework();
+                DialogBoxHelper.ShowInformationMessage("Enregistrement effectué avec succès");
+            }
+            catch
+            {
+                DialogBoxHelper.ShowErrorMessage("Une erreur est apparue lors de la sauvegarde du fichier k4");
+            }
+            
         }
 
         private void _miSaveAs_Click(object sender, EventArgs e)
