@@ -66,9 +66,19 @@ namespace Guiet.kQuatre.Business.Firework
 
         private string _elapsedTimeString = null;
 
+        private string _nextLaunchCountDownString = null;
+
         private bool _isLoadingFromFile = false;
 
         private bool _isSanityCheckOk = false;
+
+        private TimeSpan _nextIgnition = new TimeSpan(0,0,0);
+
+        private Dictionary<string, List<Line>> _lastLinesLaunchFailed = new Dictionary<string, List<Line>>();
+
+        private bool _isRedoFailedEnable = false;
+
+        private bool _activateRedoFailedLine = false;
 
         private ObservableCollection<Firework> _allFireworks = new ObservableCollection<Firework>();
 
@@ -109,7 +119,7 @@ namespace Guiet.kQuatre.Business.Firework
             {
                 LineFailed(sender, new EventArgs());
             }
-        }
+        }        
 
         public List<string> SanityCheckErrorsList
         {
@@ -135,7 +145,24 @@ namespace Guiet.kQuatre.Business.Firework
             }
         }
 
-        #endregion
+        #endregion        
+
+        public bool IsRedoFailedEnable
+        {
+            get
+            {
+                return _isRedoFailedEnable;
+            }
+
+            set
+            {
+                if (_isRedoFailedEnable != value)
+                {
+                    _isRedoFailedEnable = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         public bool IsSanityCheckOk
         {
@@ -304,6 +331,26 @@ namespace Guiet.kQuatre.Business.Firework
                 }
             }
         }
+        
+        public string NextLaunchCountDownString
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_nextLaunchCountDownString))
+                    return "00:00:00";
+                else
+                    return _nextLaunchCountDownString;
+            }
+            set
+            {
+                if (_nextLaunchCountDownString != value)
+                {
+                    _nextLaunchCountDownString = value;
+                    OnPropertyChanged();
+                }
+            }
+                
+        }
 
         public string Name
         {
@@ -391,6 +438,14 @@ namespace Guiet.kQuatre.Business.Firework
         #endregion
 
         #region Public Methods       
+
+        /// <summary>
+        /// User asked to redo failed line
+        /// </summary>
+        public void ActivateRedoFailedLine()
+        {
+            _activateRedoFailedLine = true;
+        }
 
         /// <summary>
         /// Stops firework !!
@@ -873,7 +928,14 @@ namespace Guiet.kQuatre.Business.Firework
                          select l).FirstOrDefault();
 
             //Maybe no more line to launch...firework is finished...
-            if (line == null) return null;
+            if (line == null)
+            {
+                _nextIgnition = new TimeSpan(0, 0, 0);
+                return null;
+            }
+
+            //Set next ignition time
+            _nextIgnition = line.Ignition;
 
             //Maybe another line is launched at the same time!
             List<Line> lines = (from l in _lines
@@ -902,6 +964,66 @@ namespace Guiet.kQuatre.Business.Firework
                                         nbLaunchOK.ToString(), nbTotal.ToString(), nbLaunchKO.ToString(), nbTotal.ToString());
 
             return stat;
+        }
+
+        private void RedoFailedLine()
+        {
+            List<string> keyToRemove = new List<string>();
+            
+            //Set Redo failed to false...avoid double click on button
+            IsRedoFailedEnable = false;
+
+            foreach (KeyValuePair<string, List<Line>> message in _lastLinesLaunchFailed)
+            {
+                AckFrame af = null;
+
+                try
+                {
+                    //Send Message here and get result
+                    FireFrame pf = new FireFrame(_deviceManager.Transceiver.Address, message.Value[0].ReceptorAddress.Address, LineHelper.GetFireMessage(message.Value));
+                    FrameBase fb = _deviceManager.Transceiver.SendPacketSynchronously(pf);
+
+                    af = (AckFrame)fb;
+                }
+                catch (TimeoutPacketException)
+                {
+                    af = null;
+                }
+
+                if (null != af && af.IsAckOk)
+                {
+
+                    //if result ok, start line, otherwise, set status failed
+                    //and proceed immediately to next firework (back in future)
+                    //take into account retry
+                    foreach (Line line in message.Value)
+                    {
+                        line.Start();
+                    }
+
+                    keyToRemove.Add(message.Key);
+                    
+                }
+                //Already in failed status here
+                /*else
+                {
+                    foreach (Line line in message.Value)
+                    {
+                        line.SetFailed();
+                    }
+                }*/
+            }
+
+            //Remove line ok
+            foreach(string key in keyToRemove)
+            {
+                //Line started, remove line from failed line
+                _lastLinesLaunchFailed.Remove(key);
+            }
+
+            //If line are still failed...enable redo button
+            if (_lastLinesLaunchFailed.Count > 0)                
+                IsRedoFailedEnable = true;
         }
 
         private void FireworkWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -933,13 +1055,22 @@ namespace Guiet.kQuatre.Business.Firework
                     lineHelper = PrepareNextLines();
                 }
 
+                //User want to redo last failed firework
+                if (_activateRedoFailedLine)
+                {
+                    _activateRedoFailedLine = false;
+
+                    RedoFailedLine();
+                }
+                
                 //No more line to launch...wait for current firework to finish
                 if (lineHelper == null) continue;
 
                 if (_elapsedTime.ElapsedMilliseconds >= lineHelper.Ignition)
                 {
                     prepareNextLines = true;
-
+                    
+                    bool clearFailedLine = true;
                     foreach (KeyValuePair<string, List<Line>> message in lineHelper.LinesGroupByReceptorAddress)
                     {
                         AckFrame af = null;
@@ -969,22 +1100,46 @@ namespace Guiet.kQuatre.Business.Firework
                         }
                         else
                         {
+                            //Only clear failed line 
+                            //if we failed occured at a different time
+                            //that the last failed...
+                            //This way, we can failed line are not clear if multiple line failed with the same ignition time
+                            if (clearFailedLine)
+                            {
+                                clearFailedLine = false;
+                                _lastLinesLaunchFailed.Clear();
+                            }
+
+                            //Save last line failed
+                            _lastLinesLaunchFailed.Add(message.Key, message.Value);
+
                             foreach (Line line in message.Value)
                             {
                                 line.SetFailed();
-                            }
+                            }                            
                         }
                     }
                 }
 
-                //Dunno why it is here...
-                //Thread.Sleep(250);
+                if (_lastLinesLaunchFailed.Count > 0)
+                    //Set redo failed to enable
+                    IsRedoFailedEnable = true;
             }
         }
 
         private void TimerHelper_Elapsed(object sender, ElapsedEventArgs e)
         {
             ElapsedTimeString = $"{_elapsedTime.Elapsed:hh\\:mm\\:ss}";
+
+            if (_nextIgnition.CompareTo(_elapsedTime.Elapsed) == -1)
+            {
+                NextLaunchCountDownString = "00:00:00";
+            }
+            else
+            {
+                TimeSpan nextIgnitionCountDown = _nextIgnition - _elapsedTime.Elapsed;
+                NextLaunchCountDownString = $"{nextIgnitionCountDown:hh\\:mm\\:ss}";
+            }
         }
 
         /// <summary>
@@ -995,6 +1150,9 @@ namespace Guiet.kQuatre.Business.Firework
         private void FireworkWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             State = FireworkManagerState.Editing;
+
+            //When finished Redo of failed line is disabled!
+            IsRedoFailedEnable = false;
 
             _elapsedTime.Stop();
             _elapsedTime = null;

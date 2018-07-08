@@ -37,6 +37,7 @@ namespace Guiet.kQuatre.UI.ViewModel
         private RadTimeline _fireworkTimeline = null;
 
         private Receptor _selectedTestReceptor = null;
+        private Receptor _previousTestReceptor = null;
 
         private DeviceManager _deviceManager = null;
 
@@ -57,7 +58,7 @@ namespace Guiet.kQuatre.UI.ViewModel
 
         private string _windowTitle = string.Empty;
 
-        private bool _isFireworkArmed = false;
+        private bool _isFireworkArmed = false;        
 
         #endregion
 
@@ -69,7 +70,7 @@ namespace Guiet.kQuatre.UI.ViewModel
             {
                 return (FireworkManager.State == FireworkManagerState.FireInProgress);
             }
-        }
+        }        
 
         public bool IsFireFireworkEnable
         {
@@ -136,8 +137,16 @@ namespace Guiet.kQuatre.UI.ViewModel
                 _automaticTimelineScroll = value;
             }
 
-        }
+        }        
 
+        public Receptor PreviousSelectedTestReceptor
+        {
+            get
+            {
+                return _previousTestReceptor;
+            }
+        }
+        
 
         public Receptor SelectedTestReceptor
         {
@@ -149,6 +158,7 @@ namespace Guiet.kQuatre.UI.ViewModel
             {
                 if (_selectedTestReceptor != value)
                 {
+                    _previousTestReceptor = _selectedTestReceptor;
                     _selectedTestReceptor = value;
                     OnPropertyChanged();
                 }
@@ -190,6 +200,11 @@ namespace Guiet.kQuatre.UI.ViewModel
         #endregion
 
         #region Constructor 
+
+        public void ActivateRedoFailedLine()
+        {
+            _fireworkManager.ActivateRedoFailedLine();
+        }
 
         public MainWindowViewModel(RadTimeline fireworkTimeline)
         {
@@ -341,45 +356,55 @@ namespace Guiet.kQuatre.UI.ViewModel
 
             TimeSpan lineIgnition = line.Ignition;
 
-            DateTime visiblePeriodStart = DateTime.Now.Date.Add(line.Ignition).Subtract(new TimeSpan(0, 0, 20));
-            DateTime visiblePeriodEnd = DateTime.Now.Date.Add(line.Ignition).Add(new TimeSpan(0, 0, 40));
-
-            //Horizontal part
-
-            //Change visible port view only if new visible period start - 20 s > period start ui
-            if (visiblePeriodStart.CompareTo(_fireworkManager.PeriodStartUI) > 0)
+            //Put this into try/catch, just in case...
+            //Don't want program to stop in the middle of firework
+            try
             {
+
+                DateTime visiblePeriodStart = DateTime.Now.Date.Add(line.Ignition).Subtract(new TimeSpan(0, 0, 20));
+                DateTime visiblePeriodEnd = DateTime.Now.Date.Add(line.Ignition).Add(new TimeSpan(0, 0, 40));
+
+                //Horizontal part
+
+                //Change visible port view only if new visible period start - 20 s > period start ui
+                if (visiblePeriodStart.CompareTo(_fireworkManager.PeriodStartUI) > 0)
+                {
+                    _dispatcher.BeginInvoke((Action)(() =>
+                    {
+                        _fireworkTimeline.VisiblePeriod = new Telerik.Windows.Controls.SelectionRange<DateTime>(visiblePeriodStart, visiblePeriodEnd);
+                    }));
+                }
+
                 _dispatcher.BeginInvoke((Action)(() =>
                 {
-                    _fireworkTimeline.VisiblePeriod = new Telerik.Windows.Controls.SelectionRange<DateTime>(visiblePeriodStart, visiblePeriodEnd);
+                    TimelineScrollBar verticalSlider = _fireworkTimeline.FindChildByType<TimelineScrollBar>();
+                    //Vertical part
+                    if (verticalSlider != null)
+                    {
+                        int nbOfElementVisiblePerRange = Convert.ToInt32(Math.Truncate((_fireworkManager.AllFireworks.Count * verticalSlider.SelectionRange)));
+                        double range = (line.Fireworks[0].RadRowIndex * verticalSlider.SelectionRange / nbOfElementVisiblePerRange);
+
+                        //End?
+                        if (range + verticalSlider.SelectionRange - (verticalSlider.SelectionRange / 4) > 1)
+                        {
+                            verticalSlider.Selection = new SelectionRange<double>(1 - verticalSlider.SelectionRange, 1);
+                            return;
+                        }
+
+                        //Mid screen reached?
+                        if (range > (verticalSlider.SelectionRange / 4))
+                        {
+                            var newStart = range - (verticalSlider.SelectionRange / 4);
+                            var newEnd = range + verticalSlider.SelectionRange - (verticalSlider.SelectionRange / 4);
+                            verticalSlider.Selection = new SelectionRange<double>(newStart, newEnd);
+                        }
+                    }
                 }));
             }
-
-            _dispatcher.BeginInvoke((Action)(() =>
+            catch
             {
-                TimelineScrollBar verticalSlider = _fireworkTimeline.FindChildByType<TimelineScrollBar>();
-                //Vertical part
-                if (verticalSlider != null)
-                {
-                    int nbOfElementVisiblePerRange = Convert.ToInt32(Math.Truncate((_fireworkManager.AllFireworks.Count * verticalSlider.SelectionRange)));
-                    double range = (line.Fireworks[0].RadRowIndex * verticalSlider.SelectionRange / nbOfElementVisiblePerRange);
-
-                    //End?
-                    if (range + verticalSlider.SelectionRange - (verticalSlider.SelectionRange / 4) > 1)
-                    {
-                        verticalSlider.Selection = new SelectionRange<double>(1 - verticalSlider.SelectionRange, 1);
-                        return;
-                    }
-
-                    //Mid screen reached?
-                    if (range > (verticalSlider.SelectionRange / 4))
-                    {
-                        var newStart = range - (verticalSlider.SelectionRange / 4);
-                        var newEnd = range + verticalSlider.SelectionRange - (verticalSlider.SelectionRange / 4);
-                        verticalSlider.Selection = new SelectionRange<double>(newStart, newEnd);
-                    }
-                }
-            }));
+                //NLog here
+            }
         }
 
         #endregion
@@ -388,6 +413,7 @@ namespace Guiet.kQuatre.UI.ViewModel
 
         private void FireworkManager_LineFailed(object sender, EventArgs e)
         {
+
             Business.Firework.Line line = sender as Business.Firework.Line;
 
             ComputeVisiblePeriod(line);
@@ -412,7 +438,7 @@ namespace Guiet.kQuatre.UI.ViewModel
 
         #endregion
 
-        #region Private Members
+        #region Private Members        
 
         private void DeviceManager_USBConnection(object sender, USBConnectionEventArgs e)
         {
@@ -589,6 +615,7 @@ namespace Guiet.kQuatre.UI.ViewModel
             else
             {
                 _fireworkManager.SaveFirework();
+                ShowInformationMessage("Enregistrement effectué avec succès");
             }
         }
 
@@ -598,7 +625,7 @@ namespace Guiet.kQuatre.UI.ViewModel
         public void RefreshFireTabUI()
         {
             //Object FireworkManager may have changed so GUI must be updated
-            OnPropertyChanged("FireworkManager");            
+            OnPropertyChanged("FireworkManager");
         }
 
         public void SaveAsFirework()

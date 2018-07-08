@@ -83,8 +83,7 @@ namespace Guiet.kQuatre.UI.Views
         {
             try
             {
-                _viewModel.SaveFirework();
-                DialogBoxHelper.ShowInformationMessage("Enregistrement effectué avec succès");
+                _viewModel.SaveFirework();                
             }
             catch
             {
@@ -194,7 +193,13 @@ namespace Guiet.kQuatre.UI.Views
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void _btnTestResistance_Click(object sender, RoutedEventArgs e)
-        {
+        {           
+            if (_viewModel.SelectedTestReceptor.IsResistanceTestInProgress)
+            {
+                DialogBoxHelper.ShowWarningMessage("Un test est déjà en cours d'éxécution !");
+                return;
+            }
+
             DataRecord dataRecord = _receptorChannelsDatagrid.ActiveRecord as DataRecord;
             ReceptorAddress ra = dataRecord.DataItem as ReceptorAddress;
 
@@ -263,6 +268,21 @@ namespace Guiet.kQuatre.UI.Views
             {
                 _viewModel.RefreshFireTabUI();                
             }
+        }
+
+        private void _btnRedoFailed_Click(object sender, RoutedEventArgs e)
+        {
+            _viewModel.ActivateRedoFailedLine();
+        }
+
+        private void _cbxTestReceptors_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            //Stop automatically reception test when user change receptor
+            Receptor r = _viewModel.PreviousSelectedTestReceptor;
+            if (r != null && r.IsReceptionTestInProgress)
+            {
+                r.StopTest();
+            }            
         }
     }
 }

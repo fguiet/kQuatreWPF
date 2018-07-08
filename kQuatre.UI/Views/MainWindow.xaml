@@ -11,7 +11,7 @@
         xmlns:kQuatreUI="clr-namespace:Guiet.kQuatre.UI.Timeline"                
         xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
         mc:Ignorable="d"
-        Title="{Binding Title}" WindowState="Maximized" WindowStartupLocation="CenterScreen" Closing="_mainWindow_Closing" Icon="/kQuatre;component/Resources/FireworksIcon.png" >
+        Title="{Binding Title}" Width="1600" WindowState="Maximized" WindowStartupLocation="CenterScreen" Closing="_mainWindow_Closing" Icon="/kQuatre;component/Resources/FireworksIcon.png" >
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -128,12 +128,12 @@
                     </Grid>
 
                     <Grid Grid.Row="2">
-                        
+
                         <Grid.RowDefinitions>
                             <RowDefinition  />
                         </Grid.RowDefinitions>
-                        
-                        <igDP:XamDataGrid Background="Beige" Width="Auto" Height="Auto" ScrollingMode="Immediate" Name="_fireworkDatagrid"  DataSource="{Binding FireworkManager.Lines}" HorizontalAlignment="Stretch" SelectedDataItemsScope="RecordsOnly" GroupByAreaLocation="None"> 
+
+                        <igDP:XamDataGrid Background="Beige" Width="Auto" Height="Auto" ScrollingMode="Immediate" Name="_fireworkDatagrid"  DataSource="{Binding FireworkManager.Lines}" HorizontalAlignment="Stretch" SelectedDataItemsScope="RecordsOnly" GroupByAreaLocation="None">
                             <igDP:XamDataGrid.Resources>
                                 <Style x:Key="lineRowColorStyle" TargetType="igDP:DataRecordCellArea">
                                     <Setter Property="Background" Value="Gray"/>
@@ -235,7 +235,7 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Label Grid.Row="0" Grid.Column="0" Content="Sélection d'un récepteurs : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
-                            <ComboBox Name="_cbxTestReceptors" Grid.Column="1" Grid.Row="0" SelectedValue="{Binding Path=SelectedTestReceptor}"  DisplayMemberPath="Name" ItemsSource="{Binding Path=FireworkManager.Receptors}" HorizontalAlignment="Left" VerticalAlignment="Center" Width="200"  />
+                            <ComboBox Name="_cbxTestReceptors" Grid.Column="1" Grid.Row="0" SelectedValue="{Binding Path=SelectedTestReceptor}"  DisplayMemberPath="Name" ItemsSource="{Binding Path=FireworkManager.Receptors}" HorizontalAlignment="Left" VerticalAlignment="Center" Width="200" SelectionChanged="_cbxTestReceptors_SelectionChanged"  />
                             <Button Margin="10,0,0,0" Grid.Row="0" Grid.Column="2" x:Name="_btnDoReceptorTest" IsEnabled="{Binding SelectedTestReceptor.IsTestLaunchAllowed,  FallbackValue=false}" Width="120" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Lancer le test" Click="_btnStartTestReceptor_Click" ></Button>
                             <Button Margin="10,0,0,0" Grid.Row="0" Grid.Column="3" x:Name="_btnStopReceptorTest" IsEnabled="{Binding SelectedTestReceptor.IsTestStopAllowed, FallbackValue=false}" Width="120" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Arrêter le test" Click="_btnStopTestReceptor_Click" ></Button>
                         </Grid>
@@ -273,59 +273,78 @@
                         <GroupBox.Header>
                             <TextBlock FontWeight="Bold">Test de la résistance des canaux du récepteur connecté à une ligne du feu</TextBlock>
                         </GroupBox.Header>
-                        <DockPanel Margin="10,10,10,10">
-                            <igDP:XamDataGrid Name="_receptorChannelsDatagrid" Theme="IGTheme"
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition Height="*"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Button Grid.Row="0" Grid.Column="0" Margin="5,5,5,5"  x:Name="_btnDoResistanceTest" IsEnabled="False"  Width="160" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Tester toutes les résistances"></Button>
+                                <Button Grid.Row="0" Grid.Column="1" Margin="5,5,5,5"  x:Name="_btnStopResistanceTest" IsEnabled="False" Width="160" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Arrêter le test des résistances" ></Button>
+                            </Grid>
+                            <Grid Grid.Row="1">
+                                <!--DockPanel Margin="10,10,10,10">-->
+                                <igDP:XamDataGrid  Name="_receptorChannelsDatagrid" Theme="IGTheme"
                            DataSource="{Binding SelectedTestReceptor.PluggedChannels}"  SelectedDataItemsScope="RecordsOnly" GroupByAreaLocation="None">
-                                <igDP:XamDataGrid.Resources>
-                                    <Style x:Key="lineRowColorStyle" TargetType="igDP:DataRecordCellArea">
-                                        <Setter Property="Background" Value="Gray"/>
-                                    </Style>
-                                    <Style x:Key="fireworkRowColorStyle" TargetType="igDP:DataRecordCellArea">
-                                        <Setter Property="Background" Value="LightGray"/>
-                                    </Style>
+                                    <igDP:XamDataGrid.Resources>
+                                        <Style x:Key="lineRowColorStyle" TargetType="igDP:DataRecordCellArea">
+                                            <Setter Property="Background" Value="Gray"/>
+                                        </Style>
+                                        <Style x:Key="fireworkRowColorStyle" TargetType="igDP:DataRecordCellArea">
+                                            <Setter Property="Background" Value="LightGray"/>
+                                        </Style>
 
-                                    <Style x:Key="lineRecordStyle" TargetType="{x:Type igDP:DataRecordPresenter}">
-                                        <Setter Property="Margin" Value="0,40,0,0"/>
-                                        <Setter Property="FontSize" Value="14"/>
-                                        <Setter Property="FontWeight" Value="Bold"/>
-                                    </Style>
+                                        <Style x:Key="lineRecordStyle" TargetType="{x:Type igDP:DataRecordPresenter}">
+                                            <Setter Property="Margin" Value="0,40,0,0"/>
+                                            <Setter Property="FontSize" Value="14"/>
+                                            <Setter Property="FontWeight" Value="Bold"/>
+                                        </Style>
 
-                                    <Style x:Key="fireworkRecordStyle" TargetType="{x:Type igDP:DataRecordPresenter}">
-                                        <Setter Property="Margin" Value="30,0,0,0"/>
-                                    </Style>
+                                        <Style x:Key="fireworkRecordStyle" TargetType="{x:Type igDP:DataRecordPresenter}">
+                                            <Setter Property="Margin" Value="30,0,0,0"/>
+                                        </Style>
 
-                                    <Style x:Key="buttonInCellStyle" TargetType="{x:Type igDP:CellValuePresenter}">
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate TargetType="{x:Type igDP:CellValuePresenter}">
-                                                    <Button Name="_btnTestResistance" Content="Tester" Click="_btnTestResistance_Click" 
+                                        <Style x:Key="buttonInCellStyle" TargetType="{x:Type igDP:CellValuePresenter}">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type igDP:CellValuePresenter}">
+                                                        <Button Name="_btnTestResistance" Content="Tester" Click="_btnTestResistance_Click" 
                                                             IsEnabled="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}},Path=DataContext.SelectedTestReceptor.IsTestLaunchAllowed,  FallbackValue=false}"                                                            
                                                             FontStyle="Normal" />
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </Style>
-                                </igDP:XamDataGrid.Resources>
-                                <igDP:XamDataGrid.FieldLayoutSettings>
-                                    <igDP:FieldLayoutSettings AutoGenerateFields="False"/>
-                                </igDP:XamDataGrid.FieldLayoutSettings>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </igDP:XamDataGrid.Resources>
+                                    <igDP:XamDataGrid.FieldLayoutSettings>
+                                        <igDP:FieldLayoutSettings AutoGenerateFields="False"/>
+                                    </igDP:XamDataGrid.FieldLayoutSettings>
 
-                                <igDP:XamDataGrid.FieldLayouts>
-                                    <igDP:FieldLayout Key="Channels">
-                                        <igDP:FieldLayout.Fields>
-                                            <igDP:Field IsReadOnly="True" Width="Auto" Label="Numéro de ligne" Name="LineAssociatedNumberUI" />
-                                            <igDP:Field IsReadOnly="True" Label="Liaison" Name="ReceptorAddressUI" Width="250"/>
-                                            <igDP:Field IsReadOnly="True" Label="Résistance" Name="Resistance" Width="250"/>
-                                            <igDP:UnboundField Label="Action">
-                                                <igDP:Field.Settings>
-                                                    <igDP:FieldSettings CellValuePresenterStyle="{StaticResource buttonInCellStyle}" />
-                                                </igDP:Field.Settings>
-                                            </igDP:UnboundField>
-                                        </igDP:FieldLayout.Fields>
-                                    </igDP:FieldLayout>
-                                </igDP:XamDataGrid.FieldLayouts>
-                            </igDP:XamDataGrid>
-                        </DockPanel>
+                                    <igDP:XamDataGrid.FieldLayouts>
+                                        <igDP:FieldLayout Key="Channels">
+                                            <igDP:FieldLayout.Fields>
+                                                <igDP:Field IsReadOnly="True" Width="Auto" Label="Numéro de ligne" Name="LineAssociatedNumberUI" />
+                                                <igDP:Field IsReadOnly="True" Label="Liaison" Name="ReceptorAddressUI" Width="250"/>
+                                                <igDP:Field IsReadOnly="True" Label="Résistance" Name="Resistance" Width="250"/>
+                                                <igDP:UnboundField Label="Action">
+                                                    <igDP:Field.Settings>
+                                                        <igDP:FieldSettings CellValuePresenterStyle="{StaticResource buttonInCellStyle}" />
+                                                    </igDP:Field.Settings>
+                                                </igDP:UnboundField>
+                                            </igDP:FieldLayout.Fields>
+                                        </igDP:FieldLayout>
+                                    </igDP:XamDataGrid.FieldLayouts>
+                                </igDP:XamDataGrid>
+                                <!--</DockPanel>-->
+                            </Grid>
+                        </Grid>
                     </GroupBox>
                 </Grid>
             </Custom:TabItemEx>
@@ -349,17 +368,43 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <GroupBox Grid.Row="0" Grid.Column="0" Margin="2,2,2,2" Header="Durée totale du feu">
-                            <ig:XamSegmentedDisplay VerticalAlignment="Center" Margin="10,10,10,10" Text="{Binding FireworkManager.TotalDurationUI}" Name="_segTotalTime" SegmentMode="SevenSegment"
-                                    Digits="6" Width="150" Height="50" />
+                            <ig:XamSegmentedDisplay  VerticalAlignment="Center" Margin="10,10,10,10" Text="{Binding FireworkManager.TotalDurationUI}" Name="_segTotalTime" SegmentMode="SevenSegment"
+                                    Digits="6" Width="150" Height="50" >
+                                <ig:XamSegmentedDisplay.TextForeground>
+                                    <RadialGradientBrush>
+                                        <GradientStop Color="AliceBlue" Offset="0"/>
+                                        <GradientStop Color="#006DF0" Offset="1"/>
+                                    </RadialGradientBrush>
+                                </ig:XamSegmentedDisplay.TextForeground>
+                            </ig:XamSegmentedDisplay>
                         </GroupBox>
                         <GroupBox Grid.Row="0" Grid.Column="1" Margin="2,2,2,2" Header="Temps écoulé">
                             <ig:XamSegmentedDisplay VerticalAlignment="Center" Margin="10,10,10,10" Text="{Binding FireworkManager.ElapsedTimeString}" Name="_segChrono" SegmentMode="SevenSegment"
-                                    Digits="6" Width="150" Height="50" />
+                                    Digits="6" Width="150" Height="50" >
+                                <ig:XamSegmentedDisplay.TextForeground>
+                                    <RadialGradientBrush>
+                                        <GradientStop Color="Black" Offset="0"/>
+                                        <GradientStop Color="Lime" Offset="1"/>
+                                    </RadialGradientBrush>
+                                </ig:XamSegmentedDisplay.TextForeground>
+                            </ig:XamSegmentedDisplay>
                         </GroupBox>
-                        <GroupBox Grid.Row="0" Grid.Column="2" Margin="2,2,2,2" Header="Panneau de contrôle">
+                        <GroupBox Grid.Row="0" Grid.Column="2" Margin="2,2,2,2" Header="Prochain tir">
+                            <ig:XamSegmentedDisplay VerticalAlignment="Center" Margin="10,10,10,10" Text="{Binding FireworkManager.NextLaunchCountDownString}" Name="_segNextFirework" SegmentMode="SevenSegment"
+                                    Digits="6" Width="150" Height="50" >
+                                <ig:XamSegmentedDisplay.TextForeground>
+                                    <RadialGradientBrush>
+                                        <GradientStop Color="OrangeRed" Offset="0"/>
+                                        <GradientStop Color="Orange" Offset="1"/>
+                                    </RadialGradientBrush>
+                                </ig:XamSegmentedDisplay.TextForeground>
+                            </ig:XamSegmentedDisplay>
+                        </GroupBox>
+                        <GroupBox Grid.Row="0" Grid.Column="3" Margin="2,2,2,2" Header="Panneau de contrôle">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
@@ -370,12 +415,13 @@
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <telerik:RadToggleButton x:Name="_chkArming" IsChecked="{Binding Path=IsFireworkArmed}" IsEnabled="{Binding Path=IsArmingEnable}" VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="45"  Margin="10" Style="{StaticResource RadToggleButtonStyle_OB2}" Content="Armer" Checked="_chkArming_Checked" Unchecked="_chkArming_Unchecked" />
+                                    <telerik:RadToggleButton x:Name="_chkArming" Grid.Column="0"  IsChecked="{Binding Path=IsFireworkArmed}" IsEnabled="{Binding Path=IsArmingEnable}" VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="45"  Margin="10" Style="{StaticResource RadToggleButtonStyle_OB2}" Content="Armer" Checked="_chkArming_Checked" Unchecked="_chkArming_Unchecked" />
                                     <Button Style="{StaticResource TriggerStyle}" IsEnabled="{Binding Path=IsFireFireworkEnable}" Grid.Column="1" Margin="5,5,5,5" Content="Tirer"  Height="50" Width="75" Name="_btnStart" Click="_btnStart_Click" 
                                              telerik:RadToolTipService.Placement="Center"
                                              telerik:RadToolTipService.VerticalOffset="-63"
-                                             telerik:RadToolTipService.ToolTipContent="RadToolTip enables you to specify&#x0a;tooltips on various UI controls." >
+                                             telerik:RadToolTipService.ToolTipContent="Attention, l'appuie sur ce bouton déclenche le feu d'artifice" >
                                         <telerik:RadToolTipService.ToolTipContentTemplate>
                                             <DataTemplate>
                                                 <telerik:RadToolTipContentView>
@@ -384,7 +430,8 @@
                                             </DataTemplate>
                                         </telerik:RadToolTipService.ToolTipContentTemplate>
                                     </Button>
-                                    <Button Grid.Column="3" Margin="5,5,5,5" Content="Arrêter" IsEnabled="{Binding Path=IsStopFireworkEnable}" Height="50" Width="75" Name="_btnStop" Click="_btnStop_Click" />
+                                    <Button Grid.Column="2" Margin="5,5,5,5" Content="Arrêter" IsEnabled="{Binding Path=IsStopFireworkEnable}" Height="50" Width="75" Name="_btnStop" Click="_btnStop_Click" />
+                                    <Button Grid.Column="3" Margin="5,5,5,5" Content="Tirer dernière(s) ligne(s) en échec" IsEnabled="{Binding FireworkManager.IsRedoFailedEnable}" Height="50" Width="180" Name="_btnRedoFailed" Click="_btnRedoFailed_Click" />
                                     <!--<Button  Grid.Column="1" Margin="5,5,5,5" Content="Test RadTimeline" Height="50" Width="75" Name="_btnTest" Click="_btnTest_Click" />-->
                                 </Grid>
                                 <CheckBox Grid.Row="1" IsChecked="{Binding Path=AutomaticTimelineScroll}" Content="Défilement automatique de la ligne de temps du feu" />
@@ -407,7 +454,7 @@
 							 VisiblePeriodEnd="{Binding FireworkManager.DefaultPeriodEndUI}"                            
                              TimelineItemTemplate="{StaticResource FireworkLinesTemplate}"
                              SelectionMode="Single"
-                             IsSelectionEnabled="True"
+                             IsSelectionEnabled="False"
                              ScrollMode="ScrollOnly"
                              AutoSort="False">
 

@@ -281,9 +281,8 @@ namespace Guiet.kQuatre.Business.Firework
         }
 
         public void Stop()
-        {
-        
-            //Start firework
+        {        
+            //Stop firework
             foreach (Firework firework in _fireworks)
             {
                 firework.Stop();

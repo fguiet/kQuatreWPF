@@ -320,7 +320,23 @@ namespace Guiet.kQuatre.Business.Receptor
             _receptorWorkerOhm.DoWork += ReceptorWorkerOhm_DoWork;
             _receptorWorkerOhm.RunWorkerCompleted += ReceptorWorkerOhm_RunWorkerCompleted;
             _receptorWorkerOhm.RunWorkerAsync(ra);
+        }
 
+
+        public bool IsReceptionTestInProgress
+        {
+            get
+            {
+                return (_receptorWorker != null && _receptorWorker.IsBusy);
+            }
+        }
+
+        public bool IsResistanceTestInProgress
+        {
+            get
+            {
+                return (_receptorWorkerOhm != null && _receptorWorkerOhm.IsBusy);
+            }
         }
 
         private void ReceptorWorkerOhm_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
