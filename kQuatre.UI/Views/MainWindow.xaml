@@ -247,26 +247,24 @@
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition Height="Auto"></RowDefinition>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Label Grid.Row="0" Grid.Column="0" Content="Nb de messages envoyés : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
                             <Label Grid.Row="0" Grid.Column="1" Content="{Binding Path=SelectedTestReceptor.MessageSentCounter, FallbackValue=NA}"></Label>
-                            <Label Grid.Row="0" Grid.Column="2" Content="Reçus : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
-                            <Label Grid.Row="0" Grid.Column="3"  Content="{Binding Path=SelectedTestReceptor.MessageReceivedCounter, FallbackValue=NA}" Foreground="Green" />
-                            <Label Grid.Row="0" Grid.Column="4" Content="Perdus : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
-                            <Label Grid.Row="0" Grid.Column="5" Content="{Binding Path=SelectedTestReceptor.MessageLostCounter, FallbackValue=NA}" Foreground="Red"></Label>
-                            <Label Grid.Row="0" Grid.Column="6" Content="Rssi : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
-                            <Label Grid.Row="0" Grid.Column="7" Content="{Binding Path=SelectedTestReceptor.MessageRssi, FallbackValue=NA}"></Label>
+                            <Label Grid.Row="1" Grid.Column="0" Content="Message(s) reçu(s) : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
+                            <Label Grid.Row="1" Grid.Column="1"  Content="{Binding Path=SelectedTestReceptor.MessageReceivedCounter, FallbackValue=NA}" Foreground="Green" />
+                            <Label Grid.Row="2" Grid.Column="0" Content="Message(s) perdu(s) : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
+                            <Label Grid.Row="2" Grid.Column="1" Content="{Binding Path=SelectedTestReceptor.MessageLostCounter, FallbackValue=NA}" Foreground="Red"></Label>
+                            <Label Grid.Row="3" Grid.Column="0" Content="Qualité réception : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
+                            <Label Grid.Row="3" Grid.Column="1" Content="{Binding Path=SelectedTestReceptor.MessageRssi, FallbackValue=NA}"></Label>
+                            <Label Grid.Row="3" Grid.Column="2" Content="RSSI (Received Signal Strenght Indicator), plus ce chiffre se rapproche de 0 mieux c'est. Qualité OK si : -100 &lt; RSSI &lt; 0"></Label>
                         </Grid>
                     </GroupBox>
                     <GroupBox Grid.Row="3" Margin="10,10,10,10">
