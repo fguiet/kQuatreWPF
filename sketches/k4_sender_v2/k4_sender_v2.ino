@@ -47,6 +47,9 @@ void setup() {
   Serial.begin(115200);
   while (!Serial);
 
+  //Set this if you wemos as a sender!
+  LoRa.setPins(16, 17, 15); // set CS, reset, IRQ pi
+
   //Init LoRa
   if (!LoRa.begin(FREQ)) {
     Serial.println("Starting LoRa failed!");
@@ -182,6 +185,7 @@ String createFrame(String frameId, String senderAddress, String receiverAddress,
 }
 
 void sendLoRaPacket(String frame) {
+  printDebug("Sending frame : "+frame);
   // send packet
   LoRa.beginPacket();
   LoRa.print(frame);

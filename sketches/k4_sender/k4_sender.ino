@@ -8,7 +8,7 @@ SSD1306AsciiAvrI2c oled;
 #include <SPI.h>
 #include <LoRa.h>
 
-#define DEBUG 0
+#define DEBUG 1
 
 const long freq = 868E6;
 const int SF = 9;
