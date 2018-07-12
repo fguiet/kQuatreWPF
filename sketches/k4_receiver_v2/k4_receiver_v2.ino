@@ -4,7 +4,7 @@
 //DEBUG MODE
 // 0 - Non debug mode
 // 1 - debug mode
-#define DEBUG 1
+#define DEBUG 0
 
 const long FREQ = 868E6;
 const int SF = 7;
@@ -32,7 +32,7 @@ const String ACK_OK_FRAME_RECEIVED = "OK_R1";
 /***
  * !!! Modify this !!!
  */
-const String MODULE_ADDRESS = "4";
+const String MODULE_ADDRESS = "1";
 
 void setup() {
   //Set Serial baudrate
@@ -48,7 +48,12 @@ void setup() {
   LoRa.setSpreadingFactor(SF);
   LoRa.setSignalBandwidth(BW);
 
-  //Init relays
+  
+  /***
+  * !!! Modify this !!!
+  * 
+  * Comment it if you test with Arduino and not a mega 2650 otherwise it will crash 
+  */
   initRelays();
 
   //Init Pin status 
