@@ -1,2 +1,2 @@
 # kQuatreWPF
-Refactoring of my first kQuatre project. Full rewrite using Windows Presentation Foundation (WPF)
+Written in C#, kQuatre software aims at creating and firing fireworks automatically. No more cables, system is wireless (works thanks to LoRa technology).
