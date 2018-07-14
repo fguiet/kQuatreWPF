@@ -695,9 +695,10 @@ namespace Guiet.kQuatre.Business.Firework
             {
                 _isLoadingFromFile = false;
             }
-
+            
             //Set new name here !
-            _fireworkFullFileName = String.Format("{0}{1}", System.IO.Path.GetFileNameWithoutExtension(fullFileName), DEFAULT_K4_EXTENSION);
+            _fireworkFullFileName = String.Format("{0}{1}", System.IO.Path.Combine(System.IO.Path.GetDirectoryName(fullFileName), System.IO.Path.GetFileNameWithoutExtension(fullFileName)),
+                                          DEFAULT_K4_EXTENSION);
         }
 
 
