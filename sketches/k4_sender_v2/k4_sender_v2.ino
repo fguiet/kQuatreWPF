@@ -102,9 +102,11 @@ void loop() {
     sendMessage(frame);    
   }
 
-  printDebug("Purging serial buffer...");
+  //Don't purge serial, so concurrent frames can be sent
+  //at high speed
+  //printDebug("Purging serial buffer...");
   //Clear serial buffer
-  purgeSerialBuffer();
+  //purgeSerialBuffer();
 }
 
 void sendMessage(String frame) {
@@ -124,7 +126,7 @@ void sendMessage(String frame) {
   else {
     printDebug("Message not for me sending message via LoRa");
     sendLoRaPacket(frame);
-
+    
     int timeOut = getFrameAckTimeOutValue(frame).toInt();
     waitForAck(timeOut);
   }
@@ -189,7 +191,7 @@ void sendLoRaPacket(String frame) {
   // send packet
   LoRa.beginPacket();
   LoRa.print(frame);
-  LoRa.endPacket();
+  LoRa.endPacket();  
 }
 
 void purgeSerialBuffer(){

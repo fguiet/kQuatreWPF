@@ -450,8 +450,13 @@ namespace Guiet.kQuatre.UI.ViewModel
             DeviceConnectionInfo = DEFAULT_NOT_TRANSCEIVER_CONNECTED_MESSAGE;
 
             //TODO : What happen if a firework is launched?
+            //TODO : Test this!!
+            if (_fireworkManager.State == FireworkManagerState.FireInProgress)
+            {
+                _fireworkManager.Stop();
+            }
 
-            //Device is connected...so let's refresh control bar
+            //Device is not connected anymore...so let's refresh control bar
             RefreshControlPanelUI(RefreshControlPanelEventType.DeviceConnectionChangedEvent);
         }
 
