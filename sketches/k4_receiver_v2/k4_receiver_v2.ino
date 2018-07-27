@@ -35,9 +35,13 @@ const String ACK_OK_FRAME_RECEIVED = "OK_R1";
 const String MODULE_ADDRESS = "1";
 
 void setup() {
+
+  
   //Set Serial baudrate
-  Serial.begin(115200);
-  while (!Serial);
+  if (DEBUG) {
+    Serial.begin(115200);
+    while (!Serial);
+  }
 
   //Init LoRa
   if (!LoRa.begin(FREQ)) {
@@ -48,13 +52,15 @@ void setup() {
   LoRa.setSpreadingFactor(SF);
   LoRa.setSignalBandwidth(BW);
 
+  LoRa.onReceive(onReceive);
+  LoRa.receive();
   
   /***
   * !!! Modify this !!!
   * 
   * Comment it if you test with Arduino and not a mega 2650 otherwise it will crash 
   */
-  initRelays();
+  //initRelays();
 
   //Init Pin status 
   pinMode(STATUS_PIN, OUTPUT);
@@ -62,27 +68,47 @@ void setup() {
   digitalWrite(STATUS_PIN, LOW);
   
   printDebug("Ready...");
+  
+}
 
+void onReceive(int packetSize) {
+
+  if (packetSize==0) return;
+
+  String frame = "";
+  int rssi;
+
+  while (LoRa.available()) {
+      frame = frame + ((char)LoRa.read());
+    }
+    
+  printDebug("Trame received : " + frame);  
+
+  //Serial.println("Trame received : " + frame);  
+  //Serial.println("Test");
+
+  //Get Rssi
+  rssi = LoRa.packetRssi();
+  
+  handleReceivedFrame(frame, rssi);
 }
 
 void loop() {
 
-  String frame = "";
-  int rssi;
   
-  if (LoRa.parsePacket()) {      
+  //if (LoRa.parsePacket()) {      
     
-    while (LoRa.available()) {
-      frame = frame + ((char)LoRa.read());
-    }
+    //while (LoRa.available()) {
+    //  frame = frame + ((char)LoRa.read());
+    //}
     
-    printDebug("Trame received : " + frame);  
+    //printDebug("Trame received : " + frame);  
 
     //Get Rssi
-    rssi = LoRa.packetRssi();
+    //rssi = LoRa.packetRssi();
     
-    handleReceivedFrame(frame, rssi);
-  }  
+    //handleReceivedFrame(frame, rssi);
+  //}  
 }
 
 String GetResistance(String frame) {
@@ -215,8 +241,8 @@ void handleReceivedFrame(String frame, int rssi) {
   //Check received frame
   if (!frameSanityCheck(frame)) {          
 
-    printDebug("bad syntax of trame received :  " + frame);  
-    
+    printDebug("bad syntax of trame received :  " + frame); 
+        
     //Bad frame received
     sendLoRaPacket(createFrame(UNKNOWN_FRAME_ID, MODULE_ADDRESS, SENDER_MODULE_ADDRESS, ACK_KO, ACK_KO_BAD_FRAME_RECEIVED_FROM_SENDER));
   }
@@ -361,6 +387,8 @@ void sendLoRaPacket(String frame) {
   LoRa.beginPacket();
   LoRa.print(frame);
   LoRa.endPacket();
+
+  LoRa.receive();
 }
 
 String getFrameAckTimeOutValue(String frame) {
