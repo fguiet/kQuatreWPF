@@ -56,7 +56,7 @@ namespace Guiet.kQuatre.UI.ViewModel
 
         private const string SOFTWARE_TITLE = "kQuatre";
 
-        private string _windowTitle = string.Empty;
+        //private string _windowTitle = string.Empty;
 
         private bool _isFireworkArmed = false;        
 
