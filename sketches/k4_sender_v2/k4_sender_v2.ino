@@ -8,6 +8,7 @@
 
 const String ACK_OK = "ACK_OK";
 const String ACK_KO = "ACK_KO";
+const String PING_ORDER = "PING";
 const char START_FRAME_DELIMITER = '@';
 const char END_FRAME_DELIMITER = '|';
 const int MIN_FRAME_LENGHT = 17; 
@@ -26,6 +27,9 @@ const int MIN_FRAME_LENGHT = 17;
 //*** FIRE
 //*** @;12;0;1;FIRE+250;1+15;10;|
 //*** @;19;0;3;FIRE+250;1+13;17;|
+//*** @;1;0;3;FIRE+200;1+9;AE;|
+//*** @;2;0;1;FIRE+200;2+2+1;03;|
+
 
 const int WAIT_FOR_FRAME_TIMEOUT = 200; //in ms
 
@@ -33,13 +37,16 @@ const long FREQ = 868E6;
 const int SF = 7;
 const long BW = 125E3;
 const String MODULE_ADDRESS = "0";
-const String UNKNOWN_RECEIVER_ADDRESS = "-1";
-const String UNKNOWN_FRAME_ID = "-1";
+const String UNKNOWN_RECEIVER_ADDRESS = "0";
+const String UNKNOWN_FRAME_ID = "0";
 const String ACK_KO_BAD_FRAME_RECEIVED = "KO_S1";
 const String ACK_KO_UNKNOWN_MESSAGE_FRAME_RECEIVED = "KO_S2";
 const String ACK_KO_TIMEOUT_WAITING_FOR_ACK = "KO_S3";
 const String ACK_KO_BAD_FRAME_RECEIVED_FROM_SENDER = "KO_S4";
 const String ACK_OK_PONG = "OK_S1";
+
+String ackFrameReceived;
+bool isAckFrameReceived=false;
 
 void setup() {
   
@@ -59,16 +66,64 @@ void setup() {
   LoRa.setSpreadingFactor(SF);
   LoRa.setSignalBandwidth(BW);
 
+  //LoRa.onReceive(onReceive);
+  //LoRa.receive();
+
   printDebug("Ready...");
 }
 
+/*void onReceive(int packetSize) {
+  if (packetSize == 0) return;
+
+  ackFrameReceived="";
+
+  while (LoRa.available()) {
+    ackFrameReceived = ackFrameReceived + ((char)LoRa.read());
+  }
+
+  isAckFrameReceived=true;
+}*/
+
 void loop() {
+
+  //printDebug("***begin***");     
   
   //If nothing availbale on Serial just return...
-  while(Serial.available() == 0);  //stays on this line until something's in the buffer
+  while(Serial.available() == 0) {        
+  }
+
+  //printDebug("Test");     
+
+  /*if (isAckFrameReceived)
+    printDebug("FRAME RECEIVED TRUE");     
+  else
+    printDebug("FRAME RECEIVED FALSE");     */
+                  
+  char firstCharReceived = Serial.read();
+  if (firstCharReceived=='\r' || firstCharReceived=='\n') {
+      //printDebug("Carriage Return received");                     
+      return;
+  }
+
+  //printDebug("Char received : *"+String(received)+"*");     
+
+  /*if (isAckFrameReceived) {      
+      isAckFrameReceived=false;
+      printDebug("!!!Received ACK!!!");                     
+      if (!frameSanityCheck(ackFrameReceived)) {           
+        printDebug("Bad syntax of received LoRa ACK : " + ackFrameReceived);                     
+        sendACK(createFrame("0", MODULE_ADDRESS, "0", ACK_KO, ACK_KO_BAD_FRAME_RECEIVED_FROM_SENDER));
+     }
+     else {
+        printDebug("Sending ACK to program : " + ackFrameReceived);     
+        sendACK(ackFrameReceived);            
+    }
+    return;
+  }*/
   
-  String frame = "";
-  //String ackFrame = "";
+  String frame;
+  frame.concat(firstCharReceived);
+  
   unsigned long entry = millis();
   bool isFrameTimeout = true;
   
@@ -97,7 +152,7 @@ void loop() {
   }
   else {
     printDebug("Frame syntax OK here");    
-
+  
     //Send Lora
     sendMessage(frame);    
   }
@@ -111,28 +166,29 @@ void loop() {
 
 void sendMessage(String frame) {
   String receiverAddress = getReceiverAddressValue(frame);
+  String frameId = getFrameIdValue(frame);  
 
   //Message sent to me ?
   if (receiverAddress == MODULE_ADDRESS) {
-    if (getFrameMessageValue(frame) == "PING") {
+    if (getFrameMessageValue(frame) == PING_ORDER) {
       printDebug("Message for me and it is PING...sending PONG :)");
-      sendACK(createFrame(getFrameIdValue(frame), getSenderAddressValue(frame), getReceiverAddressValue(frame), ACK_OK, ACK_OK_PONG));         
+      sendACK(createFrame(frameId, getSenderAddressValue(frame), receiverAddress, ACK_OK, ACK_OK_PONG));         
     }
     else {      
       printDebug("Message for me and but unknown message...");
-      sendACK(createFrame(getFrameIdValue(frame), getSenderAddressValue(frame), getReceiverAddressValue(frame), ACK_KO, ACK_KO_UNKNOWN_MESSAGE_FRAME_RECEIVED));
+      sendACK(createFrame(frameId, getSenderAddressValue(frame), receiverAddress, ACK_KO, ACK_KO_UNKNOWN_MESSAGE_FRAME_RECEIVED));
     }
   }
   else {
-    printDebug("Message not for me sending message via LoRa");
-    sendLoRaPacket(frame);
+    printDebug("Message not for me sending message via LoRa");    
+    sendLoRaPacket(frame);    
     
     int timeOut = getFrameAckTimeOutValue(frame).toInt();
-    waitForAck(timeOut);
+    waitForAck(frameId, receiverAddress, timeOut);
   }
 }
 
-void waitForAck(int timeOut) {  
+void waitForAck(String frameSentId, String receiverAddress, int timeOut) {  
    
   printDebug("Waiting for ACK...TimeOut is : " + String(timeOut));
 
@@ -154,8 +210,8 @@ void waitForAck(int timeOut) {
     printDebug("Received LoRa ACK : " + ackFrame);
   
      if (!frameSanityCheck(ackFrame)) {           
-        printDebug("Bad syntax of received LoRa ACK : " + ackFrame);     
-        sendACK(createFrame(UNKNOWN_FRAME_ID, MODULE_ADDRESS, UNKNOWN_RECEIVER_ADDRESS, ACK_KO, ACK_KO_BAD_FRAME_RECEIVED_FROM_SENDER));
+        printDebug("Bad syntax of received LoRa ACK : " + ackFrame);                     
+        sendACK(createFrame(frameSentId, MODULE_ADDRESS, receiverAddress, ACK_KO, ACK_KO_BAD_FRAME_RECEIVED_FROM_SENDER));
      }
      else {
         printDebug("Sending ACK to program : " + ackFrame);     
@@ -163,8 +219,8 @@ void waitForAck(int timeOut) {
      }
  }
  else {   
-    printDebug("Timeout waiting for LoRa ACK");
-    sendACK(createFrame(UNKNOWN_FRAME_ID, MODULE_ADDRESS, UNKNOWN_RECEIVER_ADDRESS, ACK_KO, ACK_KO_TIMEOUT_WAITING_FOR_ACK));     
+    printDebug("Timeout waiting for LoRa ACK");  
+    sendACK(createFrame(frameSentId, MODULE_ADDRESS, receiverAddress, ACK_KO, ACK_KO_TIMEOUT_WAITING_FOR_ACK));     
  }
 }
 
@@ -192,9 +248,11 @@ void sendLoRaPacket(String frame) {
   LoRa.beginPacket();
   LoRa.print(frame);
   LoRa.endPacket();  
+
+  //LoRa.receive();
 }
 
-void purgeSerialBuffer(){
+/*void purgeSerialBuffer(){
 
   //Put some delay so data can have time to arrive
   delay(1);
@@ -204,7 +262,7 @@ void purgeSerialBuffer(){
     char t = Serial.read();
     delay(1);
   }  
-}  
+} */ 
 
 bool frameSanityCheck(String frame) {
 

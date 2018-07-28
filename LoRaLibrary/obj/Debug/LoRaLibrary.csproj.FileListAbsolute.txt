@@ -1,0 +1,9 @@
+F:\Personal\Projects\Programming\kQuatreWPF\LoRaLibrary\bin\Debug\LoRaLibrary.dll
+F:\Personal\Projects\Programming\kQuatreWPF\LoRaLibrary\bin\Debug\LoRaLibrary.pdb
+F:\Personal\Projects\Programming\kQuatreWPF\LoRaLibrary\bin\Debug\NLog.dll
+F:\Personal\Projects\Programming\kQuatreWPF\LoRaLibrary\bin\Debug\NLog.xml
+F:\Personal\Projects\Programming\kQuatreWPF\LoRaLibrary\obj\Debug\LoRaLibrary.csproj.CoreCompileInputs.cache
+F:\Personal\Projects\Programming\kQuatreWPF\LoRaLibrary\obj\Debug\LoRaLibrary.csproj.CopyComplete
+F:\Personal\Projects\Programming\kQuatreWPF\LoRaLibrary\obj\Debug\LoRaLibrary.dll
+F:\Personal\Projects\Programming\kQuatreWPF\LoRaLibrary\obj\Debug\LoRaLibrary.pdb
+F:\Personal\Projects\Programming\kQuatreWPF\LoRaLibrary\obj\Debug\LoRaLibrary.csprojAssemblyReference.cache

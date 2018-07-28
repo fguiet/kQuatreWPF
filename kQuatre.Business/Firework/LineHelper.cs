@@ -66,12 +66,12 @@ namespace Guiet.kQuatre.Business.Firework
             }
         }
         
-        public static string GetFireMessage(List<Line> lines)
+        /*public static string GetFireMessage(List<Line> lines)
         {
             string channels = string.Join("+", lines.Select(l => l.ReceptorAddress.Channel.ToString()));
 
             return string.Format("{0}+{1}", lines.Count(), channels);
-        }
+        }*/
         /*public void AddLine(Line line)
         {
             List<Line> lineOnSameReceptor =

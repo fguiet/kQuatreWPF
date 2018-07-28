@@ -216,7 +216,7 @@ namespace Guiet.kQuatre.UI.ViewModel
             _configuration = new SoftwareConfiguration();
 
             _deviceManager = new DeviceManager(_configuration);
-            _deviceManager.DeviceConnected += DeviceManager_DeviceConnected; ;
+            _deviceManager.DeviceConnected += DeviceManager_DeviceConnected; 
             _deviceManager.DeviceDisconnected += DeviceManager_DeviceDisconnected;
             _deviceManager.DeviceErrorWhenConnecting += DeviceManager_DeviceErrorWhenConnecting;
             _deviceManager.USBConnection += DeviceManager_USBConnection;

@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kQuatre.UI", "kQuatre.UI\kQ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kQuatre.Business", "kQuatre.Business\kQuatre.Business.csproj", "{884CAFB0-FBF9-4EE0-9EF5-1093BCB8C003}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoRaLibrary", "LoRaLibrary\LoRaLibrary.csproj", "{24512B94-D64A-4D60-911B-FB7C4CC71432}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,8 +23,15 @@ Global
 		{884CAFB0-FBF9-4EE0-9EF5-1093BCB8C003}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{884CAFB0-FBF9-4EE0-9EF5-1093BCB8C003}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{884CAFB0-FBF9-4EE0-9EF5-1093BCB8C003}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24512B94-D64A-4D60-911B-FB7C4CC71432}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24512B94-D64A-4D60-911B-FB7C4CC71432}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24512B94-D64A-4D60-911B-FB7C4CC71432}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24512B94-D64A-4D60-911B-FB7C4CC71432}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F0F6B90E-7E20-43FD-8E77-F603ACDBCA7A}
 	EndGlobalSection
 EndGlobal

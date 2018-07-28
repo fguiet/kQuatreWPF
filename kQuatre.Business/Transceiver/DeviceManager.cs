@@ -1,12 +1,8 @@
-﻿using Guiet.kQuatre.Business.Configuration;
+﻿using fr.guiet.LoRaLibrary.Core;
+using Guiet.kQuatre.Business.Configuration;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO.Ports;
-using System.Linq;
 using System.Management;
-using System.Text;
-using System.Threading.Tasks;
 using System.Timers;
 
 namespace Guiet.kQuatre.Business.Transceiver
@@ -28,8 +24,9 @@ namespace Guiet.kQuatre.Business.Transceiver
         /// <summary>
         /// Emitter plugged to PC
         /// </summary>
-        private TransceiverManager _emitter = null;
-
+        //private TransceiverManager _emitter = null;
+        private LoRaController _loraTransceiver = null;
+        
         private Timer _timerHelper = null;
 
         //private string _transceiverAddress = null;
@@ -38,21 +35,31 @@ namespace Guiet.kQuatre.Business.Transceiver
 
         #endregion
 
-        #region Public Members
-
-        public TransceiverManager Transceiver
+        #region Public Members   
+        
+        public SoftwareConfiguration SoftwareConfiguration
         {
             get
             {
-                return _emitter;
+                return _softwareConfiguration;
             }
         }
+
+
+        public LoRaController Transceiver
+        {
+            get
+            {
+                return _loraTransceiver;
+            }
+        }
+       
 
         public bool IsEmitterConnected
         {
             get
             {                
-                return (_emitter != null);
+                return (_loraTransceiver != null);
             }
         }
 
@@ -130,9 +137,9 @@ namespace Guiet.kQuatre.Business.Transceiver
                 _deviceWatcher= null;
             }
 
-            if (_emitter != null)
+            if (_loraTransceiver != null)
             {
-                _emitter.CloseDevice();
+                _loraTransceiver.Close();
             }
         }
 
@@ -148,12 +155,12 @@ namespace Guiet.kQuatre.Business.Transceiver
                 foreach (string port in SerialPort.GetPortNames())
                 {
                     try
-                    {                       
-                        _emitter = new TransceiverManager(port, _softwareConfiguration);                        
-                        if (_emitter != null)
+                    {
+                        _loraTransceiver = new LoRaController(port, _softwareConfiguration.TranceiverBaudrate, _softwareConfiguration.TransceiverAddress);                                              
+                        if (_loraTransceiver != null)
                         {
                             ex = null;
-                            _emitter.DeviceDisconnected += Emitter_DeviceDisconnected;
+                            _loraTransceiver.TransceiverDisconnected += Emitter_DeviceDisconnected;                            
                             OnDeviceConnectedEvent(new ConnectionEventArgs(port));
                             break;
                         }
@@ -169,7 +176,7 @@ namespace Guiet.kQuatre.Business.Transceiver
             }
             catch (Exception exp)
             {
-                _emitter = null;
+                _loraTransceiver = null;
                 OnDeviceErrorWhenConnecting(new ConnectionErrorEventArgs(exp));                
             }
         }
@@ -206,7 +213,7 @@ namespace Guiet.kQuatre.Business.Transceiver
 
             OnUSBConnection(new USBConnectionEventArgs(_singleton.Count, _singleton.USBReady));
 
-            if (_singleton.IsUSBReady() && null == _emitter)
+            if (_singleton.IsUSBReady() && null == _loraTransceiver)
             {
                 _timerHelper.Stop();
                 _timerHelper = null;
@@ -222,9 +229,9 @@ namespace Guiet.kQuatre.Business.Transceiver
         /// Remove emitter instance
         /// </summary>
         private void SuppressDevice()
-        {            
-            _emitter.DeviceDisconnected-=Emitter_DeviceDisconnected;
-            _emitter = null;
+        {
+            _loraTransceiver.TransceiverDisconnected-=Emitter_DeviceDisconnected;            
+            _loraTransceiver = null;
             _singleton.Reset();
             OnDeviceDisconnectedEvent();
         }

@@ -13,6 +13,8 @@ namespace Guiet.kQuatre.Business.Configuration
     {
         #region Private Members
 
+        //TODO : Add total timeout
+
         /// <summary>
         /// First row of data in Excel file
         /// </summary>       
@@ -23,6 +25,8 @@ namespace Guiet.kQuatre.Business.Configuration
         private string _excelFireworkName;
 
         private int _transceiverACKTimeout;
+
+        private int _transceiverReceptionTimeout;
 
         private int _transceiverRetryMessageEmission;
 
@@ -95,6 +99,14 @@ namespace Guiet.kQuatre.Business.Configuration
             }
         }
 
+        public int TransceiverReceptionTimeout
+        {
+            get
+            {
+                return _transceiverReceptionTimeout;
+            }
+        }
+
         public int TransceiverRetryMessageEmission
         {
             get
@@ -135,6 +147,7 @@ namespace Guiet.kQuatre.Business.Configuration
         public const string TRANSCEIVER_ADDRESS_PROP_ID = "6";
         public const string TRANSCEIVER_BAUDRATE_PROP_ID = "7";
         public const string TRANSCEIVER_RETRYPING_PROP_ID = "8";
+        public const string TRANSCEIVER_RECEPTION_TIMEOUT_PROP_ID = "9";
 
         public List<ConfigFolderNode> TreeViewDataSource
         {
@@ -216,7 +229,10 @@ namespace Guiet.kQuatre.Business.Configuration
             cpn = GetPropertyNodeById(SoftwareConfiguration.TRANSCEIVER_ACK_TIMEOUT_PROP_ID);
             XElement transceiver = confFile.Descendants("Transceiver").First();
             transceiver.Element("ACKReceptionTimeout").Value = cpn.PropertyValue;
-            
+
+            cpn = GetPropertyNodeById(SoftwareConfiguration.TRANSCEIVER_RECEPTION_TIMEOUT_PROP_ID);
+            transceiver.Element("ReceptionTimeout").Value = cpn.PropertyValue;
+
             cpn = GetPropertyNodeById(SoftwareConfiguration.TRANSCEIVER_RETRY_MESSAGE_EMISSION_PROP_ID);
             transceiver.Element("RetryMessageEmission").Value = cpn.PropertyValue;
 
@@ -263,7 +279,8 @@ namespace Guiet.kQuatre.Business.Configuration
             //Transceiver
             XElement transceiver = confFile.Descendants("Transceiver").First();
             _transceiverACKTimeout = Convert.ToInt32(transceiver.Element("ACKReceptionTimeout").Value.ToString());
-            _transceiverRetryMessageEmission = Convert.ToInt32(transceiver.Element("RetryMessageEmission").Value.ToString());
+            _transceiverReceptionTimeout = Convert.ToInt32(transceiver.Element("ReceptionTimeout").Value.ToString());
+            _transceiverRetryMessageEmission = Convert.ToInt32(transceiver.Element("RetryMessageEmission").Value.ToString());            
             _transceiverAddress = transceiver.Element("Address").Value.ToString();
             _transceiverBaudrate = Convert.ToInt32(transceiver.Element("Baudrate").Value.ToString());
             _tranceiverRetryPing = Convert.ToInt32(transceiver.Element("RetryPingTransceiver").Value.ToString());
@@ -306,8 +323,10 @@ namespace Guiet.kQuatre.Business.Configuration
 
             //Transceiver
             fn = new ConfigFolderNode("Transceiver");
-            cpn = new ConfigPropertyNode(TRANSCEIVER_ACK_TIMEOUT_PROP_ID, "Expiration réception ACK (ms)", _transceiverACKTimeout.ToString());
+            cpn = new ConfigPropertyNode(TRANSCEIVER_RECEPTION_TIMEOUT_PROP_ID, "Expiration réception totale trame (ms)", _transceiverReceptionTimeout.ToString());
             fn.AddNode(cpn);
+            cpn = new ConfigPropertyNode(TRANSCEIVER_ACK_TIMEOUT_PROP_ID, "Expiration réception ACK (ms)", _transceiverACKTimeout.ToString());
+            fn.AddNode(cpn);            
             cpn = new ConfigPropertyNode(TRANSCEIVER_RETRY_MESSAGE_EMISSION_PROP_ID, "Nb de renvoie du message en cas d'échec", _transceiverRetryMessageEmission.ToString());
             fn.AddNode(cpn);
             cpn = new ConfigPropertyNode(TRANSCEIVER_ADDRESS_PROP_ID, "Adresse de l'émetteur/récepteur", _transceiverAddress.ToString());

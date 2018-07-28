@@ -1,7 +1,8 @@
-﻿using Guiet.kQuatre.Business.Exceptions;
+﻿using fr.guiet.LoRaLibrary.Frames;
+using Guiet.kQuatre.Business.Exceptions;
 using Guiet.kQuatre.Business.Firework;
 using Guiet.kQuatre.Business.Transceiver;
-using Guiet.kQuatre.Business.Transceiver.Frames;
+//using Guiet.kQuatre.Business.Transceiver.Frames;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -73,6 +74,10 @@ namespace Guiet.kQuatre.Business.Receptor
         private bool _isTestStopAllowed = false;
 
         private ReceptorAddress _receptorAddressTested = null;
+
+        private int _messageSentCounterTemp = 0;
+        private int _messageLostCounterTemp = 0;
+        private int _messageReceivedCounterTemp = 0;
 
         /// <summary>
         /// Get Current Receptor Channel associated with a line
@@ -266,11 +271,11 @@ namespace Guiet.kQuatre.Business.Receptor
             if (_receptorWorker != null && _receptorWorker.IsBusy)
             {
                 _receptorWorker.CancelAsync();
-            }            
+            }
 
             //Refresh GUI
             OnPropertyChanged("IsTestLaunchAllowed");
-        }        
+        }
 
         #endregion
 
@@ -305,7 +310,7 @@ namespace Guiet.kQuatre.Business.Receptor
                 _deviceManager.DeviceConnected += DeviceManager_DeviceConnected;
             }
         }
-        
+
         /// <summary>
         /// Get resiste of receptor address
         /// </summary>
@@ -347,32 +352,32 @@ namespace Guiet.kQuatre.Business.Receptor
         private void ReceptorWorkerOhm_DoWork(object sender, DoWorkEventArgs e)
         {
 
-            try
-            {
-                FrameBase db = new OhmFrame(_deviceManager.Transceiver.Address, _receptorAddressTested.Address, _receptorAddressTested.Channel.ToString());                
+            //try
+            //{
+            //    FrameBase db = new OhmFrame(_deviceManager.Transceiver.Address, _receptorAddressTested.Address, _receptorAddressTested.Channel.ToString());
 
-                //ACK takes at least 1500ms to respond...
-                FrameBase receivedFrame = _deviceManager.Transceiver.SendPacketSynchronously(db, 4000);
+            //    //ACK takes at least 1500ms to respond...
+            //    FrameBase receivedFrame = _deviceManager.Transceiver.SendPacketSynchronously(db, 4000);
 
-                if (receivedFrame is AckFrame)
-                {
-                    AckFrame af = (AckFrame)receivedFrame;
+            //    if (receivedFrame is AckFrame)
+            //    {
+            //        AckFrame af = (AckFrame)receivedFrame;
 
-                    if (af.IsAckOk)
-                    {
-                        e.Result = af.Ohm;
-                    }
+            //        if (af.IsAckOk)
+            //        {
+            //            e.Result = af.Ohm;
+            //        }
 
-                    if (!af.IsAckOk)
-                    {
-                        e.Result = "ACK KO";
-                    }
-                }
-            }
-            catch (TimeoutPacketException)
-            {
-                e.Result = "No response";
-            }
+            //        if (!af.IsAckOk)
+            //        {
+            //            e.Result = "ACK KO";
+            //        }
+            //    }
+            //}
+            //catch (TimeoutPacketException)
+            //{
+            //    e.Result = "No response";
+            //}
         }
 
         public void StartTest()
@@ -395,55 +400,110 @@ namespace Guiet.kQuatre.Business.Receptor
 
         private void ReceptorWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            int messageSentCounter = 0;
-            int messageLostCounter = 0;
-            int messageReceivedCounter = 0;
+            _messageSentCounterTemp = 0;
+            _messageLostCounterTemp = 0;
+            _messageReceivedCounterTemp = 0;
 
-            //init GUI
-            MessageLostCounter = messageLostCounter.ToString();
-            MessageSentCounter = messageSentCounter.ToString();
-            MessageReceivedCounter = messageReceivedCounter.ToString();
+           //init GUI
+           MessageLostCounter = _messageLostCounterTemp.ToString();
+            MessageSentCounter = _messageSentCounterTemp.ToString();
+            MessageReceivedCounter = _messageReceivedCounterTemp.ToString();
             MessageRssi = "NA";
 
-            while (true)
+            _deviceManager.Transceiver.FrameAckKoEvent += Transceiver_FrameAckKoEvent;
+            _deviceManager.Transceiver.FrameAckOkEvent += Transceiver_FrameAckOkEvent;
+            _deviceManager.Transceiver.FrameTimeOutEvent += Transceiver_FrameTimeOutEvent;
+
+            while (!_receptorWorker.CancellationPending)
             {
-                try
+                //try
+                //{                    
+
+                    MessageSentCounter = (_messageSentCounterTemp++).ToString();
+                                        
+                    _deviceManager.Transceiver.SendPingFrame(_address, _deviceManager.SoftwareConfiguration.TransceiverReceptionTimeout, _deviceManager.SoftwareConfiguration.TransceiverACKTimeout);
+
+                    Thread.Sleep(500);
+
+
+                /*if (_deviceManager.IsEmitterConnected)
                 {
-                    if (_receptorWorker.CancellationPending)
+                    FrameBase db = new PingFrame(_deviceManager.Address, _address);
+                    FrameBase receivedFrame = _deviceManager.Transceiver.SendPacketSynchronously(db);
+
+                    if (receivedFrame is AckFrame)
                     {
-                        e.Cancel = true;
-                        return;
-                    }
+                        AckFrame af = (AckFrame)receivedFrame;
 
-                    MessageSentCounter = (messageSentCounter++).ToString();                    
-
-                    if (_deviceManager.IsEmitterConnected)
-                    {
-                        FrameBase db = new PingFrame(_deviceManager.Transceiver.Address, _address);
-                        FrameBase receivedFrame = _deviceManager.Transceiver.SendPacketSynchronously(db);
-
-                        if (receivedFrame is AckFrame)
+                        if (af.IsAckOk)
                         {
-                            AckFrame af = (AckFrame)receivedFrame;
+                            MessageRssi = af.Rssi;
+                            MessageReceivedCounter = (messageReceivedCounter++).ToString();
+                        }
 
-                            if (af.IsAckOk)
-                            {
-                                MessageRssi = af.Rssi;
-                                MessageReceivedCounter = (messageReceivedCounter++).ToString();
-                            }
-
-                            if (!af.IsAckOk)
-                            {
-                                MessageLostCounter = (messageLostCounter++).ToString();
-                            }
+                        if (!af.IsAckOk)
+                        {
+                            MessageLostCounter = (messageLostCounter++).ToString();
                         }
                     }
-                    //Pause for 1s
-                    Thread.Sleep(1000);
-                }
-                catch (TimeoutPacketException)
+                }*/
+
+                //Pause for 1s
+                //Thread.Sleep(1000);
+
+                //}
+                //catch (TimeoutPacketException)
+                //{
+                //    MessageLostCounter = (messageLostCounter++).ToString();
+                //}
+            }
+
+            _deviceManager.Transceiver.FrameAckKoEvent -= Transceiver_FrameAckKoEvent;
+            _deviceManager.Transceiver.FrameAckOkEvent -= Transceiver_FrameAckOkEvent;
+            _deviceManager.Transceiver.FrameTimeOutEvent -= Transceiver_FrameTimeOutEvent;
+
+            if (_receptorWorker.CancellationPending)
+            {
+                e.Cancel = true;             
+            }
+        }
+
+        private void Transceiver_FrameTimeOutEvent(object sender, fr.guiet.LoRaLibrary.Events.FrameTimeOutEventArgs e)
+        {
+            if (e.FrameSent is PingFrame)
+            {
+                PingFrame pingFrame = (PingFrame)e.FrameSent;
+                if (pingFrame.ReceiverAddress == _address)
                 {
-                    MessageLostCounter = (messageLostCounter++).ToString();
+                    _messageLostCounterTemp = _messageLostCounterTemp + 1;
+                    MessageLostCounter = _messageLostCounterTemp++.ToString();
+                }
+            }
+        }
+
+        private void Transceiver_FrameAckOkEvent(object sender, fr.guiet.LoRaLibrary.Events.FrameAckOKEventArgs e)
+        {
+            if (e.FrameSent is PingFrame)
+            {
+                PingFrame pingFrame = (PingFrame)e.FrameSent;
+                if (pingFrame.ReceiverAddress == _address)
+                {
+                    MessageRssi = e.AckOKFrame.Rssi;
+                    _messageReceivedCounterTemp = _messageReceivedCounterTemp + 1;
+                    MessageReceivedCounter = _messageReceivedCounterTemp.ToString();
+                }
+            }
+        }
+
+        private void Transceiver_FrameAckKoEvent(object sender, fr.guiet.LoRaLibrary.Events.FrameAckKOEventArgs e)
+        {
+            if (e.FrameSent is PingFrame)
+            {
+                PingFrame pingFrame = (PingFrame)e.FrameSent;
+                if (pingFrame.ReceiverAddress == _address)
+                {
+                    _messageLostCounterTemp = _messageLostCounterTemp + 1;
+                    MessageLostCounter = _messageLostCounterTemp.ToString();
                 }
             }
         }

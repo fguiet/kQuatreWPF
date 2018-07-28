@@ -1,8 +1,8 @@
-﻿using Guiet.kQuatre.Business.Configuration;
+﻿using fr.guiet.LoRaLibrary.Frames;
+using Guiet.kQuatre.Business.Configuration;
 using Guiet.kQuatre.Business.Exceptions;
 using Guiet.kQuatre.Business.Receptor;
 using Guiet.kQuatre.Business.Transceiver;
-using Guiet.kQuatre.Business.Transceiver.Frames;
 using Infragistics.Documents.Excel;
 using System;
 using System.Collections.Generic;
@@ -72,7 +72,7 @@ namespace Guiet.kQuatre.Business.Firework
 
         private bool _isSanityCheckOk = false;
 
-        private TimeSpan _nextIgnition = new TimeSpan(0,0,0);
+        private TimeSpan _nextIgnition = new TimeSpan(0, 0, 0);
 
         private Dictionary<string, List<Line>> _lastLinesLaunchFailed = new Dictionary<string, List<Line>>();
 
@@ -119,7 +119,7 @@ namespace Guiet.kQuatre.Business.Firework
             {
                 LineFailed(sender, new EventArgs());
             }
-        }        
+        }
 
         public List<string> SanityCheckErrorsList
         {
@@ -331,7 +331,7 @@ namespace Guiet.kQuatre.Business.Firework
                 }
             }
         }
-        
+
         public string NextLaunchCountDownString
         {
             get
@@ -349,7 +349,7 @@ namespace Guiet.kQuatre.Business.Firework
                     OnPropertyChanged();
                 }
             }
-                
+
         }
 
         public string Name
@@ -422,6 +422,43 @@ namespace Guiet.kQuatre.Business.Firework
             }
         }
 
+        private void Transceiver_FrameTimeOutEvent(object sender, fr.guiet.LoRaLibrary.Events.FrameTimeOutEventArgs e)
+        {
+            if (e.FrameSent is FireFrame)
+            {
+                foreach (string lineNumber in ((FireFrame)e.FrameSent).LineNumbers)
+                {
+                    Line l = GetLineByNumber(lineNumber);
+                    l.SetFailed();
+                }
+            }
+        }
+
+        private void Transceiver_FrameAckOkEvent(object sender, fr.guiet.LoRaLibrary.Events.FrameAckOKEventArgs e)
+        {
+            if (e.FrameSent is FireFrame)
+            {
+                foreach(string lineNumber in ((FireFrame)e.FrameSent).LineNumbers)
+                {
+                    Line l = GetLineByNumber(lineNumber);
+                    l.Start();
+                }
+            }
+
+        }
+
+        private void Transceiver_FrameAckKoEvent(object sender, fr.guiet.LoRaLibrary.Events.FrameAckKOEventArgs e)
+        {
+            if (e.FrameSent is FireFrame)
+            {
+                foreach (string lineNumber in ((FireFrame)e.FrameSent).LineNumbers)
+                {
+                    Line l = GetLineByNumber(lineNumber);
+                    l.SetFailed();
+                }
+            }
+        }
+
         #endregion
 
         #region Event
@@ -461,6 +498,10 @@ namespace Guiet.kQuatre.Business.Firework
 
             if (_fireworkWorker.IsBusy)
                 _fireworkWorker.CancelAsync();
+
+            _deviceManager.Transceiver.FrameAckKoEvent -= Transceiver_FrameAckKoEvent;
+            _deviceManager.Transceiver.FrameAckOkEvent -= Transceiver_FrameAckOkEvent;
+            _deviceManager.Transceiver.FrameTimeOutEvent -= Transceiver_FrameTimeOutEvent;
         }
 
         /// <summary>
@@ -469,6 +510,10 @@ namespace Guiet.kQuatre.Business.Firework
         public void Start()
         {
             State = FireworkManagerState.FireInProgress;
+
+            _deviceManager.Transceiver.FrameAckKoEvent += Transceiver_FrameAckKoEvent;
+            _deviceManager.Transceiver.FrameAckOkEvent += Transceiver_FrameAckOkEvent;
+            _deviceManager.Transceiver.FrameTimeOutEvent += Transceiver_FrameTimeOutEvent;
 
             _fireworkWorker = new BackgroundWorker();
             _fireworkWorker.WorkerSupportsCancellation = true;
@@ -695,7 +740,7 @@ namespace Guiet.kQuatre.Business.Firework
             {
                 _isLoadingFromFile = false;
             }
-            
+
             //Set new name here !
             _fireworkFullFileName = String.Format("{0}{1}", System.IO.Path.Combine(System.IO.Path.GetDirectoryName(fullFileName), System.IO.Path.GetFileNameWithoutExtension(fullFileName)),
                                           DEFAULT_K4_EXTENSION);
@@ -752,7 +797,6 @@ namespace Guiet.kQuatre.Business.Firework
 
             try
             {
-
                 XDocument doc = new XDocument();
 
                 //Firework name
@@ -967,7 +1011,7 @@ namespace Guiet.kQuatre.Business.Firework
             return stat;
         }
 
-        private void RedoFailedLine()
+        /*private void RedoFailedLine()
         {
             List<string> keyToRemove = new List<string>();
             
@@ -981,8 +1025,8 @@ namespace Guiet.kQuatre.Business.Firework
                 try
                 {
                     //Send Message here and get result
-                    FireFrame pf = new FireFrame(_deviceManager.Transceiver.Address, message.Value[0].ReceptorAddress.Address, LineHelper.GetFireMessage(message.Value));
-                    FrameBase fb = _deviceManager.Transceiver.SendPacketSynchronously(pf);
+                    FireFrame pf = new FireFrame(_deviceManager.LoRaTransceiver.Address, message.Value[0].ReceptorAddress.Address, LineHelper.GetFireMessage(message.Value));
+                    FrameBase fb = _deviceManager.LoRaTransceiver.SendPacketSynchronously(pf);
 
                     af = (AckFrame)fb;
                 }
@@ -1013,19 +1057,19 @@ namespace Guiet.kQuatre.Business.Firework
                         line.SetFailed();
                     }
                 }*/
-            }
+        //   }
 
-            //Remove line ok
-            foreach(string key in keyToRemove)
-            {
-                //Line started, remove line from failed line
-                _lastLinesLaunchFailed.Remove(key);
-            }
-
-            //If line are still failed...enable redo button
-            if (_lastLinesLaunchFailed.Count > 0)                
-                IsRedoFailedEnable = true;
+        //Remove line ok
+        /*foreach(string key in keyToRemove)
+        {
+            //Line started, remove line from failed line
+            _lastLinesLaunchFailed.Remove(key);
         }
+
+        //If line are still failed...enable redo button
+        if (_lastLinesLaunchFailed.Count > 0)                
+            IsRedoFailedEnable = true;
+    }*/
 
         private void FireworkWorker_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -1061,64 +1105,81 @@ namespace Guiet.kQuatre.Business.Firework
                 {
                     _activateRedoFailedLine = false;
 
-                    RedoFailedLine();
+                    //TODO : A Revoir
+                    //RedoFailedLine();
                 }
-                
+
                 //No more line to launch...wait for current firework to finish
                 if (lineHelper == null) continue;
 
                 if (_elapsedTime.ElapsedMilliseconds >= lineHelper.Ignition)
                 {
                     prepareNextLines = true;
-                    
-                    bool clearFailedLine = true;
+
+                    //bool clearFailedLine = true;
                     foreach (KeyValuePair<string, List<Line>> message in lineHelper.LinesGroupByReceptorAddress)
                     {
-                        AckFrame af = null;
+                        string receptorAddress = message.Key;
+                        List<string> receptorChannels = new List<string>();
+                        List<string> lineNumbers = new List<string>();
 
-                        try
+                        //Get channel from 
+                        foreach (Line l in message.Value)
                         {
-                            //Send Message here and get result
-                            FireFrame pf = new FireFrame(_deviceManager.Transceiver.Address, message.Value[0].ReceptorAddress.Address, LineHelper.GetFireMessage(message.Value));
-                            FrameBase fb = _deviceManager.Transceiver.SendPacketSynchronously(pf);
-
-                            af = (AckFrame)fb;
+                            receptorChannels.Add(l.ReceptorAddress.Channel.ToString());
+                            lineNumbers.Add(l.Number);
                         }
-                        catch (TimeoutPacketException)
-                        {
-                            af = null;
-                        }
+                        
+                        _deviceManager.Transceiver.SendFireFrame(receptorAddress, receptorChannels, lineNumbers,  _configuration.TransceiverReceptionTimeout, _configuration.TransceiverACKTimeout);
+                        
 
-                        if (null != af && af.IsAckOk)
-                        {
-                            //if result ok, start line, otherwise, set status failed
-                            //and proceed immediately to next firework (back in future)
-                            //take into account retry
-                            foreach (Line line in message.Value)
-                            {
-                                line.Start();
-                            }
-                        }
-                        else
-                        {
-                            //Only clear failed line 
-                            //if we failed occured at a different time
-                            //that the last failed...
-                            //This way, we can failed line are not clear if multiple line failed with the same ignition time
-                            if (clearFailedLine)
-                            {
-                                clearFailedLine = false;
-                                _lastLinesLaunchFailed.Clear();
-                            }
+                        ////AckFrame af = null;
 
-                            //Save last line failed
-                            _lastLinesLaunchFailed.Add(message.Key, message.Value);
+                        //try
+                        //{
+                        //    //Send Message here and get result
+                        //    // FireFrame pf = new FireFrame(_deviceManager.Transceiver.Address, message.Value[0].ReceptorAddress.Address, LineHelper.GetFireMessage(message.Value));
+                        //    // FrameBase fb = _deviceManager.Transceiver.SendPacketSynchronously(pf);
 
-                            foreach (Line line in message.Value)
-                            {
-                                line.SetFailed();
-                            }                            
-                        }
+                        //    // af = (AckFrame)fb;
+                        //}
+                        //catch (TimeoutPacketException)
+                        //{
+                        //    // af = null;
+                        //}
+
+                        ////if (null != af && af.IsAckOk)
+
+                        //if (null == null)
+                        //{
+                        //    //if result ok, start line, otherwise, set status failed
+                        //    //and proceed immediately to next firework (back in future)
+                        //    //take into account retry
+                        //    foreach (Line line in message.Value)
+                        //    {
+                        //        line.Start();
+                        //    }
+                        //}
+                        //else
+                        //{
+                        //    //Only clear failed line 
+                        //    //if we failed occured at a different time
+                        //    //that the last failed...
+                        //    //This way, we can failed line are not clear if multiple line failed with the same ignition time
+                        //    if (clearFailedLine)
+                        //    {
+                        //        clearFailedLine = false;
+                        //        _lastLinesLaunchFailed.Clear();
+                        //    }
+
+                        //    //Save last line failed
+                        //    _lastLinesLaunchFailed.Add(message.Key, message.Value);
+
+                        //    foreach (Line line in message.Value)
+                        //    {
+                        //        line.SetFailed();
+                        //    }
+                        //}
                     }
                 }
 
@@ -1193,6 +1254,8 @@ namespace Guiet.kQuatre.Business.Firework
 
             return receptor;
         }
+
+        
 
         #endregion
     }

@@ -26,7 +26,7 @@
       </Fireworks>
     </Line>
     <Line number="4" ignition="00:00:30">
-      <ReceptorAddress address="2" channel="1" />
+      <ReceptorAddress address="1" channel="12" />
       <Fireworks>
         <Firework reference="AC298085A" designation="PACK CZ 30 CPS PAF SCINT BLANC FLEUR CREPITANTE" duration="00:00:25" />
       </Fireworks>
@@ -38,7 +38,7 @@
       </Fireworks>
     </Line>
     <Line number="6" ignition="00:01:17">
-      <ReceptorAddress address="1" channel="12" />
+      <ReceptorAddress address="4" channel="2" />
       <Fireworks>
         <Firework reference="YSALVE 1 BBE 100" designation="1 BOMBE 100mm &#xD;&#xA;***********JOK+************" duration="00:00:04" />
       </Fireworks>
