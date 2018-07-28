@@ -1,6 +1,0 @@
-F:\Personal\Projects\Programming\LoRa\LoRaLibraryLight\bin\Debug\LoRaLibraryLight.dll
-F:\Personal\Projects\Programming\LoRa\LoRaLibraryLight\bin\Debug\LoRaLibraryLight.pdb
-F:\Personal\Projects\Programming\LoRa\LoRaLibraryLight\obj\Debug\LoRaLibraryLight.csproj.CoreCompileInputs.cache
-F:\Personal\Projects\Programming\LoRa\LoRaLibraryLight\obj\Debug\LoRaLibraryLight.dll
-F:\Personal\Projects\Programming\LoRa\LoRaLibraryLight\obj\Debug\LoRaLibraryLight.pdb
-F:\Personal\Projects\Programming\LoRa\LoRaLibraryLight\obj\Debug\LoRaLibraryLight.csprojAssemblyReference.cache
