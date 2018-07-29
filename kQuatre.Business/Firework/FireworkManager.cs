@@ -426,10 +426,17 @@ namespace Guiet.kQuatre.Business.Firework
         {
             if (e.FrameSent is FireFrame)
             {
-                foreach (string lineNumber in ((FireFrame)e.FrameSent).LineNumbers)
+                if (e.FrameSent.CanBeResent)
                 {
-                    Line l = GetLineByNumber(lineNumber);
-                    l.SetFailed();
+                    _deviceManager.Transceiver.SendFrame(e.FrameSent, _configuration.TransceiverReceptionTimeout);
+                }
+                else
+                {
+                    foreach (string lineNumber in ((FireFrame)e.FrameSent).LineNumbers)
+                    {
+                        Line l = GetLineByNumber(lineNumber);
+                        l.SetFailed();
+                    }
                 }
             }
         }
@@ -451,10 +458,17 @@ namespace Guiet.kQuatre.Business.Firework
         {
             if (e.FrameSent is FireFrame)
             {
-                foreach (string lineNumber in ((FireFrame)e.FrameSent).LineNumbers)
+                if (e.FrameSent.CanBeResent)
                 {
-                    Line l = GetLineByNumber(lineNumber);
-                    l.SetFailed();
+                    _deviceManager.Transceiver.SendFrame(e.FrameSent, _configuration.TransceiverReceptionTimeout);
+                }
+                else
+                {
+                    foreach (string lineNumber in ((FireFrame)e.FrameSent).LineNumbers)
+                    {
+                        Line l = GetLineByNumber(lineNumber);
+                        l.SetFailed();
+                    }
                 }
             }
         }
@@ -1129,8 +1143,8 @@ namespace Guiet.kQuatre.Business.Firework
                             receptorChannels.Add(l.ReceptorAddress.Channel.ToString());
                             lineNumbers.Add(l.Number);
                         }
-                        
-                        _deviceManager.Transceiver.SendFireFrame(receptorAddress, receptorChannels, lineNumbers,  _configuration.TransceiverReceptionTimeout, _configuration.TransceiverACKTimeout);
+
+                        _deviceManager.Transceiver.SendFireFrame(receptorAddress, receptorChannels, lineNumbers, _configuration.TransceiverReceptionTimeout, _configuration.TransceiverACKTimeout, _configuration.TransceiverRetryMessageEmission);
                         
 
                         ////AckFrame af = null;

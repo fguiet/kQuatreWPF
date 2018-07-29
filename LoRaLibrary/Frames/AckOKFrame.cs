@@ -11,6 +11,7 @@ namespace fr.guiet.LoRaLibrary.Frames
         public const string FRAME_ORDER = "ACK_OK";
         private string _rssi = "NA";
         private string _ohm = "NA";
+        private string _snr = "NA";
 
         public String Ohm
         {
@@ -20,12 +21,25 @@ namespace fr.guiet.LoRaLibrary.Frames
             }           
         }
 
+        public String Snr
+        {
+            get
+            {
+                return _snr;
+            }
+        }
+
         public String Rssi
         {
             get
             {
                 return _rssi;
             }           
+        }
+
+        public void SetSnr(String snr)
+        {
+            _snr = snr;
         }
 
         public void SetOhm(String ohm)

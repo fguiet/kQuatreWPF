@@ -14,6 +14,9 @@ const char END_FRAME_DELIMITER = '|';
 const int MIN_FRAME_LENGHT = 17; 
 //** Sample ***
 
+//*** Test OHM
+//*** @;5;0;1;OHM+2000;;09;|
+
 //*** Test PING
 //*** @;14;0;0;PING+250;;57;|
 
@@ -66,6 +69,12 @@ void setup() {
   LoRa.setSpreadingFactor(SF);
   LoRa.setSignalBandwidth(BW);
 
+  //Set syncword so other LoRa message does not interfer
+  LoRa.setSyncWord(0xEE); 
+
+  //Set Transmit powser to 23db (17 is default)
+  LoRa.setTxPower(23);
+  
   //LoRa.onReceive(onReceive);
   //LoRa.receive();
 
@@ -225,7 +234,7 @@ void waitForAck(String frameSentId, String receiverAddress, int timeOut) {
 }
 
 void sendACK(String ackFrame) {
-  Serial.print(ackFrame);
+  Serial.print(ackFrame);  
 }
 
 String createFrame(String frameId, String senderAddress, String receiverAddress, String message, String message_complement) {

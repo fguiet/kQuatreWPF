@@ -11,7 +11,9 @@ namespace fr.guiet.LoRaLibrary.Frames
         private const string FRAME_ORDER = "FIRE";
         private List<string> _lineNumbers = null;
         
-        public FireFrame(byte frameId, string senderAddress, string receiverAddress, List<string> receiverChannels, List<string> lineNumbers, int ackTimeOut, int totalTimeOut) : base(frameId, FRAME_ORDER, senderAddress, receiverAddress, ackTimeOut, totalTimeOut)
+        public FireFrame(byte frameId, string senderAddress, string receiverAddress, List<string> receiverChannels, 
+            List<string> lineNumbers, int ackTimeOut, int totalTimeOut, int frameSentMaxRetry)
+            : base(frameId, FRAME_ORDER, senderAddress, receiverAddress, ackTimeOut, totalTimeOut, frameSentMaxRetry)
         {
             string channels = string.Join("+",  receiverChannels);
             

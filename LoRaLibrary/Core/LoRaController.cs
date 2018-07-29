@@ -43,13 +43,13 @@ namespace fr.guiet.LoRaLibrary.Core
         private void OnFrameTimeOutEvent(FrameTimeOutEventArgs args)
         {
             if (FrameTimeOutEvent != null)
-            {                                
-                FrameTimeOutEvent(this, args);
+            {
                 _logger.Warn("--- Timeout occured."
                             + Environment.NewLine
                             + string.Format("Frame sent info : frame of type {0} with ID : {1}, timeout set to {2}, ack timeout set to {3}, expected receiver address : {4}", args.FrameSent.FrameOrder, args.FrameSent.FrameId, args.FrameSent.TotalTimeOut, args.FrameSent.AckTimeOut, args.FrameSent.ReceiverAddress)
-                            +Environment.NewLine
+                            + Environment.NewLine
                             + string.Format("=> flight time : {0}  ", Convert.ToInt32(DateTime.Now.TimeOfDay.TotalMilliseconds - args.FrameSent.StartTime)));
+                FrameTimeOutEvent(this, args);
             }
         }
 
@@ -58,13 +58,13 @@ namespace fr.guiet.LoRaLibrary.Core
         private void OnFrameAckOkEvent(FrameAckOKEventArgs args)
         {
             if (FrameAckOkEvent != null)
-            {                   
-                FrameAckOkEvent(this, args);
+            {
                 _logger.Warn("+++ ACK OK received."
                            + Environment.NewLine
                            + string.Format("=> Frame sent info : frame of type : {0} with ID : {1}, timeout set to : {2}, ack timeout set to : {3}, receiver address : {4}, RSSI : {5}", args.FrameSent.FrameOrder, args.FrameSent.FrameId, args.FrameSent.TotalTimeOut, args.FrameSent.AckTimeOut, args.FrameSent.ReceiverAddress, args.AckOKFrame.Rssi)
                            + Environment.NewLine
-                            + string.Format("=> flight time : {0}  ", Convert.ToInt32(DateTime.Now.TimeOfDay.TotalMilliseconds-args.FrameSent.StartTime)));
+                            + string.Format("=> flight time : {0}  ", Convert.ToInt32(DateTime.Now.TimeOfDay.TotalMilliseconds - args.FrameSent.StartTime)));
+                FrameAckOkEvent(this, args);
             }
         }
 
@@ -73,8 +73,7 @@ namespace fr.guiet.LoRaLibrary.Core
         private void OnFrameAckKoEvent(FrameAckKOEventArgs args)
         {
             if (FrameAckKoEvent != null)
-            {                
-                FrameAckKoEvent(this, args);                
+            {
                 _logger.Warn("--- ACK KO received."
                            + Environment.NewLine
                            + string.Format("=> Frame sent info : frame of type : {0} with ID : {1}, timeout set to : {2}, ack timeout set to : {3}, expected receiver address : {4}", args.FrameSent.FrameOrder, args.FrameSent.FrameId, args.FrameSent.TotalTimeOut, args.FrameSent.AckTimeOut, args.FrameSent.ReceiverAddress)
@@ -82,6 +81,8 @@ namespace fr.guiet.LoRaLibrary.Core
                             + string.Format("=> ACK KO info : Reason : {0}", args.AckKOFrame.GetACKKOReason())
                              + Environment.NewLine
                             + string.Format("=> flight time : {0}  ", Convert.ToInt32(DateTime.Now.TimeOfDay.TotalMilliseconds - args.FrameSent.StartTime)));
+
+                FrameAckKoEvent(this, args);
             }
         }
 
@@ -110,7 +111,7 @@ namespace fr.guiet.LoRaLibrary.Core
         public LoRaController(string portname, int baudrate, string address)
         {
             _address = address;
-            
+
             _serialPortHelper = new SerialPortHelper(portname, baudrate);
 
             //Start serial port listener
@@ -159,7 +160,7 @@ namespace fr.guiet.LoRaLibrary.Core
         }
 
         private void ProcessFrame(byte[] packet)
-        {           
+        {
             try
             {
                 FrameBase frame = PacketParser.Parse(packet);
@@ -173,13 +174,13 @@ namespace fr.guiet.LoRaLibrary.Core
                     }
                 }
             }
-            catch(InvalidPacketReceivedException ipre)
-            {                          
-                _logger.Error(ipre.Message);
-            } 
-            catch(Exception e)
+            catch (InvalidPacketReceivedException ipre)
             {
-                _logger.Error("Error occured while parsing a received packet");
+                _logger.Error(ipre.Message);
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e, "Error occured while parsing a received packet");
             }
         }
 
@@ -196,13 +197,23 @@ namespace fr.guiet.LoRaLibrary.Core
             await ExecuteQueryAsync(pingFrame, new TimeSpan(0, 0, 0, 0, timeOut), CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task SendFireFrame(string receiverAddress, List<string> receiverChannels, List<string> lineNumbers, int timeOut, int ackTimeOut)
-        {            
-            FireFrame fireFrame = new FireFrame(GetNextFrameId(), _address, receiverAddress, receiverChannels, lineNumbers, ackTimeOut, timeOut);
+        public async Task SendOhmFrame(string receiverAddress, int timeOut, int ackTimeOut)
+        {
+            OhmFrame ohmFrame = new OhmFrame(GetNextFrameId(), _address, receiverAddress, ackTimeOut, timeOut);
+            await ExecuteQueryAsync(ohmFrame, new TimeSpan(0, 0, 0, 0, timeOut), CancellationToken.None).ConfigureAwait(false);
+        }
 
-            _logger.Info("Sending frame : frame of type {0} with ID : {1}, timeout set to {2}, ack timeout set to {3}, expected receiver address : {4}, frame : {5}", fireFrame.FrameOrder, fireFrame.FrameId, fireFrame.TotalTimeOut, fireFrame.AckTimeOut, fireFrame.ReceiverAddress, fireFrame.GetFrameToString());
+        public async Task SendFrame(FrameBase frame, int timeOut)
+        {
+            await ExecuteQueryAsync(frame, new TimeSpan(0, 0, 0, 0, timeOut), CancellationToken.None).ConfigureAwait(false);
+        }
 
+        public async Task SendFireFrame(string receiverAddress, List<string> receiverChannels, List<string> lineNumbers, int timeOut, int ackTimeOut, int frameSentMaxRetry)
+        {
+            FireFrame fireFrame = new FireFrame(GetNextFrameId(), _address, receiverAddress, receiverChannels, lineNumbers, ackTimeOut, timeOut, frameSentMaxRetry);
+            //   _logger.Info("Sending frame : frame of type {0} with ID : {1}, timeout set to {2}, ack timeout set to {3}, expected receiver address : {4}, sent attempt : {5}, frame : {6}", fireFrame.FrameOrder, fireFrame.FrameId, fireFrame.TotalTimeOut, fireFrame.AckTimeOut, fireFrame.ReceiverAddress, fireFrame.SentCounter, fireFrame.GetFrameToString());
             await ExecuteQueryAsync(fireFrame, new TimeSpan(0, 0, 0, 0, timeOut), CancellationToken.None).ConfigureAwait(false);
+
         }
 
         internal async Task ExecuteQueryAsync(FrameBase frame,
@@ -221,11 +232,11 @@ namespace fr.guiet.LoRaLibrary.Core
 
             if (await Task.WhenAny(taskCompletionSource.Task, delayTask).ConfigureAwait(false) !=
                 taskCompletionSource.Task)
-            {                 
+            {
                 _executeTaskCompletionSources.TryRemove(frame.FrameId, out var tcs);
 
                 FrameTimeOutEventArgs args = new FrameTimeOutEventArgs(frame);
-                OnFrameTimeOutEvent(args);                
+                OnFrameTimeOutEvent(args);
             }
             else
             {
@@ -248,8 +259,8 @@ namespace fr.guiet.LoRaLibrary.Core
                 if (receivedFrame is AckKOFrame)
                 {
                     OnFrameAckKoEvent(new FrameAckKOEventArgs(frame, (AckKOFrame)receivedFrame));
-                }                
-            }            
+                }
+            }
         }
 
         internal async Task ExecuteAsync(FrameBase frame)
@@ -259,6 +270,7 @@ namespace fr.guiet.LoRaLibrary.Core
             try
             {
                 await _serialPortHelper.WriteAsync(frame.GetFrameToByteArray());
+                _logger.Info("Sending frame : frame of type {0} with ID : {1}, timeout set to {2}, ack timeout set to {3}, expected receiver address : {4}, sent attempt : {5}, frame : {6}", frame.FrameOrder, frame.FrameId, frame.TotalTimeOut, frame.AckTimeOut, frame.ReceiverAddress, frame.SentCounter, frame.GetFrameToString());
             }
             finally
             {
@@ -282,21 +294,23 @@ namespace fr.guiet.LoRaLibrary.Core
                     var cancellationToken = _serialPortListenerCancellationTokenSource.Token;
 
                     do
-                    {                        
-                        var packet = await _serialPortHelper.ReadAsync(cancellationToken).ConfigureAwait(false);
+                    {
+                        //Timeout 500 ms (if no end frame is received it can happen!
+                        CancellationTokenSource cts = new CancellationTokenSource(500);
+                        //We assume a frame is less or egal to 50 bytes!
+                        var packet = await _serialPortHelper.ReadAsync(cts.Token).ConfigureAwait(false);
 
                         if (packet.Length > 0)
                         {
                             ProcessFrame(packet);
                         }
-
                     } while (!_serialPortListenerCancellationTokenSource.IsCancellationRequested);
                 }
                 catch
                 {
                 }
                 finally
-                {                    
+                {
                     _serialPortHelper.Dispose();
                     _serialPortlistenerLock.Release();
 

@@ -69,6 +69,11 @@ namespace Guiet.kQuatre.Business.Receptor
         /// </summary>
         private String _messageRssi = "NA";
 
+        /// <summary>
+        /// In test mode Snr received
+        /// </summary>
+        private String _messageSnr = "NA";
+
         private bool _isTestLaunchAllowed = true;
 
         private bool _isTestStopAllowed = false;
@@ -147,6 +152,23 @@ namespace Guiet.kQuatre.Business.Receptor
                 if (_messageRssi != value)
                 {
                     _messageRssi = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string MessageSnr
+        {
+            get
+            {
+                return _messageSnr;
+            }
+
+            set
+            {
+                if (_messageSnr != value)
+                {
+                    _messageSnr = value;
                     OnPropertyChanged();
                 }
             }
@@ -323,7 +345,7 @@ namespace Guiet.kQuatre.Business.Receptor
 
             _receptorWorkerOhm = new BackgroundWorker();
             _receptorWorkerOhm.DoWork += ReceptorWorkerOhm_DoWork;
-            _receptorWorkerOhm.RunWorkerCompleted += ReceptorWorkerOhm_RunWorkerCompleted;
+           // _receptorWorkerOhm.RunWorkerCompleted += ReceptorWorkerOhm_RunWorkerCompleted;
             _receptorWorkerOhm.RunWorkerAsync(ra);
         }
 
@@ -344,14 +366,23 @@ namespace Guiet.kQuatre.Business.Receptor
             }
         }
 
-        private void ReceptorWorkerOhm_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            _receptorAddressTested.Resistance = e.Result.ToString();
-        }
+        //private void ReceptorWorkerOhm_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+       // {
+            //_receptorAddressTested.Resistance = e.Result.ToString();
+       // }
 
         private void ReceptorWorkerOhm_DoWork(object sender, DoWorkEventArgs e)
         {
 
+            _deviceManager.Transceiver.FrameAckKoEvent += Transceiver_FrameAckKoEvent;
+            _deviceManager.Transceiver.FrameAckOkEvent += Transceiver_FrameAckOkEvent;
+            _deviceManager.Transceiver.FrameTimeOutEvent += Transceiver_FrameTimeOutEvent;
+
+            _deviceManager.Transceiver.SendOhmFrame(_address, 2000, 2000);
+
+            //Thread.Sleep(2000);
+
+            
             //try
             //{
             //    FrameBase db = new OhmFrame(_deviceManager.Transceiver.Address, _receptorAddressTested.Address, _receptorAddressTested.Channel.ToString());
@@ -409,6 +440,7 @@ namespace Guiet.kQuatre.Business.Receptor
             MessageSentCounter = _messageSentCounterTemp.ToString();
             MessageReceivedCounter = _messageReceivedCounterTemp.ToString();
             MessageRssi = "NA";
+            MessageSnr = "NA";
 
             _deviceManager.Transceiver.FrameAckKoEvent += Transceiver_FrameAckKoEvent;
             _deviceManager.Transceiver.FrameAckOkEvent += Transceiver_FrameAckOkEvent;
@@ -479,6 +511,19 @@ namespace Guiet.kQuatre.Business.Receptor
                     MessageLostCounter = _messageLostCounterTemp++.ToString();
                 }
             }
+
+            if (e.FrameSent is OhmFrame)
+            {
+                OhmFrame ohmFrame = (OhmFrame)e.FrameSent;
+                if (ohmFrame.ReceiverAddress == _address)
+                {
+                    _receptorAddressTested.Resistance = "Timeout! Transceiver plugged?";
+                }
+
+                _deviceManager.Transceiver.FrameAckKoEvent -= Transceiver_FrameAckKoEvent;
+                _deviceManager.Transceiver.FrameAckOkEvent -= Transceiver_FrameAckOkEvent;
+                _deviceManager.Transceiver.FrameTimeOutEvent -= Transceiver_FrameTimeOutEvent;
+            }
         }
 
         private void Transceiver_FrameAckOkEvent(object sender, fr.guiet.LoRaLibrary.Events.FrameAckOKEventArgs e)
@@ -489,9 +534,23 @@ namespace Guiet.kQuatre.Business.Receptor
                 if (pingFrame.ReceiverAddress == _address)
                 {
                     MessageRssi = e.AckOKFrame.Rssi;
+                    MessageSnr = e.AckOKFrame.Snr;
                     _messageReceivedCounterTemp = _messageReceivedCounterTemp + 1;
                     MessageReceivedCounter = _messageReceivedCounterTemp.ToString();
                 }
+            }
+
+            if (e.FrameSent is OhmFrame)
+            {
+                OhmFrame ohmFrame = (OhmFrame)e.FrameSent;
+                if (ohmFrame.ReceiverAddress == _address)
+                {
+                    _receptorAddressTested.Resistance = e.AckOKFrame.Ohm;
+                }
+
+                _deviceManager.Transceiver.FrameAckKoEvent -= Transceiver_FrameAckKoEvent;
+                _deviceManager.Transceiver.FrameAckOkEvent -= Transceiver_FrameAckOkEvent;
+                _deviceManager.Transceiver.FrameTimeOutEvent -= Transceiver_FrameTimeOutEvent;
             }
         }
 
@@ -505,6 +564,19 @@ namespace Guiet.kQuatre.Business.Receptor
                     _messageLostCounterTemp = _messageLostCounterTemp + 1;
                     MessageLostCounter = _messageLostCounterTemp.ToString();
                 }
+            }
+
+            if (e.FrameSent is OhmFrame)
+            {
+                OhmFrame ohmFrame = (OhmFrame)e.FrameSent;
+                if (ohmFrame.ReceiverAddress == _address)
+                {
+                    _receptorAddressTested.Resistance = "No ack..receiver plugged?";
+                }
+
+                _deviceManager.Transceiver.FrameAckKoEvent -= Transceiver_FrameAckKoEvent;
+                _deviceManager.Transceiver.FrameAckOkEvent -= Transceiver_FrameAckOkEvent;
+                _deviceManager.Transceiver.FrameTimeOutEvent -= Transceiver_FrameTimeOutEvent;
             }
         }
 

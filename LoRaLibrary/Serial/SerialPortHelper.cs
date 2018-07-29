@@ -1,4 +1,5 @@
-﻿using System;
+﻿using fr.guiet.LoRaLibrary.Frames;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Ports;
@@ -28,24 +29,49 @@ namespace fr.guiet.LoRaLibrary.Serial
         public async Task WriteAsync(byte[] data)
         {
             await _serialPort.BaseStream.WriteAsync(data, 0, data.Length).ConfigureAwait(false);
-
         }
 
         public async Task<byte[]> ReadAsync(CancellationToken cancellationToken)
         {
-            var bufferStream = new MemoryStream();
+            // needed because LoadAsync incorrectly completes sometimes
+            var bufferStream = new MemoryStream();            
 
-            while (_serialPort.BytesToRead > 0)
+            if (_serialPort.BytesToRead > 0)
             {
-                var data = new byte[_serialPort.BytesToRead];
+                do
+                {
+                    var data = new byte[FrameBase.FRAME_MAX_LENGHT - (uint)bufferStream.Length];
+                    var read = await _serialPort.BaseStream.ReadAsync(data, 0, data.Length, cancellationToken)
+                        .ConfigureAwait(false);
 
-                var read = await _serialPort.BaseStream.ReadAsync(data, 0, data.Length, cancellationToken)
-                    .ConfigureAwait(false);
+                    await bufferStream.WriteAsync(data, 0, read, cancellationToken);
 
-                await bufferStream.WriteAsync(data, 0, read, cancellationToken);
+                    if (bufferStream.ToArray().Where(t => t == Encoding.ASCII.GetBytes(FrameBase.FRAME_END_DELIMITER)[0]).Count() != 0)
+                    {
+                        break;
+                    }
+
+                    await Task.Delay(50, cancellationToken);
+
+                } while (!cancellationToken.IsCancellationRequested);
             }
 
-            return bufferStream.ToArray();            
+            return bufferStream.ToArray();
+
+            /* var bufferStream = new MemoryStream();
+
+             var data = new byte[_serialPort.BytesToRead];
+
+             while (_serialPort.BytesToRead > 0 && data[_serialPort.BytesToRead - 1] != Encoding.ASCII.GetBytes("|")[0])
+             {                
+
+                 var read = await _serialPort.BaseStream.ReadAsync(data, 0, data.Length, cancellationToken)
+                     .ConfigureAwait(false);
+
+                 await bufferStream.WriteAsync(data, data.Length, read, cancellationToken);
+             }
+
+             return bufferStream.ToArray(); */
         }
 
         public void Dispose()

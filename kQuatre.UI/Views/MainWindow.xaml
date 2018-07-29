@@ -250,6 +250,7 @@
                                 <RowDefinition Height="Auto"></RowDefinition>
                                 <RowDefinition Height="Auto"></RowDefinition>
                                 <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition Height="Auto"></RowDefinition>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -265,6 +266,9 @@
                             <Label Grid.Row="3" Grid.Column="0" Content="Qualité réception : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
                             <Label Grid.Row="3" Grid.Column="1" Content="{Binding Path=SelectedTestReceptor.MessageRssi, FallbackValue=NA}"></Label>
                             <Label Grid.Row="3" Grid.Column="2" Content="RSSI (Received Signal Strenght Indicator), plus ce chiffre se rapproche de 0 mieux c'est. Qualité OK si : -100 &lt; RSSI &lt; 0"></Label>
+                            <Label Grid.Row="4" Grid.Column="0" Content="Rapport signal sur bruit : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
+                            <Label Grid.Row="4" Grid.Column="1" Content="{Binding Path=SelectedTestReceptor.MessageSnr, FallbackValue=NA}"></Label>
+                            <Label Grid.Row="4" Grid.Column="2" Content="SNR (Signal to Noise Ratio)"></Label>
                         </Grid>
                     </GroupBox>
                     <GroupBox Grid.Row="3" Margin="10,10,10,10">

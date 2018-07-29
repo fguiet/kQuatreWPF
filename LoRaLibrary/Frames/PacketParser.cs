@@ -54,7 +54,13 @@ namespace fr.guiet.LoRaLibrary.Frames
 
                         if (ackComplementArray.Length >= 3)
                         {
-                            string ohm = ackComplement.Split('+')[2];
+                            string snr = ackComplement.Split('+')[2];
+                            resultFrameTemp.SetSnr(snr);
+                        }
+
+                        if (ackComplementArray.Length >= 4)
+                        {
+                            string ohm = ackComplement.Split('+')[3];
                             resultFrameTemp.SetOhm(ohm);
                         }
 
@@ -107,7 +113,7 @@ namespace fr.guiet.LoRaLibrary.Frames
             }
             catch
             {
-                throw new Exceptions.InvalidPacketReceivedException(string.Format("Could not parse received packet : {0}", frame));
+                    throw new Exceptions.InvalidPacketReceivedException(string.Format("Could not parse received packet : {0}", frame));
             }
 
             return resultFrame;
