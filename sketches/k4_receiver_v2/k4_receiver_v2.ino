@@ -4,7 +4,7 @@
 //DEBUG MODE
 // 0 - Non debug mode
 // 1 - debug mode
-#define DEBUG 0
+#define DEBUG 1
 
 const long FREQ = 868E6;
 const int SF = 7;
@@ -23,9 +23,9 @@ const char START_FRAME_DELIMITER = '@';
 const char END_FRAME_DELIMITER = '|';
 const int MIN_FRAME_LENGHT = 17; 
 
-const String UNKNOWN_RECEIVER_ADDRESS = "-1";
+const String UNKNOWN_RECEIVER_ADDRESS = "0";
 const String SENDER_MODULE_ADDRESS = "0";
-const String UNKNOWN_FRAME_ID = "-1";
+const String UNKNOWN_FRAME_ID = "0";
 const String ACK_KO_BAD_FRAME_RECEIVED_FROM_SENDER = "KO_R1";
 const String ACK_OK_FRAME_RECEIVED = "OK_R1";
 
@@ -34,10 +34,14 @@ const String ACK_OK_FRAME_RECEIVED = "OK_R1";
  */
 const String MODULE_ADDRESS = "1";
 
-void setup() {
+//unsigned long currentTime =0;
+String frameReceived;
+bool isFrameReceived=false;
+int rssi;
 
+void setup() {
   
-  //Set Serial baudrate
+  //Set Serial baudrate, only when debugging!
   if (DEBUG) {
     Serial.begin(115200);
     while (!Serial);
@@ -55,12 +59,9 @@ void setup() {
   LoRa.onReceive(onReceive);
   LoRa.receive();
   
-  /***
-  * !!! Modify this !!!
-  * 
-  * Comment it if you test with Arduino and not a mega 2650 otherwise it will crash 
-  */
-  //initRelays();
+  if (!DEBUG) {
+    initRelays();
+  }
 
   //Init Pin status 
   pinMode(STATUS_PIN, OUTPUT);
@@ -76,26 +77,43 @@ void onReceive(int packetSize) {
   if (packetSize==0) return;
 
   String frame = "";
-  int rssi;
-
+  
   while (LoRa.available()) {
       frame = frame + ((char)LoRa.read());
     }
-    
-  printDebug("Trame received : " + frame);  
+
+  frameReceived = frame;
+  isFrameReceived=true;
+  
+  //printDebug("Trame received : " + frame);  
+  
 
   //Serial.println("Trame received : " + frame);  
   //Serial.println("Test");
 
   //Get Rssi
-  rssi = LoRa.packetRssi();
+  //rssi = LoRa.packetRssi();
   
-  handleReceivedFrame(frame, rssi);
+  //handleReceivedFrame(frame, rssi);
 }
 
 void loop() {
 
+  if (isFrameReceived) {
+    isFrameReceived=false;
+
+    printDebug("Trame received : " + frameReceived);    
+
+    //Get Rssi
+    rssi = LoRa.packetRssi();
   
+    handleReceivedFrame(frameReceived, rssi);
+  }
+    
+  
+  //Serial.println("test");
+  //myDelay(1000);
+  //Serial.println("autre");
   //if (LoRa.parsePacket()) {      
     
     //while (LoRa.available()) {
@@ -320,11 +338,13 @@ void fireFirework(String frame) {
   
   //On patiente un peu...
   delay(1000);
+  delay(1000);
   
   //Désactivation des relays pour éviter les courts-circuit
   for(int i=0;i<nbOfRelayToFire;i++) 
   {                    
      int relayToFire = getFrameChunk(messageComplement,'+',chunkNumber + i).toInt(); //Numéro de relay à déclencher (1..16)
+     printDebug("De-activating relay : " + String(relayToFire));
      digitalWrite(FIRST_RELAY_DIGITAL_PIN + relayToFire, HIGH); //Le relay 1 doit être branché sur le digital 22 et ainsi de suite
   }
   
@@ -457,6 +477,18 @@ void printDebug(String debugMessage) {
     Serial.println(debugMessage);
   }  
 }
+
+/*
+ * Using millis inteads on delay
+ * because delay is not working without Serial activated
+ * Dunno why
+ */
+/*void myDelay(int pause) {
+
+  currentTime = millis();  
+  while (millis() - currentTime < pause) {    
+  }     
+}*/
 
 /*
 * Relay initialisation
