@@ -37,7 +37,8 @@ const String MODULE_ADDRESS = "1";
 //unsigned long currentTime =0;
 String frameReceived;
 bool isFrameReceived=false;
-int rssi;
+//int rssi;
+//int snr;
 
 void setup() {
   
@@ -55,6 +56,12 @@ void setup() {
 
   LoRa.setSpreadingFactor(SF);
   LoRa.setSignalBandwidth(BW);
+  
+  //Set syncword so other LoRa message does not interfer
+  LoRa.setSyncWord(0xEE); 
+
+  //Set Transmit powser to 23db (17 is default)
+  LoRa.setTxPower(23);
 
   LoRa.onReceive(onReceive);
   LoRa.receive();
@@ -105,9 +112,12 @@ void loop() {
     printDebug("Trame received : " + frameReceived);    
 
     //Get Rssi
-    rssi = LoRa.packetRssi();
+    int rssi = LoRa.packetRssi();
+
+    //Get Snr
+    int snr = LoRa.packetSnr();
   
-    handleReceivedFrame(frameReceived, rssi);
+    handleReceivedFrame(frameReceived, rssi, snr);
   }
     
   
@@ -156,7 +166,7 @@ String GetResistance(String frame) {
   digitalWrite(FIRST_RELAY_DIGITAL_PIN + relayToCheck, HIGH);        
 
   //Wait a little
-  delay(500);
+  //delay(500);
        
   //Deactivate test mode
   digitalWrite(RELAY1_TEST_PIN,LOW); 
@@ -254,7 +264,7 @@ int countCharInString(String message, char toFind) {
 }
 
 
-void handleReceivedFrame(String frame, int rssi) {
+void handleReceivedFrame(String frame, int rssi, int snr) {
 
   //Check received frame
   if (!frameSanityCheck(frame)) {          
@@ -279,15 +289,15 @@ void handleReceivedFrame(String frame, int rssi) {
 
       if (message != "OHM") {
         //Send always ACK here ... except when message is OHM ... will send ACK later
-        sendLoRaPacket(createFrame(getFrameIdValue(frame), MODULE_ADDRESS, getSenderAddressValue(frame), ACK_OK, ACK_OK_FRAME_RECEIVED + "+" + String(rssi)));    
+        sendLoRaPacket(createFrame(getFrameIdValue(frame), MODULE_ADDRESS, getSenderAddressValue(frame), ACK_OK, ACK_OK_FRAME_RECEIVED + "+" + String(rssi) + "+" + String(snr)));    
       }
       
-      handleFrameMessage(frame, rssi);
+      handleFrameMessage(frame, rssi, snr);
     }
   } 
 }
 
-void handleFrameMessage(String frame, int rssi)  {
+void handleFrameMessage(String frame, int rssi, int snr)  {
 
   String message = getFrameMessageValue(frame);
 
@@ -305,7 +315,7 @@ void handleFrameMessage(String frame, int rssi)  {
   if (message == "OHM") {
     String result = GetResistance(frame);    
     //Send ACK with OHM mesurement
-    sendLoRaPacket(createFrame(getFrameIdValue(frame), MODULE_ADDRESS, getSenderAddressValue(frame), ACK_OK, ACK_OK_FRAME_RECEIVED + "+" + String(rssi) + "+" + result));    
+    sendLoRaPacket(createFrame(getFrameIdValue(frame), MODULE_ADDRESS, getSenderAddressValue(frame), ACK_OK, ACK_OK_FRAME_RECEIVED + "+" + String(rssi) + "+" + String(snr) + "+" + result));    
   }
  
   if (message == "FIRE") { //Ok let's fire!!
