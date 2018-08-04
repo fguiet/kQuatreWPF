@@ -59,7 +59,7 @@ namespace fr.guiet.LoRaLibrary.Core
         {
             if (FrameAckOkEvent != null)
             {
-                _logger.Warn("+++ ACK OK received."
+                _logger.Info("+++ ACK OK received."
                            + Environment.NewLine
                            + string.Format("=> Frame sent info : frame of type : {0} with ID : {1}, timeout set to : {2}, ack timeout set to : {3}, receiver address : {4}, RSSI : {5}", args.FrameSent.FrameOrder, args.FrameSent.FrameId, args.FrameSent.TotalTimeOut, args.FrameSent.AckTimeOut, args.FrameSent.ReceiverAddress, args.AckOKFrame.Rssi)
                            + Environment.NewLine
