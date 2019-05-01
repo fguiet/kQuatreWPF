@@ -18,16 +18,14 @@
  *  version 1.0.1
  * 
  */
-
-#include "Queue.h"
+//#include <Queue.h>
 #include <SPI.h>
 #include <LoRa.h>
-
 
 //DEBUG MODE
 // 0 - Non debug mode
 // 1 - debug mode
-#define DEBUG 1
+#define DEBUG 0
 
 const long FREQ = 868E6;
 const int SF = 7;
@@ -57,10 +55,12 @@ struct frameObj {
   String frame;
   int rssi;
   int snr;
-  bool frameOk;
+  bool isReceived;
 };
-Queue<frameObj> frameQueue;
 
+frameObj frame = { "", 0, 0, false };
+
+//Queue<frameObj> frameQueue;
 
 /***
  * !!! Modify this !!!
@@ -118,11 +118,23 @@ void setup() {
 
 void loop() {
 
-  if (!frameQueue.isEmpty()) {
-    frameObj frame = frameQueue.dequeue();
-
+  if (frame.isReceived) {
+    frame.isReceived = false;
+    printDebug("Handle frame : " + frame.frame);
     handleFrameMessage(frame.frame, frame.rssi, frame.snr);
+    
   }
+
+  //if (!frameQueue.isEmpty()) {
+         
+  //  frameObj frame = frameQueue.dequeue();
+       
+  //  printDebug("Dequeue frame : " + frame.frame);
+
+  //  handleFrameMessage(frame.frame, frame.rssi, frame.snr);
+
+    //printDebug("Free Memory : " + String(freeMemory()));
+ // }
   
 }
 
@@ -160,6 +172,8 @@ void onReceive(int packetSize) {
 
   //Handle
   handleReceivedFrame(frameStr, rssi, snr); 
+  //frame = { frameStr, rssi, snr, true };
+  //frameQueue.enqueue(frame);
 }
 
 void handleReceivedFrame(String frameStr, int rssi, int snr) {
@@ -192,9 +206,14 @@ void handleReceivedFrame(String frameStr, int rssi, int snr) {
         sendLoRaPacket(createFrame(getFrameIdValue(frameStr), MODULE_ADDRESS, getSenderAddressValue(frameStr), ACK_OK, ACK_OK_FRAME_RECEIVED + "+" + String(rssi) + "+" + String(snr)));    
       }
       
-      frameObj frame = { frameStr, rssi, snr, isFrameOk };
+      //frameObj frame = { frameStr, rssi, snr, isFrameOk };
+      frame = { frameStr, rssi, snr, true };
 
-      frameQueue.enqueue(frame);
+      //printDebug("Enqueue frame : " + frameStr);  
+      
+      //bool result = frameQueue.enqueue(frame);
+      //if (!result)
+      //  printDebug("Cannot enqueue");  
     }
   } 
 }

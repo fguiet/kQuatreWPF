@@ -62,7 +62,7 @@
     <Compile Include="Configuration\ConfigFolderNode.cs" />
     <Compile Include="Configuration\ConfigPropertyNode.cs" />
     <Compile Include="Configuration\SoftwareConfiguration.cs" />
-    <Compile Include="Exceptions\CannotLaunchRescueLineException.cs" />
+    <Compile Include="Exceptions\CannotLaunchLineException.cs" />
     <Compile Include="Exceptions\InvalidPacketReceivedException.cs" />
     <Compile Include="Exceptions\TimeoutPacketException.cs" />
     <Compile Include="Firework\FireworkManagerState.cs" />

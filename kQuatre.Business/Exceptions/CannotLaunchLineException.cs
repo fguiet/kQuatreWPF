@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Guiet.kQuatre.Business.Exceptions
 {
-    public class CannotLaunchRescueLineException : Exception
+    public class CannotLaunchLineException : Exception
     {
-        public CannotLaunchRescueLineException(string message) : base(message)
+        public CannotLaunchLineException(string message) : base(message)
         {
 
         }

@@ -292,5 +292,18 @@ namespace Guiet.kQuatre.UI.Views
                 r.StopTest();
             }            
         }
+
+        private void _fireworkTimeline_SelectionChanged(object sender, Telerik.Windows.Controls.SelectionChangeEventArgs e)
+        {
+            if (e.AddedItems.Count > 0)
+            {
+                Firework f = (Firework)e.AddedItems[0];
+                //DialogBoxHelper.ShowInformationMessage("Ligne sélectionnée : ");
+
+                _viewModel.LaunchFailedLine(f.AssignedLine.Number);
+
+                _fireworkTimeline.SelectedItem = null;
+            }
+        }
     }
 }

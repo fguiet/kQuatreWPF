@@ -27,6 +27,7 @@ namespace Guiet.kQuatre.Business.Firework
         #region Private members     
 
         private LineHelper _lineHelperRescue = null;
+        private LineHelper _lineHelperFailed = null;
 
         /// <summary>
         /// Each receptor owns a mac address. Each receptor has got x channels. A channel is linked to a firework line
@@ -831,6 +832,30 @@ namespace Guiet.kQuatre.Business.Firework
             IsDirty = isDirty;
         }
 
+        public void LaunchLine(string lineNumber)
+        {
+            //Check             
+            if (_state == FireworkManagerState.FireInProgress)
+            {
+
+                Line l = (from rl in ActiveLines
+                          where rl.State == LineState.LaunchFailed && rl.Number == lineNumber
+                          select rl).FirstOrDefault();
+
+                if (l != null)
+                {
+
+                    List<Line> lines = new List<Line>();
+                    lines.Add(l);
+                    _lineHelperFailed = new LineHelper(lines);
+                }
+                else
+                {
+                    throw new CannotLaunchLineException(string.Format("Impossible de lancer la ligne : {0}, le tir de la ligne n'a pas échoué", lineNumber));
+                }
+            }
+        }
+
         public void LaunchRescueLine(string lineNumber)
         {
             //Check             
@@ -850,7 +875,7 @@ namespace Guiet.kQuatre.Business.Firework
                 }
                 else
                 {
-                    throw new CannotLaunchRescueLineException(string.Format("Impossible de lancer la ligne de secours : {0}", lineNumber));
+                    throw new CannotLaunchLineException(string.Format("Impossible de lancer la ligne de secours : {0}", lineNumber));
                 }                
             }
         }
@@ -1135,8 +1160,8 @@ namespace Guiet.kQuatre.Business.Firework
             string stat = string.Format("Nombre de lignes OK : {0} sur {1}\r\nNombre de lignes KO : {2} sur {3}",
                                         nbLaunchOK.ToString(), nbTotal.ToString(), nbLaunchKO.ToString(), nbTotal.ToString());
 
-            stat = stat + string.Format("{0}Ligne(s) de secours tirée(s) OK : {1}, ligne de secours tirée(s) KO : {2}, total ligne de secours : {3}",
-                                        Environment.NewLine, nbRescueOK.ToString(), nbRescueKO.ToString(), nbTotalRescue.ToString());
+            stat = stat + string.Format("{0}Ligne(s) de secours tirée(s) OK : {1} sur {2}\r\nligne de secours tirée(s) KO : {3} sur {4}",
+                                        Environment.NewLine, nbRescueOK.ToString(), nbTotalRescue.ToString(),  nbRescueKO.ToString(), nbTotalRescue.ToString());
 
             return stat;
         }
@@ -1237,6 +1262,15 @@ namespace Guiet.kQuatre.Business.Firework
 
                     //TODO : A Revoir
                     //RedoFailedLine();
+                }
+
+                //Failed lignes to launch?
+                if (_lineHelperFailed != null)
+                {
+                    Fire(_lineHelperFailed);
+
+                    //Ok failed line launched!
+                    _lineHelperFailed = null;
                 }
 
                 //Rescue lignes to launch?

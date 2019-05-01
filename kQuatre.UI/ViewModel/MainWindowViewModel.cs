@@ -483,6 +483,18 @@ namespace Guiet.kQuatre.UI.ViewModel
 
         #region Public Members
 
+        public void LaunchFailedLine(string lineNumber)
+        {
+            try
+            {
+                _fireworkManager.LaunchLine(lineNumber);
+            }
+            catch (CannotLaunchLineException ex)
+            {
+                DialogBoxHelper.ShowErrorMessage(ex.Message);
+            }
+        }
+
         public void KeyPress(Key key)
         {
             try
@@ -526,7 +538,7 @@ namespace Guiet.kQuatre.UI.ViewModel
                         break;
                 }
             }
-            catch (CannotLaunchRescueLineException ex)
+            catch (CannotLaunchLineException ex)
             {
                 DialogBoxHelper.ShowErrorMessage(ex.Message);
             }

@@ -296,6 +296,13 @@ namespace Guiet.kQuatre.Business.Firework
             }
         }
 
+        public Line AssignedLine
+        {
+            get
+            {
+                return _assignedLine;
+            }
+        }
 
         #endregion
 
