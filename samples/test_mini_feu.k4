@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FireworkDefinition fireworkName="">
+  <Receptors>
+    <Receptor name="Boitier 1" address="1" nbOfChannels="16" />
+    <Receptor name="Boitier 2" address="2" nbOfChannels="16" />
+    <Receptor name="Boitier 3" address="3" nbOfChannels="16" />
+    <Receptor name="Boitier 4" address="4" nbOfChannels="16" />
+  </Receptors>
+  <Lines>
+    <Line number="1" ignition="00:00:00" rescue="yes">
+      <ReceptorAddress address="1" channel="3" />
+      <Fireworks>
+        <Firework reference="AC190109A" designation="SAC 5 BOMBES 75MM PISTIL ASSORTI&#xD;&#xA;R5 / 45 50 55 00 05" duration="00:00:26" />
+        <Firework reference="AC190453A" designation="SAC 5 BOMBES 75MM AIGUE MARINE R3&#xD;&#xA;R3 / 50 53 56 59 02" duration="00:00:18" />
+      </Fireworks>
+    </Line>
+    <Line number="2" ignition="00:00:00" rescue="no">
+      <ReceptorAddress address="1" channel="1" />
+      <Fireworks>
+        <Firework reference="AC160140A" designation="MARRON AIR 50MM TITANE LOGE EN MORTIER" duration="00:00:03" />
+      </Fireworks>
+    </Line>
+    <Line number="3" ignition="00:00:10" rescue="no">
+      <ReceptorAddress address="1" channel="2" />
+      <Fireworks>
+        <Firework reference="AC190672A" designation="5 BOMBES 75MM R5 AIGUE MARINE&#xD;&#xA;R5 / 55 00 05 10 15" duration="00:00:22" />
+      </Fireworks>
+    </Line>
+  </Lines>
+</FireworkDefinition>

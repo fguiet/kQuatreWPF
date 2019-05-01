@@ -92,7 +92,7 @@ namespace Guiet.kQuatre.UI.Views
                 //Vertical part
                 if (_verticalSlider != null)
                 {
-                    int nbOfElementVisiblePerRange = Convert.ToInt32(Math.Truncate((_fireworkManager.AllFireworks.Count() * this._verticalSlider.SelectionRange)));
+                    int nbOfElementVisiblePerRange = Convert.ToInt32(Math.Truncate((_fireworkManager.AllActiveFireworks.Count() * this._verticalSlider.SelectionRange)));
                     double range = (line.Fireworks[0].RadRowIndex * this._verticalSlider.SelectionRange / nbOfElementVisiblePerRange) ;
 
 

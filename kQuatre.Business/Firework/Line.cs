@@ -52,6 +52,8 @@ namespace Guiet.kQuatre.Business.Firework
 
         #region Private Members
 
+        private bool _isRescueLine = false;
+
         private bool _isDirty = false;
 
         //Line number
@@ -79,6 +81,40 @@ namespace Guiet.kQuatre.Business.Firework
         #endregion
 
         #region Public Members
+
+        public String IsRescueLineText
+        {
+            get
+            {
+                if (_isRescueLine)
+                {
+                    return "Oui";
+                }
+                else
+                {
+                    return "Non";
+                }
+            }
+        }
+
+        public bool IsRescueLine
+        {
+            get
+            {
+                return _isRescueLine;
+            }
+            set
+            {
+                _isRescueLine = value;
+
+                if (value == true)
+                {
+                    Ignition = new TimeSpan();
+                }
+
+                OnPropertyChanged();
+            }
+        }
 
         public bool IsDirty
         {
@@ -270,6 +306,11 @@ namespace Guiet.kQuatre.Business.Firework
             }
         }
 
+        public void SetAsRescueLine()
+        {
+            IsRescueLine = true;
+        }
+
         public void Reset()
         {
             _state = LineState.Standby;
@@ -325,6 +366,7 @@ namespace Guiet.kQuatre.Business.Firework
             l.Ignition = _ignition;
             l.ReceptorAddress = _receptorAddress;
             l.IsDirty = false;
+            l.IsRescueLine = _isRescueLine;
 
             return l;
         }
@@ -337,6 +379,7 @@ namespace Guiet.kQuatre.Business.Firework
         {
             Number = lineClone.Number;
             Ignition = lineClone.Ignition;
+            IsRescueLine = lineClone.IsRescueLine;
 
             if (lineClone.ReceptorAddress == null)
                 UnassignReceptorAddress();

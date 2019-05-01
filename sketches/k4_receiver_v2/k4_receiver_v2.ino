@@ -4,7 +4,7 @@
 //DEBUG MODE
 // 0 - Non debug mode
 // 1 - debug mode
-#define DEBUG 1
+#define DEBUG 0
 
 const long FREQ = 868E6;
 const int SF = 7;
@@ -37,8 +37,8 @@ const String MODULE_ADDRESS = "1";
 //unsigned long currentTime =0;
 String frameReceived;
 bool isFrameReceived=false;
-//int rssi;
-//int snr;
+int rssi;
+int snr;
 
 void setup() {
   
@@ -89,8 +89,42 @@ void onReceive(int packetSize) {
       frame = frame + ((char)LoRa.read());
     }
 
-  frameReceived = frame;
-  isFrameReceived=true;
+ //Get Rssi
+  rssi = LoRa.packetRssi();
+
+  //Get Snr
+  snr = LoRa.packetSnr();
+
+  if (!frameSanityCheck(frame)) {          
+
+    printDebug("bad syntax of trame received :  " + frame); 
+        
+    //Bad frame received
+    sendLoRaPacket(createFrame(UNKNOWN_FRAME_ID, MODULE_ADDRESS, SENDER_MODULE_ADDRESS, ACK_KO, ACK_KO_BAD_FRAME_RECEIVED_FROM_SENDER));
+  }
+  else {
+
+    printDebug("syntax of trame received is ok :  " + frame);  
+    
+    //Frame ok here let's handle frame message
+    //Let's see whether frame is for me...
+    String receiverAddress = getReceiverAddressValue(frame);
+    String message = getFrameMessageValue(frame);
+    
+    if (receiverAddress == MODULE_ADDRESS) {
+
+      printDebug("trame received is for me :  " + frame);  
+
+      if (message != "OHM") {
+        //Send always ACK here ... except when message is OHM ... will send ACK later
+        sendLoRaPacket(createFrame(getFrameIdValue(frame), MODULE_ADDRESS, getSenderAddressValue(frame), ACK_OK, ACK_OK_FRAME_RECEIVED + "+" + String(rssi) + "+" + String(snr)));    
+      }
+      
+      //handleFrameMessage(frame, rssi, snr);
+       frameReceived = frame;  
+       isFrameReceived=true;
+    }   
+  }
   
   //printDebug("Trame received : " + frame);  
   
@@ -112,10 +146,10 @@ void loop() {
     printDebug("Trame received : " + frameReceived);    
 
     //Get Rssi
-    int rssi = LoRa.packetRssi();
+    //int rssi = LoRa.packetRssi();
 
     //Get Snr
-    int snr = LoRa.packetSnr();
+    //int snr = LoRa.packetSnr();
   
     handleReceivedFrame(frameReceived, rssi, snr);
   }
@@ -266,35 +300,37 @@ int countCharInString(String message, char toFind) {
 
 void handleReceivedFrame(String frame, int rssi, int snr) {
 
-  //Check received frame
-  if (!frameSanityCheck(frame)) {          
+  handleFrameMessage(frame, rssi, snr);
 
-    printDebug("bad syntax of trame received :  " + frame); 
+  //Check received frame
+  //if (!frameSanityCheck(frame)) {          
+
+  //  printDebug("bad syntax of trame received :  " + frame); 
         
     //Bad frame received
-    sendLoRaPacket(createFrame(UNKNOWN_FRAME_ID, MODULE_ADDRESS, SENDER_MODULE_ADDRESS, ACK_KO, ACK_KO_BAD_FRAME_RECEIVED_FROM_SENDER));
-  }
-  else {
+  //  sendLoRaPacket(createFrame(UNKNOWN_FRAME_ID, MODULE_ADDRESS, SENDER_MODULE_ADDRESS, ACK_KO, ACK_KO_BAD_FRAME_RECEIVED_FROM_SENDER));
+  //}
+  //else {
 
-    printDebug("syntax of trame received is ok :  " + frame);  
+  //  printDebug("syntax of trame received is ok :  " + frame);  
     
     //Frame ok here let's handle frame message
     //Let's see whether frame is for me...
-    String receiverAddress = getReceiverAddressValue(frame);
-    String message = getFrameMessageValue(frame);
+   // String receiverAddress = getReceiverAddressValue(frame);
+   // String message = getFrameMessageValue(frame);
     
-    if (receiverAddress == MODULE_ADDRESS) {
+    //if (receiverAddress == MODULE_ADDRESS) {
 
-      printDebug("trame received is for me :  " + frame);  
+    //  printDebug("trame received is for me :  " + frame);  
 
-      if (message != "OHM") {
+      //if (message != "OHM") {
         //Send always ACK here ... except when message is OHM ... will send ACK later
-        sendLoRaPacket(createFrame(getFrameIdValue(frame), MODULE_ADDRESS, getSenderAddressValue(frame), ACK_OK, ACK_OK_FRAME_RECEIVED + "+" + String(rssi) + "+" + String(snr)));    
-      }
+       // sendLoRaPacket(createFrame(getFrameIdValue(frame), MODULE_ADDRESS, getSenderAddressValue(frame), ACK_OK, ACK_OK_FRAME_RECEIVED + "+" + String(rssi) + "+" + String(snr)));    
+      //}
       
-      handleFrameMessage(frame, rssi, snr);
-    }
-  } 
+      //handleFrameMessage(frame, rssi, snr);
+   // }
+ // } 
 }
 
 void handleFrameMessage(String frame, int rssi, int snr)  {

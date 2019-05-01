@@ -58,7 +58,7 @@ void setup() {
   while (!Serial);
 
   //Set this if you wemos as a sender!
-  LoRa.setPins(16, 17, 15); // set CS, reset, IRQ pi
+  //LoRa.setPins(16, 17, 15); // set CS, reset, IRQ pi
 
   //Init LoRa
   if (!LoRa.begin(FREQ)) {

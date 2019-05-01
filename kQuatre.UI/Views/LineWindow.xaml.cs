@@ -18,8 +18,6 @@ namespace Guiet.kQuatre.UI.Views
 
         public LineWindow(FireworkManager fireworkManager, Line line)
         {
-            
-
             InitializeComponent();
 
             _fireworkManager = fireworkManager;
@@ -27,8 +25,6 @@ namespace Guiet.kQuatre.UI.Views
             _line = line;
 
             this.Loaded += LineWindow_Loaded;
-
-            
         }
 
         private void LineWindow_Loaded(object sender, RoutedEventArgs e)
@@ -70,8 +66,20 @@ namespace Guiet.kQuatre.UI.Views
         }
 
         private void _cbxLineLocation_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
+        {            
             _viewModel.UpdateLineNumber();
+        }
+
+        private void _chkRescueLine_Checked(object sender, RoutedEventArgs e)
+        {
+            _mkeIgnition.IsEnabled = false;
+            _viewModel.InitializeLineLocation();
+        }
+
+        private void _chkRescueLine_Unchecked(object sender, RoutedEventArgs e)
+        {
+            _mkeIgnition.IsEnabled = true;
+            _viewModel.InitializeLineLocation();
         }
     }
 }

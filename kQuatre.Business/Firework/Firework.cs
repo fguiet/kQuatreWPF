@@ -109,10 +109,36 @@ namespace Guiet.kQuatre.Business.Firework
                 FireworkFinished(this, new EventArgs());
             }
         }
-        
+
         #endregion
 
         #region Public Members 
+
+        public String StateText
+        {
+            get
+            {
+                switch (_state)
+                {
+                    case FireworkState.Finished:
+                        return "Terminé";
+
+                    case FireworkState.ImminentLaunch:
+                        return "Départ imminent";
+
+                    case FireworkState.InProgress:
+                        return "En cours";
+
+                    case FireworkState.LaunchFailed:
+                        return "Tir échoué";
+
+                    case FireworkState.Standby:
+                        return "En attente";
+                    default:
+                        return "Erreur : état inconnu";
+                }
+            }
+        }
 
         public string SummaryUI
         {
@@ -136,7 +162,7 @@ namespace Guiet.kQuatre.Business.Firework
             {
                 return (this.State == FireworkState.Finished || this.State == FireworkState.LaunchFailed);
             }
-        }
+        }        
 
         public FireworkState State
         {
@@ -171,6 +197,8 @@ namespace Guiet.kQuatre.Business.Firework
                         this.RadColor = Colors.Gray;
                         break;
                 }
+
+                OnPropertyChanged("StateText");                
             }
             get
             {
@@ -244,6 +272,14 @@ namespace Guiet.kQuatre.Business.Firework
             }
         }
 
+        public string DurationText
+        {
+            get
+            {
+                return _duration.ToString(@"mm\:ss");
+            }
+        }
+
         public string Designation
         {
             get
@@ -284,7 +320,8 @@ namespace Guiet.kQuatre.Business.Firework
         public void Reset()
         {
             State = FireworkState.Standby;
-            PercentComplete = 100;
+            PercentComplete = 100; //Set to 0 so RadColor can be set properly
+            OnPropertyChanged("ElapsedTimeText");
         }
 
         public void Stop()
@@ -329,14 +366,29 @@ namespace Guiet.kQuatre.Business.Firework
             this.State = FireworkState.ImminentLaunch;
         }
 
+        public string ElapsedTimeText
+        {
+            get
+            {
+                if (_elapsedTime == null) return "00:00";
+
+                return _elapsedTime.Elapsed.ToString(@"mm\:ss");
+            }
+        }
+
         #endregion
 
         #region Private methods 
 
         private void TimerHelp_Elapsed(object sender, ElapsedEventArgs e)
         {
+
+            if (_elapsedTime == null) return;
+
             //Compute percent complete
             //100% = duration in millisecond
+
+            OnPropertyChanged("ElapsedTimeText");
 
             double complete = (100 * _elapsedTime.ElapsedMilliseconds) / _duration.TotalMilliseconds;
 

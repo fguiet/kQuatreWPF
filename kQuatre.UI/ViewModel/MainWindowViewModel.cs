@@ -1,7 +1,9 @@
 ﻿using Guiet.kQuatre.Business.Configuration;
+using Guiet.kQuatre.Business.Exceptions;
 using Guiet.kQuatre.Business.Firework;
 using Guiet.kQuatre.Business.Receptor;
 using Guiet.kQuatre.Business.Transceiver;
+using Guiet.kQuatre.UI.Helpers;
 using Guiet.kQuatre.UI.Views;
 using Microsoft.Win32;
 using System;
@@ -9,6 +11,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Threading;
 using Telerik.Windows.Controls;
 using Telerik.Windows.Controls.Timeline;
@@ -221,7 +224,7 @@ namespace Guiet.kQuatre.UI.ViewModel
             _deviceManager.DeviceErrorWhenConnecting += DeviceManager_DeviceErrorWhenConnecting;
             _deviceManager.USBConnection += DeviceManager_USBConnection;
 
-            FireworkManager = InstantiateNewFirework();
+            FireworkManager = InstantiateNewFirework();            
 
             //Device already plugged?
             _deviceManager.DiscoverDevice();
@@ -381,7 +384,7 @@ namespace Guiet.kQuatre.UI.ViewModel
                     //Vertical part
                     if (verticalSlider != null)
                     {
-                        int nbOfElementVisiblePerRange = Convert.ToInt32(Math.Truncate((_fireworkManager.AllFireworks.Count * verticalSlider.SelectionRange)));
+                        int nbOfElementVisiblePerRange = Convert.ToInt32(Math.Truncate((_fireworkManager.AllActiveFireworks.Count * verticalSlider.SelectionRange)));
                         double range = (line.Fireworks[0].RadRowIndex * verticalSlider.SelectionRange / nbOfElementVisiblePerRange);
 
                         //End?
@@ -479,6 +482,55 @@ namespace Guiet.kQuatre.UI.ViewModel
         #endregion
 
         #region Public Members
+
+        public void KeyPress(Key key)
+        {
+            try
+            {
+                switch (key)
+                {
+                    case Key.NumPad1:
+                        _fireworkManager.LaunchRescueLine("1");
+                        break;
+
+                    case Key.NumPad2:
+                        _fireworkManager.LaunchRescueLine("2");
+                        break;
+
+                    case Key.NumPad3:
+                        _fireworkManager.LaunchRescueLine("3");
+                        break;
+
+                    case Key.NumPad4:
+                        _fireworkManager.LaunchRescueLine("4");
+                        break;
+
+                    case Key.NumPad5:
+                        _fireworkManager.LaunchRescueLine("5");
+                        break;
+
+                    case Key.NumPad6:
+                        _fireworkManager.LaunchRescueLine("6");
+                        break;
+
+                    case Key.NumPad7:
+                        _fireworkManager.LaunchRescueLine("7");
+                        break;
+
+                    case Key.NumPad8:
+                        _fireworkManager.LaunchRescueLine("8");
+                        break;
+
+                    case Key.NumPad9:
+                        _fireworkManager.LaunchRescueLine("9");
+                        break;
+                }
+            }
+            catch (CannotLaunchRescueLineException ex)
+            {
+                DialogBoxHelper.ShowErrorMessage(ex.Message);
+            }
+        }
 
         public void ResetUI()
         {

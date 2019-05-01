@@ -32,6 +32,14 @@ namespace Guiet.kQuatre.UI.ViewModel
             {
                 return _lineLocation;
             }
+            set
+            {
+                if (_lineLocation != value)
+                {
+                    _lineLocation = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         private string _selectedLineLocation;
@@ -129,7 +137,7 @@ namespace Guiet.kQuatre.UI.ViewModel
         public LineViewModel(FireworkManager fireworkManager, Line line)
         {
             _fireworkManager = fireworkManager;
-            _line = line;           
+            _line = line;
 
             if (line == null)
             {
@@ -144,7 +152,7 @@ namespace Guiet.kQuatre.UI.ViewModel
             }
 
             InitializeLineLocation();
-            _lineClone.PropertyChanged += LineClone_PropertyChanged;            
+            _lineClone.PropertyChanged += LineClone_PropertyChanged;
         }
 
         private void LineClone_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -181,7 +189,7 @@ namespace Guiet.kQuatre.UI.ViewModel
         }
 
         public void Save()
-        {            
+        {
             if (_mode == WindowMode.Add)
                 _fireworkManager.AddOrUpdateLine(true, _line, _lineClone);
             else
@@ -189,61 +197,89 @@ namespace Guiet.kQuatre.UI.ViewModel
 
         }
 
-        private void InitializeLineLocation()
+        public void InitializeLineLocation()
         {
-            int nbLines = _fireworkManager.Lines.Count;
+            List<ComboBoxItem> item = new List<ComboBoxItem>();
+
+            int firstPos = 0;
+            int nbLines = 0;
+            int lastPos = 0;
+            if (!_lineClone.IsRescueLine)
+            {
+                //Normal lines
+                nbLines = _fireworkManager.ActiveLines.Count;
+                firstPos = _fireworkManager.RescueLines.Count; 
+                lastPos = _fireworkManager.ActiveLines.Count + _fireworkManager.RescueLines.Count;
+            }
+            else
+            {
+                //Rescue line
+                firstPos = 0;
+                lastPos = _fireworkManager.RescueLines.Count;
+                nbLines = _fireworkManager.RescueLines.Count;
+            }
+
             string verb = string.Empty;
             ComboBoxItem cbi = null;
             string message = string.Empty;
             if (_mode == WindowMode.Add)
             {
                 verb = "Insérer";
-                cbi = new ComboBoxItem("0", "Insérer en première position");
-                _lineLocation.Add(cbi);
+                cbi = new ComboBoxItem(firstPos.ToString(), "Insérer en première position");
+                item.Add(cbi);
 
                 //Insert on first position selected by default
-                SelectedLineLocation = "0";
+                SelectedLineLocation = firstPos.ToString();
                 //SelectedLineLocation = (nbLines + 1).ToString();
 
                 if (nbLines == 0)
+                {
+                    LineLocation = item;
                     return;
+                }
             }
             else
             {
                 verb = "Déplacer";
                 cbi = new ComboBoxItem(DO_NOT_MOVE_ID, "Ne pas déplacer");
-                _lineLocation.Add(cbi);
+                item.Add(cbi);
 
                 SelectedLineLocation = DO_NOT_MOVE_ID;
 
-                if (nbLines == 1) return;
+                if (nbLines == 1)
+                {
+                    LineLocation = item;
+                    return;
+                }
 
                 if (_line.Number != "1")
                 {
-                    cbi = new ComboBoxItem("0", "Déplacer en première position");
-                    _lineLocation.Add(cbi);
+                    cbi = new ComboBoxItem(firstPos.ToString(), "Déplacer en première position");
+                    item.Add(cbi);
                 }
             }
 
-            if (nbLines > 2)
+            if (nbLines >= 2)
             {
-                for (int i = 1; i < nbLines; i++)
+                for (int i = firstPos + 1; i < lastPos; i++)
                 {
                     if (i.ToString() != _line.Number && (i + 1).ToString() != _line.Number)
                     {
                         message = string.Format("{0} entre la ligne {1} et {2}", verb, i, i + 1);
                         cbi = new ComboBoxItem(i.ToString(), message);
-                        _lineLocation.Add(cbi);
+                        item.Add(cbi);
                     }
                 }
             }
 
-            if (_line.Number != nbLines.ToString())
+            if (_line.Number != lastPos.ToString())
             {
                 message = string.Format("{0} en dernière position", verb);
-                cbi = new ComboBoxItem((nbLines + 1).ToString(), message);
-                _lineLocation.Add(cbi);
+                cbi = new ComboBoxItem(lastPos.ToString(), message);
+                item.Add(cbi);
             }
+
+            LineLocation = item;
         }
     }
 }

@@ -7,232 +7,244 @@
     <Receptor name="Boitier 4" address="4" nbOfChannels="16" />
   </Receptors>
   <Lines>
-    <Line number="1" ignition="00:00:05">
+    <Line number="1" ignition="00:00:00" rescue="yes">
+      <ReceptorAddress address="2" channel="14" />
+      <Fireworks>
+        <Firework reference="AC190453A" designation="SAC 5 BOMBES 75MM AIGUE MARINE R3&#xD;&#xA;R3 / 50 53 56 59 02" duration="00:00:18" />
+      </Fireworks>
+    </Line>
+    <Line number="2" ignition="00:00:00" rescue="yes">
+      <ReceptorAddress address="2" channel="1" />
+      <Fireworks>
+        <Firework reference="AC160140A" designation="MARRON AIR 50MM TITANE LOGE EN MORTIER" duration="00:00:03" />
+      </Fireworks>
+    </Line>
+    <Line number="3" ignition="00:00:05" rescue="no">
       <ReceptorAddress address="3" channel="9" />
       <Fireworks>
         <Firework reference="AC160140A" designation="MARRON AIR 50MM TITANE LOGE EN MORTIER" duration="00:00:03" />
       </Fireworks>
     </Line>
-    <Line number="2" ignition="00:00:05">
+    <Line number="4" ignition="00:00:05" rescue="no">
       <ReceptorAddress address="1" channel="2" />
       <Fireworks>
         <Firework reference="AC298056A" designation="PACK CD 16 CPS BBTES 4 EFFETS VARIES" duration="00:00:18" />
       </Fireworks>
     </Line>
-    <Line number="3" ignition="00:00:05">
+    <Line number="5" ignition="00:00:05" rescue="no">
       <ReceptorAddress address="1" channel="1" />
       <Fireworks>
         <Firework reference="AC160140A" designation="MARRON AIR 50MM TITANE LOGE EN MORTIER" duration="00:00:03" />
       </Fireworks>
     </Line>
-    <Line number="4" ignition="00:00:30">
+    <Line number="6" ignition="00:00:30" rescue="no">
       <ReceptorAddress address="1" channel="12" />
       <Fireworks>
         <Firework reference="AC298085A" designation="PACK CZ 30 CPS PAF SCINT BLANC FLEUR CREPITANTE" duration="00:00:25" />
       </Fireworks>
     </Line>
-    <Line number="5" ignition="00:00:52">
+    <Line number="7" ignition="00:00:52" rescue="no">
       <ReceptorAddress address="3" channel="14" />
       <Fireworks>
         <Firework reference="AC190685A" designation="SAC 5 BOMBES 75MM R5 PETALES ASSORTIES&#xD;&#xA;R5 / 52 57 02 07 12" duration="00:00:26" />
       </Fireworks>
     </Line>
-    <Line number="6" ignition="00:01:17">
+    <Line number="8" ignition="00:01:17" rescue="no">
       <ReceptorAddress address="4" channel="2" />
       <Fireworks>
         <Firework reference="YSALVE 1 BBE 100" designation="1 BOMBE 100mm &#xD;&#xA;***********JOK+************" duration="00:00:04" />
       </Fireworks>
     </Line>
-    <Line number="7" ignition="00:01:23">
+    <Line number="9" ignition="00:01:23" rescue="no">
       <ReceptorAddress address="2" channel="2" />
       <Fireworks>
         <Firework reference="AC297312A" designation="KAKI ROUGE CLIGNOTANT ARGENT&#xD;&#xA;PACK CD 25 COUPS BOMB" duration="00:00:34" />
       </Fireworks>
     </Line>
-    <Line number="8" ignition="00:01:55">
+    <Line number="10" ignition="00:01:55" rescue="no">
       <ReceptorAddress address="1" channel="10" />
       <Fireworks>
         <Firework reference="AC190675A" designation="5 BOMBES 75MM R5 OPALINE&#xD;&#xA;R5 / 55 00 05 10 15" duration="00:00:26" />
       </Fireworks>
     </Line>
-    <Line number="9" ignition="00:02:20">
+    <Line number="11" ignition="00:02:20" rescue="no">
       <ReceptorAddress address="1" channel="6" />
       <Fireworks>
         <Firework reference="AC297333A" designation="PASSIFORE CLIGNOTANT VERT ET CREPITANT&#xD;&#xA;PACK CW 21" duration="00:00:26" />
       </Fireworks>
     </Line>
-    <Line number="10" ignition="00:02:55">
+    <Line number="12" ignition="00:02:55" rescue="no">
       <ReceptorAddress address="2" channel="5" />
       <Fireworks>
         <Firework reference="AC280737A" designation="BOTTE DE 10 CHANDELLES 20 ETOILES SCINTILLANT  OR" duration="00:00:32" />
       </Fireworks>
     </Line>
-    <Line number="11" ignition="00:03:20">
+    <Line number="13" ignition="00:03:20" rescue="no">
       <ReceptorAddress address="3" channel="3" />
       <Fireworks>
         <Firework reference="AC297814A" designation="GENTIANE ROUGE ET OR&#xD;&#xA;PACK CZ 25 COUPS COMETES ROUG" duration="00:00:24" />
       </Fireworks>
     </Line>
-    <Line number="12" ignition="00:03:40">
+    <Line number="14" ignition="00:03:40" rescue="no">
       <ReceptorAddress address="3" channel="16" />
       <Fireworks>
         <Firework reference="AC298089A" designation="PACK CD 25 CPS TRC PALM BROCADE CROWN SCINT ROUGE" duration="00:00:25" />
       </Fireworks>
     </Line>
-    <Line number="13" ignition="00:03:55">
+    <Line number="15" ignition="00:03:55" rescue="no">
       <ReceptorAddress address="1" channel="9" />
       <Fireworks>
         <Firework reference="WAC990807A" designation="ASSORTIMENT N°4 - 5 BBES 75MM R4 &#xD;&#xA;R4 / 55 59 03 07 11" duration="00:00:23" />
       </Fireworks>
     </Line>
-    <Line number="14" ignition="00:04:16">
+    <Line number="16" ignition="00:04:16" rescue="no">
       <ReceptorAddress address="2" channel="3" />
       <Fireworks>
         <Firework reference="AC120021A" designation="FONTAINE CONIQUE DOREE" duration="00:01:00" />
       </Fireworks>
     </Line>
-    <Line number="15" ignition="00:04:40">
+    <Line number="17" ignition="00:04:40" rescue="no">
       <ReceptorAddress address="3" channel="1" />
       <Fireworks>
         <Firework reference="AC298079A" designation="PACK CD 19 CPS SPIRALE PIVOINE RGE VERT VIOLET" duration="00:00:30" />
       </Fireworks>
     </Line>
-    <Line number="16" ignition="00:05:08">
+    <Line number="18" ignition="00:05:08" rescue="no">
       <ReceptorAddress address="3" channel="4" />
       <Fireworks>
         <Firework reference="WAC990805A" designation="ASSORTIMENT N°2 - 5 BBES 75MM R4 &#xD;&#xA;R4 / 08 12 16 20 24" duration="00:00:20" />
       </Fireworks>
     </Line>
-    <Line number="17" ignition="00:05:24">
+    <Line number="19" ignition="00:05:24" rescue="no">
       <ReceptorAddress address="1" channel="7" />
       <Fireworks>
         <Firework reference="AC298092A" designation="PACK CD 100 CPS  COM CREPITANT BBTE MULTI" duration="00:00:50" />
       </Fireworks>
     </Line>
-    <Line number="18" ignition="00:06:07">
+    <Line number="20" ignition="00:06:07" rescue="no">
       <ReceptorAddress address="2" channel="8" />
       <Fireworks>
         <Firework reference="AC190695A" designation="5 BOMBES 75MM R5 PALME&#xD;&#xA;R5 / 07 12 17 22 27" duration="00:00:26" />
       </Fireworks>
     </Line>
-    <Line number="19" ignition="00:06:38">
+    <Line number="21" ignition="00:06:38" rescue="no">
       <ReceptorAddress address="2" channel="4" />
       <Fireworks>
         <Firework reference="AC298057A" designation="PACK CD 36 CPS BBTES 5 EFFETS VARIES" duration="00:00:35" />
       </Fireworks>
     </Line>
-    <Line number="20" ignition="00:07:00">
+    <Line number="22" ignition="00:07:00" rescue="no">
       <ReceptorAddress address="1" channel="3" />
       <Fireworks>
         <Firework reference="AC190672A" designation="5 BOMBES 75MM R5 AIGUE MARINE&#xD;&#xA;R5 / 00 05 10 15 20" duration="00:00:26" />
       </Fireworks>
     </Line>
-    <Line number="21" ignition="00:07:25">
+    <Line number="23" ignition="00:07:25" rescue="no">
       <ReceptorAddress address="1" channel="11" />
       <Fireworks>
         <Firework reference="AC298038A" designation="PACK CD 19 PAF BLEU WILLOW SCINT BLANC" duration="00:00:30" />
       </Fireworks>
     </Line>
-    <Line number="22" ignition="00:07:45">
+    <Line number="24" ignition="00:07:45" rescue="no">
       <ReceptorAddress address="2" channel="9" />
       <Fireworks>
         <Firework reference="WAC990806A" designation="ASSORTIMENT N°3 - 5 BBES 75MM R4 &#xD;&#xA;R4 / 45 49 53 57 01" duration="00:00:23" />
       </Fireworks>
     </Line>
-    <Line number="23" ignition="00:08:05">
+    <Line number="25" ignition="00:08:05" rescue="no">
       <ReceptorAddress address="1" channel="4" />
       <Fireworks>
         <Firework reference="AC297295A" designation="BAUHINIA TRONC BLEU + CLIGNOTANT&#xD;&#xA;PACK CD 19 COUPS" duration="00:00:32" />
       </Fireworks>
     </Line>
-    <Line number="24" ignition="00:08:30">
+    <Line number="26" ignition="00:08:30" rescue="no">
       <ReceptorAddress address="2" channel="6" />
       <Fireworks>
         <Firework reference="AC298086A" designation="PACK CZ 49 CPS BBT WILLOW ROUEG VERT &amp; SCINT ROUGE" duration="00:00:35" />
       </Fireworks>
     </Line>
-    <Line number="25" ignition="00:08:55">
+    <Line number="27" ignition="00:08:55" rescue="no">
       <ReceptorAddress address="1" channel="5" />
       <Fireworks>
         <Firework reference="AC190696A" designation="5 BOMBES 75MM R5 PISTIL&#xD;&#xA;R5 / 55 00 05 10 15" duration="00:00:26" />
       </Fireworks>
     </Line>
-    <Line number="26" ignition="00:09:19">
+    <Line number="28" ignition="00:09:19" rescue="no">
       <ReceptorAddress address="3" channel="15" />
       <Fireworks>
         <Firework reference="AC942312A" designation="CHANDELLE 30MM 10 COMETES CREPITANTES" duration="00:00:30" />
         <Firework reference="AC297341A" designation="JACINTHE CREPITANTE&#xD;&#xA;PACK CD 19 COUPS PAF CREPITANT" duration="00:00:21" />
       </Fireworks>
     </Line>
-    <Line number="27" ignition="00:09:42">
+    <Line number="29" ignition="00:09:42" rescue="no">
       <ReceptorAddress address="2" channel="7" />
       <Fireworks>
         <Firework reference="AC298004A" designation="MAHONIA&#xD;&#xA;PACK CW 100 CPS POT A FEU CRACKERS + BOMBE" duration="00:00:35" />
         <Firework reference="AC190750A" designation="SAC 5 BOMBES 75MM SAULE CREPITANT R4&#xD;&#xA;R4 / 42 46 50 54 58" duration="00:00:23" />
       </Fireworks>
     </Line>
-    <Line number="28" ignition="00:09:54">
+    <Line number="30" ignition="00:09:54" rescue="no">
       <ReceptorAddress address="2" channel="10" />
       <Fireworks>
         <Firework reference="AC190465A" designation="SAC 5 BOMBES 75MM TRONC CREPITANT SAULE CREPITANT &#xD;&#xA;R4 / 54 58 02 06 10" duration="00:00:27" />
       </Fireworks>
     </Line>
-    <Line number="29" ignition="00:10:18">
+    <Line number="31" ignition="00:10:18" rescue="no">
       <ReceptorAddress address="1" channel="8" />
       <Fireworks>
         <Firework reference="AC130631A" designation="BENGALE 1MN VIOLET" duration="00:01:00" />
       </Fireworks>
     </Line>
-    <Line number="30" ignition="00:10:53">
+    <Line number="32" ignition="00:10:53" rescue="no">
       <ReceptorAddress address="3" channel="5" />
       <Fireworks>
         <Firework reference="AC120021A" designation="FONTAINE CONIQUE DOREE" duration="00:01:00" />
       </Fireworks>
     </Line>
-    <Line number="31" ignition="00:11:17">
+    <Line number="33" ignition="00:11:17" rescue="no">
       <ReceptorAddress address="1" channel="13" />
       <Fireworks>
         <Firework reference="AC298058A" designation="PACK CD 19 CPS BBTES 4 EFFETS VARIES" duration="00:00:28" />
       </Fireworks>
     </Line>
-    <Line number="32" ignition="00:11:31">
+    <Line number="34" ignition="00:11:31" rescue="no">
       <ReceptorAddress address="1" channel="16" />
       <Fireworks>
         <Firework reference="AC190697A" designation="5 BOMBES 75MM R5 CROSSETTE&#xD;&#xA;R5 / 31 36 41 46 51" duration="00:00:26" />
       </Fireworks>
     </Line>
-    <Line number="33" ignition="00:11:55">
+    <Line number="35" ignition="00:11:55" rescue="no">
       <ReceptorAddress address="3" channel="2" />
       <Fireworks>
         <Firework reference="AC298060A" designation="PACK CD 19 CPS PALME OR CLIGNO RGE" duration="00:00:26" />
       </Fireworks>
     </Line>
-    <Line number="34" ignition="00:12:15">
+    <Line number="36" ignition="00:12:15" rescue="no">
       <ReceptorAddress address="1" channel="14" />
       <Fireworks>
         <Firework reference="AC297343A" designation="JACINTHE BLEUE&#xD;&#xA;PACK CD 19 COUPS PAF BLEU A BOMBETT" duration="00:00:21" />
       </Fireworks>
     </Line>
-    <Line number="35" ignition="00:12:23">
+    <Line number="37" ignition="00:12:23" rescue="no">
       <ReceptorAddress address="1" channel="15" />
       <Fireworks>
         <Firework reference="AC297426A" designation="HELIOTROPE TRONC ASSORTI SAULE COULEUR&#xD;&#xA;PACK CD 25" duration="00:00:22" />
         <Firework reference="AC297426A" designation="HELIOTROPE TRONC ASSORTI SAULE COULEUR&#xD;&#xA;PACK CD 25" duration="00:00:22" />
       </Fireworks>
     </Line>
-    <Line number="36" ignition="00:12:43">
+    <Line number="38" ignition="00:12:43" rescue="no">
       <ReceptorAddress address="2" channel="11" />
       <Fireworks>
         <Firework reference="AC298039A" designation="PACK CD 19 COMETE BLEU BBTE CHRYS BROC" duration="00:00:35" />
       </Fireworks>
     </Line>
-    <Line number="37" ignition="00:13:00">
+    <Line number="39" ignition="00:13:00" rescue="no">
       <ReceptorAddress address="3" channel="6" />
       <Fireworks>
         <Firework reference="AC298072A" designation="PACK CD 25CPS 47MM BBES ASSORTIES" duration="00:00:37" />
       </Fireworks>
     </Line>
-    <Line number="38" ignition="00:13:05">
+    <Line number="40" ignition="00:13:05" rescue="no">
       <ReceptorAddress address="3" channel="7" />
       <Fireworks>
         <Firework reference="AC298059A" designation="PACK CD 19 CPS RGE VERT BLEU A CREPITANT" duration="00:00:30" />
@@ -241,19 +253,19 @@
         <Firework reference="AC190164A" designation="5 BOMBES 75MM PALME R2 R25 EN TETE" duration="00:00:37" />
       </Fireworks>
     </Line>
-    <Line number="39" ignition="00:13:10">
+    <Line number="41" ignition="00:13:10" rescue="no">
       <ReceptorAddress address="2" channel="12" />
       <Fireworks>
         <Firework reference="AC190694A" designation="5 BOMBES 75MM R5 CHRYSANTHEME&#xD;&#xA;R5 / 10 15 20 25 30" duration="00:00:26" />
       </Fireworks>
     </Line>
-    <Line number="40" ignition="00:13:27">
+    <Line number="42" ignition="00:13:27" rescue="no">
       <ReceptorAddress address="2" channel="13" />
       <Fireworks>
         <Firework reference="AC298002A" designation="PACK 25CPS BBET RGE BE/V CREP/BLE CROW..&#xD;&#xA;PACKS SECOURS" duration="00:00:25" />
       </Fireworks>
     </Line>
-    <Line number="41" ignition="00:13:27">
+    <Line number="43" ignition="00:13:27" rescue="no">
       <ReceptorAddress address="3" channel="8" />
       <Fireworks>
         <Firework reference="WAC190233R3A" designation="SAC 5 BBES 75MM R3'' BQ BPE 2018 &#xD;&#xA;R3 / 25 28 31 34 37" duration="00:00:17" />

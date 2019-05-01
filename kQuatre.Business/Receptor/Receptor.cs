@@ -345,7 +345,7 @@ namespace Guiet.kQuatre.Business.Receptor
 
             _receptorWorkerOhm = new BackgroundWorker();
             _receptorWorkerOhm.DoWork += ReceptorWorkerOhm_DoWork;
-           // _receptorWorkerOhm.RunWorkerCompleted += ReceptorWorkerOhm_RunWorkerCompleted;
+            // _receptorWorkerOhm.RunWorkerCompleted += ReceptorWorkerOhm_RunWorkerCompleted;
             _receptorWorkerOhm.RunWorkerAsync(ra);
         }
 
@@ -367,9 +367,9 @@ namespace Guiet.kQuatre.Business.Receptor
         }
 
         //private void ReceptorWorkerOhm_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-       // {
-            //_receptorAddressTested.Resistance = e.Result.ToString();
-       // }
+        // {
+        //_receptorAddressTested.Resistance = e.Result.ToString();
+        // }
 
         private void ReceptorWorkerOhm_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -378,11 +378,13 @@ namespace Guiet.kQuatre.Business.Receptor
             _deviceManager.Transceiver.FrameAckOkEvent += Transceiver_FrameAckOkEvent;
             _deviceManager.Transceiver.FrameTimeOutEvent += Transceiver_FrameTimeOutEvent;
 
-            _deviceManager.Transceiver.SendOhmFrame(_address, 2000, 2000);
+            ReceptorAddress ra = (ReceptorAddress)e.Argument;
+
+            _deviceManager.Transceiver.SendOhmFrame(_address, ra.Channel.ToString(), 2000, 2000);
 
             //Thread.Sleep(2000);
 
-            
+
             //try
             //{
             //    FrameBase db = new OhmFrame(_deviceManager.Transceiver.Address, _receptorAddressTested.Address, _receptorAddressTested.Channel.ToString());
@@ -435,8 +437,8 @@ namespace Guiet.kQuatre.Business.Receptor
             _messageLostCounterTemp = 0;
             _messageReceivedCounterTemp = 0;
 
-           //init GUI
-           MessageLostCounter = _messageLostCounterTemp.ToString();
+            //init GUI
+            MessageLostCounter = _messageLostCounterTemp.ToString();
             MessageSentCounter = _messageSentCounterTemp.ToString();
             MessageReceivedCounter = _messageReceivedCounterTemp.ToString();
             MessageRssi = "NA";
@@ -451,11 +453,11 @@ namespace Guiet.kQuatre.Business.Receptor
                 //try
                 //{                    
 
-                    MessageSentCounter = (_messageSentCounterTemp++).ToString();
-                                        
-                    _deviceManager.Transceiver.SendPingFrame(_address, _deviceManager.SoftwareConfiguration.TransceiverReceptionTimeout, _deviceManager.SoftwareConfiguration.TransceiverACKTimeout);
+                MessageSentCounter = (_messageSentCounterTemp++).ToString();
 
-                    Thread.Sleep(500);
+                _deviceManager.Transceiver.SendPingFrame(_address, _deviceManager.SoftwareConfiguration.TransceiverReceptionTimeout, _deviceManager.SoftwareConfiguration.TransceiverACKTimeout);
+
+                Thread.Sleep(500);
 
 
                 /*if (_deviceManager.IsEmitterConnected)
@@ -496,7 +498,7 @@ namespace Guiet.kQuatre.Business.Receptor
 
             if (_receptorWorker.CancellationPending)
             {
-                e.Cancel = true;             
+                e.Cancel = true;
             }
         }
 

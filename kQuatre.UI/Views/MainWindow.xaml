@@ -7,6 +7,7 @@
         xmlns:Custom="http://infragistics.com/Windows" x:Name="_mainWindow" x:Class="Guiet.kQuatre.UI.Views.MainWindow"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:views="clr-namespace:Guiet.kQuatre.UI.ViewModel"
+        xmlns:conv="clr-namespace:Guiet.kQuatre.UI.Converters"
         xmlns:igDP="http://infragistics.com/DataPresenter"
         xmlns:kQuatreUI="clr-namespace:Guiet.kQuatre.UI.Timeline"                
         xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
@@ -28,6 +29,7 @@
                 </Style.Triggers>
             </Style>
 
+            <conv:CountToVisibilityConverter x:Key="CountToVisibilityConverter"></conv:CountToVisibilityConverter>
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
@@ -133,7 +135,7 @@
                             <RowDefinition  />
                         </Grid.RowDefinitions>
 
-                        <igDP:XamDataGrid Background="Beige" Width="Auto" Height="Auto" ScrollingMode="Immediate" Name="_fireworkDatagrid"  DataSource="{Binding FireworkManager.Lines}" HorizontalAlignment="Stretch" SelectedDataItemsScope="RecordsOnly" GroupByAreaLocation="None">
+                        <igDP:XamDataGrid Background="Beige" Width="Auto" Height="Auto" ScrollingMode="Immediate" Name="_fireworkDatagrid"  DataSource="{Binding FireworkManager.AllLines}" HorizontalAlignment="Stretch" SelectedDataItemsScope="RecordsOnly" GroupByAreaLocation="None">
                             <igDP:XamDataGrid.Resources>
                                 <Style x:Key="lineRowColorStyle" TargetType="igDP:DataRecordCellArea">
                                     <Setter Property="Background" Value="Gray"/>
@@ -180,6 +182,7 @@
                                         <igDP:Field IsReadOnly="True" Label="Mise à feu" Name="Ignition" >
                                         </igDP:Field>
                                         <igDP:Field IsReadOnly="True" Label="Liaison" Name="ReceptorAddressUI" Width="250"/>
+                                        <igDP:Field IsReadOnly="True" Label="Ligne de secours" Name="IsRescueLineText" Width="150"  />
                                         <igDP:UnboundField Label="Action">
                                             <igDP:Field.Settings>
                                                 <igDP:FieldSettings CellValuePresenterStyle="{StaticResource buttonInCellStyle}" />
@@ -361,6 +364,10 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                        <!-- GridSplitter Visibility Collapsed by default -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Rescue lines Visibility Collapsed by default -->
                     </Grid.RowDefinitions>
 
                     <Grid Grid.Row="0">
@@ -447,7 +454,7 @@
                              Content="Firework Timeline" 
                              HorizontalAlignment="Stretch"
                              VerticalAlignment="Stretch"
-                             ItemsSource="{Binding FireworkManager.AllFireworks}"
+                             ItemsSource="{Binding FireworkManager.AllActiveFireworks}"
                              PeriodStart= "{Binding FireworkManager.PeriodStartUI}"
                              PeriodEnd="{Binding FireworkManager.PeriodEndUI}"
                              StartPath="RadStart"
@@ -470,7 +477,40 @@
                             </telerik:RadTimeline.Intervals>
                         </telerik:RadTimeline>
                     </Grid>
+                    <GridSplitter Visibility="{Binding Path=FireworkManager.RescueLines.Count, Converter={StaticResource CountToVisibilityConverter}}" ShowsPreview="True" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Center" ResizeDirection="Rows" Grid.Row="2" BorderThickness="5" BorderBrush="Black"></GridSplitter>
+                    <Grid Grid.Row="3">
+                        <igDP:XamDataGrid DataSource="{Binding FireworkManager.AllRescueFireworks}" 
+                          ScrollingMode="Immediate"
+                          HorizontalAlignment="Stretch" 
+                          SelectedDataItemsScope="RecordsOnly" GroupByAreaLocation="None"
+                          VerticalAlignment="Stretch"
+                          Name="_dgRescueLines" Visibility="{Binding Path=FireworkManager.RescueLines.Count, Converter={StaticResource CountToVisibilityConverter}}">
 
+                            <igDP:XamDataGrid.FieldLayoutSettings>
+                                <igDP:FieldLayoutSettings AutoGenerateFields="False"/>
+                            </igDP:XamDataGrid.FieldLayoutSettings>
+
+                            <igDP:XamDataGrid.FieldLayouts>
+                                <igDP:FieldLayout Key="Firework">
+                                    <igDP:FieldLayout.Fields>
+                                        <igDP:Field IsReadOnly="True"  Width="Auto" Label="Désignation feu de secours" Name="Designation" />
+                                        <igDP:Field IsReadOnly="True" Width="Auto" Label="Ligne/Liaison" Name="SummaryUI" />
+                                        <igDP:TextField  IsReadOnly="True" Width="Auto" Label="Etat" Name="StateText">
+                                            <!-- Cause a thread problem exception .... -->
+                                            <!--<igDP:TextField.CellBindings>
+                                                <igDP:CellBinding Property="Foreground"
+                                          Target="CellValuePresenter"
+                                          Binding="{Binding Path=DataItem.ColorPresentation}" />
+                                            </igDP:TextField.CellBindings>-->
+                                        </igDP:TextField>
+                                    </igDP:FieldLayout.Fields>
+                                    <igDP:Field IsReadOnly="True" Width="Auto" Label="Durée théorique" Name="DurationText" />
+                                    <igDP:Field IsReadOnly="True" Width="Auto" Label="Durée réalisée" Name="ElapsedTimeText" />
+                                </igDP:FieldLayout>
+                            </igDP:XamDataGrid.FieldLayouts>
+
+                        </igDP:XamDataGrid>
+                    </Grid>
                 </Grid>
             </Custom:TabItemEx>
 

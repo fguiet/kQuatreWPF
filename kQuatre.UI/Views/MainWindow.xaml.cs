@@ -38,8 +38,16 @@ namespace Guiet.kQuatre.UI.Views
             this._viewModel = new MainWindowViewModel(_fireworkTimeline);
             this.DataContext = _viewModel;
 
+            //KeyPressed handler
+            this.KeyDown += MainWindow_KeyDown;
+
             //Datagrid
             _fireworkDatagrid.InitializeRecord += FireworkDatagrid_InitializeRecord;                        
+        }
+
+        private void MainWindow_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {            
+            _viewModel.KeyPress(e.Key);            
         }
 
         /// <summary>

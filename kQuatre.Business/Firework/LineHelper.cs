@@ -10,7 +10,7 @@ namespace Guiet.kQuatre.Business.Firework
     {
         private List<Line> _lines = new List<Line>();
         private Dictionary<string, List<Line>> _messages = new Dictionary<string, List<Line>>();
-        
+
         //private const string FIRE_MESSAGE_KEY = "FIRE";
 
         public LineHelper(List<Line> lines)

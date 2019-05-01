@@ -59,7 +59,7 @@ namespace fr.guiet.LoRaLibrary.Core
         {
             if (FrameAckOkEvent != null)
             {
-                _logger.Warn("+++ ACK OK received."
+                _logger.Info("+++ ACK OK received."
                            + Environment.NewLine
                            + string.Format("=> Frame sent info : frame of type : {0} with ID : {1}, timeout set to : {2}, ack timeout set to : {3}, receiver address : {4}, RSSI : {5}", args.FrameSent.FrameOrder, args.FrameSent.FrameId, args.FrameSent.TotalTimeOut, args.FrameSent.AckTimeOut, args.FrameSent.ReceiverAddress, args.AckOKFrame.Rssi)
                            + Environment.NewLine
@@ -197,9 +197,9 @@ namespace fr.guiet.LoRaLibrary.Core
             await ExecuteQueryAsync(pingFrame, new TimeSpan(0, 0, 0, 0, timeOut), CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task SendOhmFrame(string receiverAddress, int timeOut, int ackTimeOut)
+        public async Task SendOhmFrame(string receiverAddress, string channel, int timeOut, int ackTimeOut)
         {
-            OhmFrame ohmFrame = new OhmFrame(GetNextFrameId(), _address, receiverAddress, ackTimeOut, timeOut);
+            OhmFrame ohmFrame = new OhmFrame(GetNextFrameId(), _address, receiverAddress, channel, ackTimeOut, timeOut);
             await ExecuteQueryAsync(ohmFrame, new TimeSpan(0, 0, 0, 0, timeOut), CancellationToken.None).ConfigureAwait(false);
         }
 

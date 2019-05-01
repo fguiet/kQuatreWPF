@@ -24,7 +24,9 @@ namespace Guiet.kQuatre.Business.Firework
     /// </summary>
     public class FireworkManager : INotifyPropertyChanged
     {
-        #region Private members        
+        #region Private members     
+
+        private LineHelper _lineHelperRescue = null;
 
         /// <summary>
         /// Each receptor owns a mac address. Each receptor has got x channels. A channel is linked to a firework line
@@ -35,7 +37,7 @@ namespace Guiet.kQuatre.Business.Firework
         /// Firework is a collection of lines, each lines is made up of firework(s)
         /// A line is attached to an address of a receptor (receptor address + channel)
         /// </summary>
-        private ObservableCollection<Line> _lines = new ObservableCollection<Line>();
+        private ObservableCollection<Line> _lines = new ObservableCollection<Line>();        
 
         /// <summary>
         /// Software configuration
@@ -236,11 +238,21 @@ namespace Guiet.kQuatre.Business.Firework
             }
         }
 
-        public ObservableCollection<Firework> AllFireworks
+        public ObservableCollection<Firework> AllActiveFireworks
         {
             get
             {
-                IOrderedEnumerable<Firework> allFireworks = (_lines.ToList().SelectMany(l => l.Fireworks).ToList()).OrderBy(y => y.RadRowIndex);
+                IOrderedEnumerable<Firework> allFireworks = (ActiveLines.ToList().SelectMany(l => l.Fireworks).ToList()).OrderBy(y => y.RadRowIndex);
+
+                return new ObservableCollection<Firework>(allFireworks);
+            }
+        }
+
+        public ObservableCollection<Firework> AllRescueFireworks
+        {
+            get
+            {
+                IOrderedEnumerable<Firework> allFireworks = (RescueLines.ToList().SelectMany(l => l.Fireworks).ToList()).OrderBy(y => y.RadRowIndex);
 
                 return new ObservableCollection<Firework>(allFireworks);
             }
@@ -283,11 +295,11 @@ namespace Guiet.kQuatre.Business.Firework
         {
             get
             {
-                if (_lines == null || _lines.Count == 0) return new TimeSpan(0, 0, 0);
+                if (ActiveLines == null || ActiveLines.Count == 0) return new TimeSpan(0, 0, 0);
 
                 TimeSpan sp = new TimeSpan(0, 0, 0);
                 TimeSpan maxSp = new TimeSpan(0, 0, 0);
-                foreach (Line l in _lines)
+                foreach (Line l in ActiveLines)
                 {
                     if (l.LongestFireworkDuration.HasValue)
                         sp = l.Ignition.Add(l.LongestFireworkDuration.Value);
@@ -393,11 +405,46 @@ namespace Guiet.kQuatre.Business.Firework
             }
         }
 
-        public ObservableCollection<Line> Lines
+        /// <summary>
+        /// Return rescue and active lines
+        /// </summary>
+        public ObservableCollection<Line> AllLines
+        {
+            get
+            {              
+                return _lines;
+            }
+
+        }
+
+        /// <summary>
+        /// Return only rescue lines
+        /// </summary>
+        public ObservableCollection<Line> RescueLines
         {
             get
             {
-                return _lines;
+                var rescueLines = (from al in _lines
+                                   where al.IsRescueLine == true
+                                   select al).ToList();
+
+                return new ObservableCollection<Line>(rescueLines);
+            }
+
+        }
+
+        /// <summary>
+        /// Return only active lines (not the rescue ones)
+        /// </summary>
+        public ObservableCollection<Line> ActiveLines
+        {
+            get
+            {
+                var activeLines = (from al in _lines
+                                   where al.IsRescueLine == false
+                                   select al).ToList();
+
+                return new ObservableCollection<Line>(activeLines);
             }
 
         }
@@ -505,7 +552,7 @@ namespace Guiet.kQuatre.Business.Firework
         {
             //User ask to stop firework in this case...So stop it properly
             //Stop firework and line properly
-            foreach (Line l in _lines)
+            foreach (Line l in AllLines)
             {
                 l.Stop();
             }
@@ -627,6 +674,14 @@ namespace Guiet.kQuatre.Business.Firework
                     line.LineStarted += Line_LineStarted;
                     line.LineFailed += Line_LineFailed;
                     line.PropertyChanged += Line_PropertyChanged;
+
+                    if (l.Attribute("rescue") != null)
+                    {
+                        string rescueLine = l.Attribute("rescue").Value.ToString();
+
+                        if (rescueLine == "yes")
+                            line.SetAsRescueLine();
+                    }
 
                     if (l.Attribute("ignition") != null)
                     {
@@ -776,6 +831,30 @@ namespace Guiet.kQuatre.Business.Firework
             IsDirty = isDirty;
         }
 
+        public void LaunchRescueLine(string lineNumber)
+        {
+            //Check             
+            if (_state == FireworkManagerState.FireInProgress)
+            {
+
+                Line l = (from rl in RescueLines
+                          where rl.State == LineState.Standby && rl.Number == lineNumber 
+                          select rl).FirstOrDefault();
+
+                if (l != null)
+                {
+
+                    List<Line> lines = new List<Line>();
+                    lines.Add(l);
+                    _lineHelperRescue = new LineHelper(lines);
+                }
+                else
+                {
+                    throw new CannotLaunchRescueLineException(string.Format("Impossible de lancer la ligne de secours : {0}", lineNumber));
+                }                
+            }
+        }
+
         public void SaveFirework()
         {
             SaveFirework(_fireworkFullFileName);
@@ -826,9 +905,15 @@ namespace Guiet.kQuatre.Business.Firework
 
                 foreach (Line l in _lines)
                 {
+                    string rescue = "no";
+                    if (l.IsRescueLine)
+                        rescue = "yes";
+
+
                     XElement line = new XElement("Line",
                                                 new XAttribute("number", l.Number),
-                                                new XAttribute("ignition", $"{l.Ignition:hh\\:mm\\:ss}")
+                                                new XAttribute("ignition", $"{l.Ignition:hh\\:mm\\:ss}"),
+                                                new XAttribute("rescue", rescue)
                                                 );
 
                     //Receptor if any...
@@ -898,14 +983,15 @@ namespace Guiet.kQuatre.Business.Firework
             }
 
             //Check firework has got at least one line
-            if (_lines != null && _lines.Count == 0)
+            if (ActiveLines != null && ActiveLines.Count == 0)
             {
                 _sanityCheckErrorsList.Add("Aucun plan de tir définit pour le feu d'artifice en cours d'édition");
                 isSanityCheckOk = false;
             }
 
+            //Active lines
             Line previousLine = null;
-            foreach (Line l in _lines)
+            foreach (Line l in ActiveLines)
             {
                 //Checking lines with no firework
                 if (l.Fireworks.Count == 0)
@@ -932,6 +1018,23 @@ namespace Guiet.kQuatre.Business.Firework
                 }
 
                 previousLine = l;
+            }
+
+            //Rescue lines
+            foreach (Line l in RescueLines)
+            {
+                //Checking lines with no firework
+                if (l.Fireworks.Count == 0)
+                {
+                    _sanityCheckErrorsList.Add(string.Format("La ligne n°{0} est définie sans feu d'artifice associé", l.Number));
+                    isSanityCheckOk = false;
+                }
+
+                if (l.ReceptorAddress == null)
+                {
+                    _sanityCheckErrorsList.Add(string.Format("La ligne n°{0} est définie sans adresse de récepteur associée", l.Number));
+                    isSanityCheckOk = false;
+                }               
             }
 
             _isSanityCheckOk = isSanityCheckOk;
@@ -972,7 +1075,7 @@ namespace Guiet.kQuatre.Business.Firework
         private bool IsAllLineFinished()
         {
             int nb = (from l in _lines
-                      where l.IsFinished == true
+                      where (l.IsFinished == true && l.IsRescueLine == false) || (l.IsRescueLine == true && (l.IsFinished || l.State == LineState.Standby))
                       select l).Count();
 
             return (nb == _lines.Count);
@@ -981,7 +1084,7 @@ namespace Guiet.kQuatre.Business.Firework
         private LineHelper PrepareNextLines()
         {
             //Gets next line to launch!
-            Line line = (from l in _lines
+            Line line = (from l in ActiveLines
                          where l.State == LineState.Standby
                          orderby l.Ignition.Milliseconds
                          select l).FirstOrDefault();
@@ -997,7 +1100,7 @@ namespace Guiet.kQuatre.Business.Firework
             _nextIgnition = line.Ignition;
 
             //Maybe another line is launched at the same time!
-            List<Line> lines = (from l in _lines
+            List<Line> lines = (from l in ActiveLines
                                 where l.State == LineState.Standby
                                 && l.Ignition.TotalMilliseconds == line.Ignition.TotalMilliseconds
                                 select l).ToList();
@@ -1009,18 +1112,31 @@ namespace Guiet.kQuatre.Business.Firework
 
         public string GetFireworkStatistics()
         {
-            int nbTotal = _lines.Count();
+            int nbTotal = ActiveLines.Count();
 
-            int nbLaunchOK = (from l in _lines
+            int nbLaunchOK = (from l in ActiveLines
                               where l.State == LineState.Finished
                               select l).Count();
 
-            int nbLaunchKO = (from l in _lines
+            int nbLaunchKO = (from l in ActiveLines
                               where l.State == LineState.LaunchFailed
                               select l).Count();
 
+            int nbRescueOK = (from l in RescueLines
+                                where l.State == LineState.Finished
+                                select l).Count();
+
+            int nbRescueKO = (from l in RescueLines
+                              where l.State == LineState.LaunchFailed
+                              select l).Count();
+
+            int nbTotalRescue = RescueLines.Count();
+
             string stat = string.Format("Nombre de lignes OK : {0} sur {1}\r\nNombre de lignes KO : {2} sur {3}",
                                         nbLaunchOK.ToString(), nbTotal.ToString(), nbLaunchKO.ToString(), nbTotal.ToString());
+
+            stat = stat + string.Format("{0}Ligne(s) de secours tirée(s) OK : {1}, ligne de secours tirée(s) KO : {2}, total ligne de secours : {3}",
+                                        Environment.NewLine, nbRescueOK.ToString(), nbRescueKO.ToString(), nbTotalRescue.ToString());
 
             return stat;
         }
@@ -1123,6 +1239,15 @@ namespace Guiet.kQuatre.Business.Firework
                     //RedoFailedLine();
                 }
 
+                //Rescue lignes to launch?
+                if (_lineHelperRescue != null)
+                {
+                    Fire(_lineHelperRescue);
+
+                    //Ok rescue line launched!
+                    _lineHelperRescue = null;
+                }
+
                 //No more line to launch...wait for current firework to finish
                 if (lineHelper == null) continue;
 
@@ -1130,76 +1255,81 @@ namespace Guiet.kQuatre.Business.Firework
                 {
                     prepareNextLines = true;
 
-                    //bool clearFailedLine = true;
-                    foreach (KeyValuePair<string, List<Line>> message in lineHelper.LinesGroupByReceptorAddress)
-                    {
-                        string receptorAddress = message.Key;
-                        List<string> receptorChannels = new List<string>();
-                        List<string> lineNumbers = new List<string>();
-
-                        //Get channel from 
-                        foreach (Line l in message.Value)
-                        {
-                            receptorChannels.Add(l.ReceptorAddress.Channel.ToString());
-                            lineNumbers.Add(l.Number);
-                        }
-
-                        _deviceManager.Transceiver.SendFireFrame(receptorAddress, receptorChannels, lineNumbers, _configuration.TransceiverReceptionTimeout, _configuration.TransceiverACKTimeout, _configuration.TransceiverRetryMessageEmission);
-                        
-
-                        ////AckFrame af = null;
-
-                        //try
-                        //{
-                        //    //Send Message here and get result
-                        //    // FireFrame pf = new FireFrame(_deviceManager.Transceiver.Address, message.Value[0].ReceptorAddress.Address, LineHelper.GetFireMessage(message.Value));
-                        //    // FrameBase fb = _deviceManager.Transceiver.SendPacketSynchronously(pf);
-
-                        //    // af = (AckFrame)fb;
-                        //}
-                        //catch (TimeoutPacketException)
-                        //{
-                        //    // af = null;
-                        //}
-
-                        ////if (null != af && af.IsAckOk)
-
-                        //if (null == null)
-                        //{
-                        //    //if result ok, start line, otherwise, set status failed
-                        //    //and proceed immediately to next firework (back in future)
-                        //    //take into account retry
-                        //    foreach (Line line in message.Value)
-                        //    {
-                        //        line.Start();
-                        //    }
-                        //}
-                        //else
-                        //{
-                        //    //Only clear failed line 
-                        //    //if we failed occured at a different time
-                        //    //that the last failed...
-                        //    //This way, we can failed line are not clear if multiple line failed with the same ignition time
-                        //    if (clearFailedLine)
-                        //    {
-                        //        clearFailedLine = false;
-                        //        _lastLinesLaunchFailed.Clear();
-                        //    }
-
-                        //    //Save last line failed
-                        //    _lastLinesLaunchFailed.Add(message.Key, message.Value);
-
-                        //    foreach (Line line in message.Value)
-                        //    {
-                        //        line.SetFailed();
-                        //    }
-                        //}
-                    }
+                    Fire(lineHelper);
                 }
 
                 if (_lastLinesLaunchFailed.Count > 0)
                     //Set redo failed to enable
                     IsRedoFailedEnable = true;
+            }
+        }
+
+        private void Fire(LineHelper lineHelper)
+        {
+            //bool clearFailedLine = true;
+            foreach (KeyValuePair<string, List<Line>> message in lineHelper.LinesGroupByReceptorAddress)
+            {
+                string receptorAddress = message.Key;
+                List<string> receptorChannels = new List<string>();
+                List<string> lineNumbers = new List<string>();
+
+                //Get channel from 
+                foreach (Line l in message.Value)
+                {
+                    receptorChannels.Add(l.ReceptorAddress.Channel.ToString());
+                    lineNumbers.Add(l.Number);
+                }
+
+                _deviceManager.Transceiver.SendFireFrame(receptorAddress, receptorChannels, lineNumbers, _configuration.TransceiverReceptionTimeout, _configuration.TransceiverACKTimeout, _configuration.TransceiverRetryMessageEmission);
+
+
+                ////AckFrame af = null;
+
+                //try
+                //{
+                //    //Send Message here and get result
+                //    // FireFrame pf = new FireFrame(_deviceManager.Transceiver.Address, message.Value[0].ReceptorAddress.Address, LineHelper.GetFireMessage(message.Value));
+                //    // FrameBase fb = _deviceManager.Transceiver.SendPacketSynchronously(pf);
+
+                //    // af = (AckFrame)fb;
+                //}
+                //catch (TimeoutPacketException)
+                //{
+                //    // af = null;
+                //}
+
+                ////if (null != af && af.IsAckOk)
+
+                //if (null == null)
+                //{
+                //    //if result ok, start line, otherwise, set status failed
+                //    //and proceed immediately to next firework (back in future)
+                //    //take into account retry
+                //    foreach (Line line in message.Value)
+                //    {
+                //        line.Start();
+                //    }
+                //}
+                //else
+                //{
+                //    //Only clear failed line 
+                //    //if we failed occured at a different time
+                //    //that the last failed...
+                //    //This way, we can failed line are not clear if multiple line failed with the same ignition time
+                //    if (clearFailedLine)
+                //    {
+                //        clearFailedLine = false;
+                //        _lastLinesLaunchFailed.Clear();
+                //    }
+
+                //    //Save last line failed
+                //    _lastLinesLaunchFailed.Add(message.Key, message.Value);
+
+                //    foreach (Line line in message.Value)
+                //    {
+                //        line.SetFailed();
+                //    }
+                //}
             }
         }
 
