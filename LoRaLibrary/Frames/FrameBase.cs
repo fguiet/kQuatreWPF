@@ -79,7 +79,7 @@ namespace fr.guiet.LoRaLibrary.Frames
                 return _senderAddress;
             }
         }
-
+        
         public bool CanBeResent
         {
             get
@@ -90,7 +90,6 @@ namespace fr.guiet.LoRaLibrary.Frames
                     return false;
             }
         }
-
         public string ReceiverAddress
         {
             get

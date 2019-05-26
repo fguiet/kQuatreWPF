@@ -9,7 +9,7 @@
     <Baudrate>115200</Baudrate>
     <RetryPingTransceiver>3</RetryPingTransceiver>
     <ACKReceptionTimeout>200</ACKReceptionTimeout>
-    <ReceptionTimeout>500</ReceptionTimeout>
+    <ReceptionTimeout>500</ReceptionTimeout>  
     <RetryMessageEmission>2</RetryMessageEmission>    
     <Address>0</Address>    
   </Transceiver>
