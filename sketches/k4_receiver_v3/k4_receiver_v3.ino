@@ -3,22 +3,21 @@
  * 
  * F. Guiet 
  * Creation           : 29/04/2019
- * Last modification  : 
+ * Last modification  : 26/05/2019
  * 
  * Version            : 3
  * 
  * History            : 
  *                      
+ *                      3.1 : 26/05/2019 : Remove Enqueue library (not working very well)              
+ *                      
  * Librairies used    :
  * 
  *  - https://github.com/sandeepmistry/arduino-LoRa
  *  version 0.5
- *  
- *  - https://github.com/EinarArnason/ArduinoQueue
- *  version 1.0.1
+ *   
  * 
  */
-//#include <Queue.h>
 #include <SPI.h>
 #include <LoRa.h>
 
@@ -59,8 +58,6 @@ struct frameObj {
 };
 
 frameObj frame = { "", 0, 0, false };
-
-//Queue<frameObj> frameQueue;
 
 /***
  * !!! Modify this !!!
@@ -123,19 +120,7 @@ void loop() {
     printDebug("Handle frame : " + frame.frame);
     handleFrameMessage(frame.frame, frame.rssi, frame.snr);
     
-  }
-
-  //if (!frameQueue.isEmpty()) {
-         
-  //  frameObj frame = frameQueue.dequeue();
-       
-  //  printDebug("Dequeue frame : " + frame.frame);
-
-  //  handleFrameMessage(frame.frame, frame.rssi, frame.snr);
-
-    //printDebug("Free Memory : " + String(freeMemory()));
- // }
-  
+  } 
 }
 
 void sendLoRaPacket(String frame) {
@@ -171,9 +156,7 @@ void onReceive(int packetSize) {
   int snr = LoRa.packetSnr();
 
   //Handle
-  handleReceivedFrame(frameStr, rssi, snr); 
-  //frame = { frameStr, rssi, snr, true };
-  //frameQueue.enqueue(frame);
+  handleReceivedFrame(frameStr, rssi, snr);  
 }
 
 void handleReceivedFrame(String frameStr, int rssi, int snr) {
@@ -207,13 +190,7 @@ void handleReceivedFrame(String frameStr, int rssi, int snr) {
       }
       
       //frameObj frame = { frameStr, rssi, snr, isFrameOk };
-      frame = { frameStr, rssi, snr, true };
-
-      //printDebug("Enqueue frame : " + frameStr);  
-      
-      //bool result = frameQueue.enqueue(frame);
-      //if (!result)
-      //  printDebug("Cannot enqueue");  
+      frame = { frameStr, rssi, snr, true };     
     }
   } 
 }
@@ -260,8 +237,6 @@ String GetResistance(String frame) {
   String result(valBuffer);
 
   printDebug("Result resistance : "+result);
-
-  //result.replace(".",",");
   
   return result;  
 }
