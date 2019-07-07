@@ -204,6 +204,8 @@ namespace Guiet.kQuatre.Business.Transceiver
                 _timerHelper.Interval = 1000;
                 _timerHelper.Elapsed += TimerHelper_Elapsed;
                 _timerHelper.Start();
+                _singleton.Reset();
+                _loraTransceiver = null;
             }                 
         }
 

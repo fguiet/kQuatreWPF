@@ -272,6 +272,10 @@ namespace fr.guiet.LoRaLibrary.Core
                 await _serialPortHelper.WriteAsync(frame.GetFrameToByteArray());
                 _logger.Info("Sending frame : frame of type {0} with ID : {1}, timeout set to {2}, ack timeout set to {3}, expected receiver address : {4}, sent attempt : {5}, frame : {6}", frame.FrameOrder, frame.FrameId, frame.TotalTimeOut, frame.AckTimeOut, frame.ReceiverAddress, frame.SentCounter, frame.GetFrameToString());
             }
+            catch(Exception ex)
+            {
+                _logger.Error("Error Sending frame : frame of type {0} with ID : {1}, timeout set to {2}, ack timeout set to {3}, expected receiver address : {4}, sent attempt : {5}, frame : {6}, Error message : {7}", frame.FrameOrder, frame.FrameId, frame.TotalTimeOut, frame.AckTimeOut, frame.ReceiverAddress, frame.SentCounter, frame.GetFrameToString(), ex.Message);
+            }
             finally
             {
                 _executionLock.Release();
@@ -306,9 +310,7 @@ namespace fr.guiet.LoRaLibrary.Core
                         }
                     } while (!_serialPortListenerCancellationTokenSource.IsCancellationRequested);
                 }
-                catch
-                {
-                }
+      
                 finally
                 {
                     _serialPortHelper.Dispose();

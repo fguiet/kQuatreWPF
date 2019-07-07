@@ -457,7 +457,7 @@ namespace Guiet.kQuatre.Business.Receptor
 
                 _deviceManager.Transceiver.SendPingFrame(_address, _deviceManager.SoftwareConfiguration.TransceiverReceptionTimeout, _deviceManager.SoftwareConfiguration.TransceiverACKTimeout);
 
-                Thread.Sleep(500);
+                Thread.Sleep(750);
 
 
                 /*if (_deviceManager.IsEmitterConnected)
@@ -510,7 +510,7 @@ namespace Guiet.kQuatre.Business.Receptor
                 if (pingFrame.ReceiverAddress == _address)
                 {
                     _messageLostCounterTemp = _messageLostCounterTemp + 1;
-                    MessageLostCounter = _messageLostCounterTemp++.ToString();
+                    MessageLostCounter = _messageLostCounterTemp.ToString();
                 }
             }
 
