@@ -453,11 +453,12 @@ namespace Guiet.kQuatre.Business.Receptor
                 //try
                 //{                    
 
-                MessageSentCounter = (_messageSentCounterTemp++).ToString();
+                _messageSentCounterTemp = _messageSentCounterTemp + 1;
+                MessageSentCounter = (_messageSentCounterTemp).ToString();
 
                 _deviceManager.Transceiver.SendPingFrame(_address, _deviceManager.SoftwareConfiguration.TransceiverReceptionTimeout, _deviceManager.SoftwareConfiguration.TransceiverACKTimeout);
 
-                Thread.Sleep(750);
+                Thread.Sleep(500);
 
 
                 /*if (_deviceManager.IsEmitterConnected)
