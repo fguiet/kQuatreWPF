@@ -1,0 +1,45 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:fr.guiet.kquatre.ui.views"
+        xmlns:ig="http://schemas.infragistics.com/xaml" xmlns:Custom="http://infragistics.com/DataPresenter" x:Class="fr.guiet.kquatre.ui.views.ConfigurationWindow"
+        mc:Ignorable="d"
+        Title="Configuration" Height="500" Width="600" MinHeight="265" MinWidth="444" WindowStartupLocation="CenterScreen" Icon="/kQuatre;component/Resources/FireworksIcon.png">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="85"/>
+            <ColumnDefinition Width="85"/>
+        </Grid.ColumnDefinitions>
+        <Border Grid.Row="2" Grid.Column="0"  Background="LightGray" />
+        <Border Grid.Row="2" Grid.Column="1"  Background="LightGray" />
+        <Border Grid.Row="2" Grid.Column="2"  Background="LightGray" />
+        <Button Name="_btnClose" Content="Fermer" Grid.Column="2" HorizontalAlignment="Center"  Grid.Row="1" VerticalAlignment="Center" Width="75" Click="_btnClose_Click"/>
+        <Button Content="Enregistrer" IsEnabled="{Binding IsDirty}"  Grid.Column="1" HorizontalAlignment="Center"  Grid.Row="1" VerticalAlignment="Center" Width="75" Name="_btnSave" Click="_btnSave_Click"/>
+        <Custom:XamTreeGrid Name="_configTreeGrid" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch"  Grid.Row="0"  Grid.ColumnSpan="3" DataSource="{Binding ConfTreeViewDataSource}" InitializeRecord="_configTreeGrid_InitializeRecord" EditModeEnding="_configTreeGrid_EditModeEnding" CellUpdated="_configTreeGrid_CellUpdated">
+            <Custom:XamTreeGrid.FieldLayoutSettings>
+                <Custom:FieldLayoutSettings AutoGenerateFields="False" />
+            </Custom:XamTreeGrid.FieldLayoutSettings>
+            <Custom:XamTreeGrid.FieldLayouts>
+                <Custom:FieldLayout Key="FolderNode" IsDefault="True">
+                    <Custom:TextField Name="FolderName" Label="Paramètres" Width="*" AllowEdit="False" />
+                    <Custom:TextField BindingType="Unbound" Name="PropertyValue" Label="Valeur" Width="100" AllowEdit="False" />
+                    <Custom:Field Name="PropertyNodes" />
+                </Custom:FieldLayout>
+                <Custom:FieldLayout Key="PropertyNodes">
+                    <Custom:Field Label="FolderName"  Name="PropertyName"  Width="190" AllowEdit="False"/>
+                    <Custom:TextField Label="Valeur"  Name="PropertyValue" Width="190" AllowEdit="True"  />
+                </Custom:FieldLayout>
+            </Custom:XamTreeGrid.FieldLayouts>
+        </Custom:XamTreeGrid>
+
+
+
+    </Grid>
+</Window>

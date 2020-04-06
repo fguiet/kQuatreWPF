@@ -58,7 +58,7 @@ void setup() {
   while (!Serial);
 
   //Set this if you wemos as a sender!
-  LoRa.setPins(16, 17, 15); // set CS, reset, IRQ pi
+  //LoRa.setPins(16, 17, 15); // set CS, reset, IRQ pi
 
   //Init LoRa
   if (!LoRa.begin(FREQ)) {
@@ -234,11 +234,13 @@ void waitForAck(String frameSentId, String receiverAddress, int timeOut) {
 }
 
 void sendACK(String ackFrame) {
-  Serial.print(ackFrame);  
+  //delay(50);
+  Serial.print(ackFrame);   
+  Serial.flush();
 }
 
 String createFrame(String frameId, String senderAddress, String receiverAddress, String message, String message_complement) {
-  
+ 
   String frame = String(START_FRAME_DELIMITER) + ";" + frameId + ";" + senderAddress + ";" + receiverAddress + ";" + message + ";" + message_complement;  
   frame.concat(";");
   String checkSum = ComputeCheckSum(frame);
