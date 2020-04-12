@@ -48,7 +48,7 @@ namespace fr.guiet.kquatre.ui.views
             _viewModel.KeyPress(e.Key);            
         }
 
-        private void _miOpenExcel_Click(object sender, System.EventArgs e)
+        private void MiOpenExcel_Click(object sender, System.EventArgs e)
         {
             _viewModel.LoadFireWork(true);    
         }
@@ -58,7 +58,7 @@ namespace fr.guiet.kquatre.ui.views
             _viewModel.OpenConfigurationWindow();
         }
 
-        private void _miOpenK4_Click(object sender, EventArgs e)
+        private void MiOpenK4_Click(object sender, EventArgs e)
         {
             _viewModel.LoadFireWork(false);
         }
@@ -68,7 +68,7 @@ namespace fr.guiet.kquatre.ui.views
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void _miSave_Click(object sender, EventArgs e)
+        private void MiSave_Click(object sender, EventArgs e)
         {
             try
             {
@@ -80,32 +80,32 @@ namespace fr.guiet.kquatre.ui.views
             }
         }
 
-        private void _miSaveAs_Click(object sender, EventArgs e)
+        private void MiSaveAs_Click(object sender, EventArgs e)
         {
             _viewModel.SaveAsFirework();
         }
 
-        private void _miNewFirework_Click(object sender, EventArgs e)
+        private void MiNewFirework_Click(object sender, EventArgs e)
         {
             _viewModel.NewFirework();
         }
 
-        private void _miFireworkManagement_Click(object sender, EventArgs e)
+        private void MiFireworkManagement_Click(object sender, EventArgs e)
         {
             _viewModel.OpenFireworkManagementWindow();
         }
 
-        private void _btnTest_Click(object sender, RoutedEventArgs e)
+        private void BtnTest_Click(object sender, RoutedEventArgs e)
         {
             _viewModel.OpenTestRadTimeline();
         }
 
-        private void _miQuit_Click(object sender, EventArgs e)
+        private void MiQuit_Click(object sender, EventArgs e)
         {
             this.Close();
         }
 
-        private void _mainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (_viewModel.QuitApplication())
             {

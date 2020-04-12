@@ -10,8 +10,8 @@ namespace fr.guiet.kquatre.business.configuration
 {
     public class ConfigPropertyNode 
     {
-        private string _propertyId;
-        private string _propertyName;
+        private readonly string _propertyId;
+        private readonly string _propertyName;
         private string _propertyValue;       
 
         public string PropertyId

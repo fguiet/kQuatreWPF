@@ -45,7 +45,7 @@ namespace fr.guiet.kquatre.business.firework
         /// <summary>
         /// Software configuration
         /// </summary>
-        private SoftwareConfiguration _configuration = null;
+        private readonly SoftwareConfiguration _configuration = null;
 
         /// <summary>
         /// Firework name
@@ -61,7 +61,7 @@ namespace fr.guiet.kquatre.business.firework
         /// Device manager (radio controller)
         /// Initialized once
         /// </summary>
-        private DeviceManager _deviceManager = null;
+        private readonly DeviceManager _deviceManager = null;
 
         /// <summary>
         /// Elapsed time since firework has begun
@@ -84,9 +84,9 @@ namespace fr.guiet.kquatre.business.firework
 
         //private bool _isRedoFailedEnable = false;
 
-        private bool _activateRedoFailedLine = false;
+        //private bool _activateRedoFailedLine = false;
 
-        private ObservableCollection<Firework> _allFireworks = null; 
+        //private ObservableCollection<Firework> _allFireworks = null;
 
         private List<string> _sanityCheckErrorsList = null;
 
@@ -110,7 +110,7 @@ namespace fr.guiet.kquatre.business.firework
         #region Events
 
         public event EventHandler LineStarted;
-        public event EventHandler LineFailed;        
+        public event EventHandler LineFailed;
         public event EventHandler FireworkFinished;
         public event EventHandler FireworkStarted;
         public event EventHandler FireworkLoaded;
@@ -124,26 +124,17 @@ namespace fr.guiet.kquatre.business.firework
         /// </summary>
         private void OnTransceiverInfoChangedEvent(string transceiverInfo)
         {
-            if (TransceiverInfoChanged != null)
-            {
-                TransceiverInfoChanged(this, new TransceiverInfoEventArgs(transceiverInfo));
-            }
+            TransceiverInfoChanged?.Invoke(this, new TransceiverInfoEventArgs(transceiverInfo));
         }
 
         private void OnTransceiverConnectedEvent()
         {
-            if (TransceiverConnected != null)
-            {
-                TransceiverConnected(this, new EventArgs());
-            }
+            TransceiverConnected?.Invoke(this, new EventArgs());
         }
 
         private void OnTransceiverDisconnectedEvent()
         {
-            if (TransceiverDisconnected != null)
-            {
-                TransceiverDisconnected(this, new EventArgs());
-            }
+            TransceiverDisconnected?.Invoke(this, new EventArgs());
         }
 
         /// <summary>
@@ -151,10 +142,7 @@ namespace fr.guiet.kquatre.business.firework
         /// </summary>
         private void OnFireworkDefinitionModifiedEvent()
         {
-            if (FireworkDefinitionModified != null)
-            {
-                FireworkDefinitionModified(this, new EventArgs());
-            }
+            FireworkDefinitionModified?.Invoke(this, new EventArgs());
         }
 
         /// <summary>
@@ -162,34 +150,22 @@ namespace fr.guiet.kquatre.business.firework
         /// </summary>
         private void OnFireworkLoadedEvent()
         {
-            if (FireworkLoaded != null)
-            {
-                FireworkLoaded(this, new EventArgs());
-            }
+            FireworkLoaded?.Invoke(this, new EventArgs());
         }
 
         private void OnFireworkStartedEvent()
         {
-            if (FireworkStarted != null)
-            {
-                FireworkStarted(this, new EventArgs());
-            }
+            FireworkStarted?.Invoke(this, new EventArgs());
         }
 
         private void OnFireworkFinishedEvent()
         {
-            if (FireworkFinished != null)
-            {
-                FireworkFinished(this, new EventArgs());
-            }
+            FireworkFinished?.Invoke(this, new EventArgs());
         }
 
         private void OnLineFailedEvent(object sender)
         {
-            if (LineFailed != null)
-            {
-                LineFailed(sender, new EventArgs());
-            }
+            LineFailed?.Invoke(sender, new EventArgs());
         }
 
         public List<string> SanityCheckErrorsList
@@ -202,10 +178,7 @@ namespace fr.guiet.kquatre.business.firework
 
         private void OnLineStartedEvent(object sender)
         {
-            if (LineStarted != null)
-            {
-                LineStarted(sender, new EventArgs());
-            }
+            LineStarted?.Invoke(sender, new EventArgs());
         }
 
         #endregion        
@@ -282,7 +255,7 @@ namespace fr.guiet.kquatre.business.firework
                 {
                     _state = value;
 
-                    OnPropertyChanged();                    
+                    OnPropertyChanged();
                 }
             }
         }
@@ -522,7 +495,7 @@ namespace fr.guiet.kquatre.business.firework
 
             _lines = new ObservableCollection<Line>();
 
-            _name = string.Empty;           
+            _name = string.Empty;
 
             _fireworkCancellationToken = null;
 
@@ -544,9 +517,9 @@ namespace fr.guiet.kquatre.business.firework
 
             //_isRedoFailedEnable = false;
 
-            _activateRedoFailedLine = false;
+            //_activateRedoFailedLine = false;
 
-            _allFireworks = new ObservableCollection<Firework>();
+            //_allFireworks = new ObservableCollection<Firework>();
 
             _sanityCheckErrorsList = null;
 
@@ -576,7 +549,10 @@ namespace fr.guiet.kquatre.business.firework
             {
                 if (e.FrameSent.CanBeResent)
                 {
-                    await _deviceManager.Transceiver.SendFrame(e.FrameSent, _configuration.TransceiverReceptionTimeout);
+                    //Transceiver can be disconnected anytime...
+                    //So better check 
+                    if (_deviceManager.IsTransceiverConnected)
+                        await _deviceManager.Transceiver.SendFrame(e.FrameSent, _configuration.TotalTimeOut);
                 }
                 else
                 {
@@ -608,7 +584,10 @@ namespace fr.guiet.kquatre.business.firework
             {
                 if (e.AckKOFrame.SentFrame.CanBeResent)
                 {
-                    await _deviceManager.Transceiver.SendFrame(e.AckKOFrame.SentFrame, _configuration.TransceiverReceptionTimeout);
+                    //Transceiver can be disconnected anytime...
+                    //So better check 
+                    if (_deviceManager.IsTransceiverConnected)
+                        await _deviceManager.Transceiver.SendFrame(e.AckKOFrame.SentFrame, _configuration.TotalTimeOut);
                 }
                 else
                 {
@@ -634,26 +613,20 @@ namespace fr.guiet.kquatre.business.firework
 
         private void DeviceManager_DeviceDisconnected(object sender, EventArgs e)
         {
-            string info = DeviceManager.DEFAULT_NOT_TRANSCEIVER_CONNECTED_MESSAGE;            
-
-            //TODO : What happen if a firework is launched?
-            //TODO : Test this!!
+            string info = DeviceManager.DEFAULT_NOT_TRANSCEIVER_CONNECTED_MESSAGE;
+            
             if (_state == FireworkManagerState.FireworkRunning)
             {
                 Stop();
             }
 
             OnTransceiverDisconnectedEvent();
-            OnTransceiverInfoChangedEvent(info);                       
+            OnTransceiverInfoChangedEvent(info);
         }
 
         private void DeviceManager_DeviceConnected(object sender, ConnectionEventArgs e)
-        {            
+        {
             string info = string.Format(DeviceManager.DEFAULT_TRANSCEIVER_CONNECTED_MESSAGE, e.Port);
-
-            //TODO : A Revoir
-            //Device is connected...so let's refresh control bar
-            //RefreshControlPanelUI(RefreshControlPanelEventType.DeviceConnectionChangedEvent);
 
             OnTransceiverConnectedEvent();
             OnTransceiverInfoChangedEvent(info);
@@ -674,10 +647,7 @@ namespace fr.guiet.kquatre.business.firework
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] String propertyName = "")
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         #endregion
@@ -700,10 +670,10 @@ namespace fr.guiet.kquatre.business.firework
         /// <summary>
         /// User asked to redo failed line
         /// </summary>
-        public void ActivateRedoFailedLine()
+        /*public void ActivateRedoFailedLine()
         {
             _activateRedoFailedLine = true;
-        }
+        }*/
 
         /// <summary>
         /// Stops firework !!
@@ -718,15 +688,15 @@ namespace fr.guiet.kquatre.business.firework
             }
 
             if (_fireworkCancellationToken != null)
-                _fireworkCancellationToken.Cancel();                       
+                _fireworkCancellationToken.Cancel();
         }
 
         /// <summary>
         /// Start firework !!!
         /// </summary>
         public void Start()
-        {             
-            DoWorkAsync();            
+        {
+            DoWorkAsync();
         }
 
         public void DeleteLine(Line line)
@@ -1014,8 +984,11 @@ namespace fr.guiet.kquatre.business.firework
 
                 if (l != null)
                 {
-                    List<Line> lines = new List<Line>();
-                    lines.Add(l);
+                    List<Line> lines = new List<Line>
+                    {
+                        l
+                    };
+                    //lines.Add(l);
                     _lineHelperFailed = new LineHelper(lines);
                 }
                 else
@@ -1038,8 +1011,8 @@ namespace fr.guiet.kquatre.business.firework
                 if (l != null)
                 {
 
-                    List<Line> lines = new List<Line>();
-                    lines.Add(l);
+                    List<Line> lines = new List<Line> { l };
+                    //lines.Add(l);
                     _lineHelperRescue = new LineHelper(lines);
                 }
                 else
@@ -1327,7 +1300,7 @@ namespace fr.guiet.kquatre.business.firework
             string stat = string.Format("Nombre de lignes OK : {0} sur {1}\r\nNombre de lignes KO : {2} sur {3}",
                                         nbLaunchOK.ToString(), nbTotal.ToString(), nbLaunchKO.ToString(), nbTotal.ToString());
 
-            stat = stat + string.Format("{0}Ligne(s) de secours tirée(s) OK : {1} sur {2}\r\nligne de secours tirée(s) KO : {3} sur {4}",
+            stat += string.Format("{0}Ligne(s) de secours tirée(s) OK : {1} sur {2}\r\nligne de secours tirée(s) KO : {3} sur {4}",
                                         Environment.NewLine, nbRescueOK.ToString(), nbTotalRescue.ToString(), nbRescueKO.ToString(), nbTotalRescue.ToString());
 
             return stat;
@@ -1343,18 +1316,16 @@ namespace fr.guiet.kquatre.business.firework
 
             State = FireworkManagerState.FireworkRunning;
 
-            _deviceManager.Transceiver.FrameAckKoEvent += Transceiver_FrameAckKoEvent;
-            _deviceManager.Transceiver.FrameAckOkEvent += Transceiver_FrameAckOkEvent;
-            _deviceManager.Transceiver.FrameTimeOutEvent += Transceiver_FrameTimeOutEvent;
-
             //New token
             _fireworkCancellationToken = new CancellationTokenSource();
 
             _elapsedTime = new Stopwatch();
             _elapsedTime.Start();
 
-            _timerHelper = new System.Timers.Timer();
-            _timerHelper.Interval = 1000;
+            _timerHelper = new System.Timers.Timer
+            {
+                Interval = 1000
+            };
             _timerHelper.Elapsed += TimerHelper_Elapsed;
             _timerHelper.Start();
 
@@ -1364,82 +1335,97 @@ namespace fr.guiet.kquatre.business.firework
             //Firework has started event
             OnFireworkStartedEvent();
 
+            //Transceiver can be disconnected anytime
+            if (_deviceManager.IsTransceiverConnected)
+            {
+                _deviceManager.Transceiver.FrameAckKoEvent += Transceiver_FrameAckKoEvent;
+                _deviceManager.Transceiver.FrameAckOkEvent += Transceiver_FrameAckOkEvent;
+                _deviceManager.Transceiver.FrameTimeOutEvent += Transceiver_FrameTimeOutEvent;
+            }
+            else
+            {
+                _fireworkCancellationToken.Cancel();
+            }
+
             Task.Run(async () =>
-           {
-               while (!IsAllLineFinished() && !_fireworkCancellationToken.IsCancellationRequested)
-               {                  
-                   //Prepare next lines?
-                   if (prepareNextLines)
-                   {
-                       prepareNextLines = false;
-                       //Get next lines with same launch time
-                       lineHelper = PrepareNextLines();
-                   }
+            {
+                while (!IsAllLineFinished() && !_fireworkCancellationToken.IsCancellationRequested)
+                {
+                    //Prepare next lines?
+                    if (prepareNextLines)
+                    {
+                        prepareNextLines = false;
+                        //Get next lines with same launch time
+                        lineHelper = PrepareNextLines();
+                    }
 
-                   //User want to redo last failed firework
-                   /*if (_activateRedoFailedLine)
-                   {
-                       _activateRedoFailedLine = false;
+                    //User want to redo last failed firework
+                    /*if (_activateRedoFailedLine)
+                    {
+                        _activateRedoFailedLine = false;
 
-                       //TODO : A Revoir
-                       //RedoFailedLine();
-                   }*/
+                        //TODO : A Revoir
+                        //RedoFailedLine();
+                    }*/
 
-                   //Failed lignes to launch?
-                   //User can click on the screen 
-                   //to launch failed line
-                   if (_lineHelperFailed != null)
-                   {
-                       await Fire(_lineHelperFailed);
+                    //Failed lignes to launch?
+                    //User can click on the screen 
+                    //to launch failed line
+                    if (_lineHelperFailed != null)
+                    {
+                        await Fire(_lineHelperFailed);
 
-                       //Ok failed line launched!
-                       _lineHelperFailed = null;
-                   }
+                        //Ok failed line launched!
+                        _lineHelperFailed = null;
+                    }
 
-                   //Rescue lignes to launch?
-                   if (_lineHelperRescue != null)
-                   {
-                       await Fire(_lineHelperRescue);
+                    //Rescue lignes to launch?
+                    if (_lineHelperRescue != null)
+                    {
+                        await Fire(_lineHelperRescue);
 
-                       //Ok rescue line launched!
-                       _lineHelperRescue = null;
-                   }
+                        //Ok rescue line launched!
+                        _lineHelperRescue = null;
+                    }
 
-                   //No more line to launch...wait for current firework to finish
-                   if (lineHelper == null) continue;
+                    //No more line to launch...wait for current firework to finish
+                    if (lineHelper == null) continue;
 
-                   if (_elapsedTime.ElapsedMilliseconds >= lineHelper.Ignition)
-                   {
-                       prepareNextLines = true;
+                    if (_elapsedTime.ElapsedMilliseconds >= lineHelper.Ignition)
+                    {
+                        prepareNextLines = true;
 
-                       await Fire(lineHelper);
-                   }
+                        await Fire(lineHelper);
+                    }
 
-                  // if (_lastLinesLaunchFailed.Count > 0)
-                       //Set redo failed to enable
-                      // IsRedoFailedEnable = true;
-               }
-           }, _fireworkCancellationToken.Token).ContinueWith(t =>
-           {
-               State = FireworkManagerState.FireworkStopped;
+                    // if (_lastLinesLaunchFailed.Count > 0)
+                    //Set redo failed to enable
+                    // IsRedoFailedEnable = true;
+                }
+            }, _fireworkCancellationToken.Token).ContinueWith(t =>
+            {
+                State = FireworkManagerState.FireworkStopped;
 
-               //Annulation abonnement des événements
-               _deviceManager.Transceiver.FrameAckKoEvent -= Transceiver_FrameAckKoEvent;
-               _deviceManager.Transceiver.FrameAckOkEvent -= Transceiver_FrameAckOkEvent;
-               _deviceManager.Transceiver.FrameTimeOutEvent -= Transceiver_FrameTimeOutEvent;
+                if (_deviceManager.IsTransceiverConnected)
+                {
+                    //Annulation abonnement des événements
+                    _deviceManager.Transceiver.FrameAckKoEvent -= Transceiver_FrameAckKoEvent;
+                    _deviceManager.Transceiver.FrameAckOkEvent -= Transceiver_FrameAckOkEvent;
+                    _deviceManager.Transceiver.FrameTimeOutEvent -= Transceiver_FrameTimeOutEvent;
+                }
 
-               //When finished Redo of failed line is disabled!
-               //IsRedoFailedEnable = false;
+                //When finished Redo of failed line is disabled!
+                //IsRedoFailedEnable = false;
 
-               _elapsedTime.Stop();
-               _elapsedTime = null;
+                _elapsedTime.Stop();
+                _elapsedTime = null;
 
-               _timerHelper.Stop();
-               _timerHelper = null;
+                _timerHelper.Stop();
+                _timerHelper = null;
 
-               OnFireworkFinishedEvent();
+                OnFireworkFinishedEvent();
 
-           }).ConfigureAwait(false);            
+            }).ConfigureAwait(false);
         }
 
         private async Task Fire(LineHelper lineHelper)
@@ -1458,7 +1444,9 @@ namespace fr.guiet.kquatre.business.firework
                     lineNumbers.Add(l.Number);
                 }
 
-                await _deviceManager.Transceiver.SendFireFrame(receptorAddress, receptorChannels, lineNumbers, _configuration.TransceiverReceptionTimeout, _configuration.TransceiverACKTimeout, _configuration.TransceiverRetryMessageEmission);
+                //Transceiver can be disconnected anytime...so better checked
+                if (_deviceManager.IsTransceiverConnected)
+                    await _deviceManager.Transceiver.SendFireFrame(receptorAddress, receptorChannels, lineNumbers, _configuration.TotalTimeOut, _configuration.AckTimeOut, _configuration.RetryFrameEmission);
             }
         }
 

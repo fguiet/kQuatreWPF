@@ -29,7 +29,7 @@ namespace fr.guiet.kquatre.business.receptor
         /// Jeton d'annulation
         /// </summary>
         private CancellationTokenSource _pingTestCancellationToken = null;
-        
+
         /// <summary>
         /// Jeton d'annulation
         /// </summary>
@@ -38,17 +38,17 @@ namespace fr.guiet.kquatre.business.receptor
         /// <summary>
         /// Receptor name
         /// </summary>
-        private string _name = null;
+        private readonly string _name = null;
 
         /// <summary>
         /// Receptor address
         /// </summary>
-        private string _address = null;
+        private readonly string _address = null;
 
         /// <summary>
         /// List of receptor addresses associated with this receptor
         /// </summary>
-        private List<ReceptorAddress> _receptorAddresses = new List<ReceptorAddress>();
+        private readonly List<ReceptorAddress> _receptorAddresses = new List<ReceptorAddress>();
 
         /// <summary>
         /// In test mode count the number of sent message
@@ -88,8 +88,8 @@ namespace fr.guiet.kquatre.business.receptor
         private bool _isPingTestRunning = false;
         private bool _isPingOhmRunning = false;
 
-        //public event EventHandler OnTransceiverDisconnected;
-        //public event EventHandler OnTransceiverConnected;
+        private readonly int DEFAULT_OHM_FRAME_TOTAL_TIMEOUT = 1000;
+        private readonly int DEFAULT_OHM_FRAME_ACK_TIMEOUT = 800;
 
         public event EventHandler PingTestStopped;
 
@@ -263,10 +263,7 @@ namespace fr.guiet.kquatre.business.receptor
 
         private void OnPingTestStoppedEvent()
         {
-            if (PingTestStopped != null)
-            {
-                PingTestStopped(this, new EventArgs());
-            }
+            PingTestStopped?.Invoke(this, new EventArgs());
         }
 
         private void DeviceManager_DeviceDisconnected(object sender, EventArgs e)
@@ -347,7 +344,7 @@ namespace fr.guiet.kquatre.business.receptor
         {
             get
             {
-                return (_isPingOhmRunning);                
+                return (_isPingOhmRunning);
             }
         }
 
@@ -356,33 +353,39 @@ namespace fr.guiet.kquatre.business.receptor
         /// Backgroundworker replacement
         /// </summary>
         /// <returns></returns>
-        public void DoReceptionOhmWorkAsync(ReceptorAddress args)
+        public void DoReceptionOhmWorkAsync(ReceptorAddress ra)
         {
-            _deviceManager.Transceiver.FrameAckKoEvent += Transceiver_FrameAckKoEvent;
-            _deviceManager.Transceiver.FrameAckOkEvent += Transceiver_FrameAckOkEvent;
-            _deviceManager.Transceiver.FrameTimeOutEvent += Transceiver_FrameTimeOutEvent;
-
             //New token
             _ohmTestCancellationToken = new CancellationTokenSource();
 
+            if (_deviceManager.IsTransceiverConnected)
+            {
+                _deviceManager.Transceiver.FrameAckKoEvent += Transceiver_FrameAckKoEvent;
+                _deviceManager.Transceiver.FrameAckOkEvent += Transceiver_FrameAckOkEvent;
+                _deviceManager.Transceiver.FrameTimeOutEvent += Transceiver_FrameTimeOutEvent;
+            }
+            else
+            {
+                _ohmTestCancellationToken.Cancel();
+            }
+
             Task.Run(() =>
             {
-                ReceptorAddress ra = args;
-
-                //TODO : Timeout a revoir?
-                Task ohmTask = _deviceManager.Transceiver.SendOhmFrame(_address, ra.Channel.ToString(), 2000, 2000);
-                ohmTask.Wait();
-
+                if (_deviceManager.IsTransceiverConnected)
+                {
+                    Task ohmTask = _deviceManager.Transceiver.SendOhmFrame(_address, ra.Channel.ToString(), DEFAULT_OHM_FRAME_TOTAL_TIMEOUT, DEFAULT_OHM_FRAME_ACK_TIMEOUT);
+                    ohmTask.Wait();
+                }
             }).ContinueWith(t =>
             {
                 _isPingOhmRunning = false;
 
-                //Be sure events are thrown other null value can happen below
-                //await Task.Delay(_deviceManager.SoftwareConfiguration.TransceiverReceptionTimeout);
-
-                _deviceManager.Transceiver.FrameAckKoEvent -= Transceiver_FrameAckKoEvent;
-                _deviceManager.Transceiver.FrameAckOkEvent -= Transceiver_FrameAckOkEvent;
-                _deviceManager.Transceiver.FrameTimeOutEvent -= Transceiver_FrameTimeOutEvent;
+                if (_deviceManager.IsTransceiverConnected)
+                {
+                    _deviceManager.Transceiver.FrameAckKoEvent -= Transceiver_FrameAckKoEvent;
+                    _deviceManager.Transceiver.FrameAckOkEvent -= Transceiver_FrameAckOkEvent;
+                    _deviceManager.Transceiver.FrameTimeOutEvent -= Transceiver_FrameTimeOutEvent;
+                }
 
             }).ConfigureAwait(false);
         }
@@ -407,25 +410,35 @@ namespace fr.guiet.kquatre.business.receptor
             MessageRssi = "NA";
             MessageSnr = "NA";
 
-            //Abonnement aux événements
-            _deviceManager.Transceiver.FrameAckKoEvent += Transceiver_FrameAckKoEvent;
-            _deviceManager.Transceiver.FrameAckOkEvent += Transceiver_FrameAckOkEvent;
-            _deviceManager.Transceiver.FrameTimeOutEvent += Transceiver_FrameTimeOutEvent;
-
             //New token
             _pingTestCancellationToken = new CancellationTokenSource();
+
+            if (_deviceManager.IsTransceiverConnected)
+            {
+
+                //Abonnement aux événements
+                _deviceManager.Transceiver.FrameAckKoEvent += Transceiver_FrameAckKoEvent;
+                _deviceManager.Transceiver.FrameAckOkEvent += Transceiver_FrameAckOkEvent;
+                _deviceManager.Transceiver.FrameTimeOutEvent += Transceiver_FrameTimeOutEvent;
+            }
+            else
+            {
+                _pingTestCancellationToken.Cancel();
+            }
 
             Task.Run(async () =>
             {
                 while (!_pingTestCancellationToken.IsCancellationRequested)
                 {
 
-                    _messageSentCounterTemp = _messageSentCounterTemp + 1;
+                    _messageSentCounterTemp += 1;
                     MessageSentCounter = (_messageSentCounterTemp).ToString();
 
-                    await _deviceManager.Transceiver.SendPingFrame(_address, _deviceManager.SoftwareConfiguration.TransceiverReceptionTimeout, _deviceManager.SoftwareConfiguration.TransceiverACKTimeout);
+                    if (_deviceManager.IsTransceiverConnected)
+                        await _deviceManager.Transceiver.SendPingFrame(_address, _deviceManager.SoftwareConfiguration.TotalTimeOut, _deviceManager.SoftwareConfiguration.AckTimeOut);
 
-                    await Task.Delay(300, _pingTestCancellationToken.Token);
+                    //700ms between 2 ping!
+                    await Task.Delay(500, _pingTestCancellationToken.Token);
 
                 }
 
@@ -433,10 +446,13 @@ namespace fr.guiet.kquatre.business.receptor
             {
                 _isPingTestRunning = false;
 
-                //Annulation abonnement
-                _deviceManager.Transceiver.FrameAckKoEvent -= Transceiver_FrameAckKoEvent;
-                _deviceManager.Transceiver.FrameAckOkEvent -= Transceiver_FrameAckOkEvent;
-                _deviceManager.Transceiver.FrameTimeOutEvent -= Transceiver_FrameTimeOutEvent;
+                if (_deviceManager.IsTransceiverConnected)
+                {
+                    //Annulation abonnement
+                    _deviceManager.Transceiver.FrameAckKoEvent -= Transceiver_FrameAckKoEvent;
+                    _deviceManager.Transceiver.FrameAckOkEvent -= Transceiver_FrameAckOkEvent;
+                    _deviceManager.Transceiver.FrameTimeOutEvent -= Transceiver_FrameTimeOutEvent;
+                }
 
                 OnPingTestStoppedEvent();
 
@@ -446,19 +462,17 @@ namespace fr.guiet.kquatre.business.receptor
         private void Transceiver_FrameTimeOutEvent(object sender, FrameTimeOutEventArgs e)
         {
 
-            if (e.FrameSent is PingFrame)
+            if (e.FrameSent is PingFrame pingFrame)
             {
-                PingFrame pingFrame = (PingFrame)e.FrameSent;
                 if (pingFrame.ReceiverAddress == _address)
                 {
-                    _messageLostCounterTemp = _messageLostCounterTemp + 1;
+                    _messageLostCounterTemp += 1;
                     MessageLostCounter = _messageLostCounterTemp.ToString();
                 }
             }
 
-            if (e.FrameSent is OhmFrame)
+            if (e.FrameSent is OhmFrame ohmFrame)
             {
-                OhmFrame ohmFrame = (OhmFrame)e.FrameSent;
                 if (ohmFrame.ReceiverAddress == _address)
                 {
                     _receptorAddressTested.Resistance = "Timeout! Transceiver plugged?";
@@ -468,21 +482,19 @@ namespace fr.guiet.kquatre.business.receptor
 
         private void Transceiver_FrameAckOkEvent(object sender, FrameAckOKEventArgs e)
         {
-            if (e.AckOKFrame.SentFrame is PingFrame)
+            if (e.AckOKFrame.SentFrame is PingFrame pingFrame)
             {
-                PingFrame pingFrame = (PingFrame)e.AckOKFrame.SentFrame;
                 if (pingFrame.ReceiverAddress == _address)
                 {
                     MessageRssi = e.AckOKFrame.Rssi;
                     MessageSnr = e.AckOKFrame.Snr;
-                    _messageReceivedCounterTemp = _messageReceivedCounterTemp + 1;
+                    _messageReceivedCounterTemp += 1;
                     MessageReceivedCounter = _messageReceivedCounterTemp.ToString();
                 }
             }
 
-            if (e.AckOKFrame.SentFrame is OhmFrame)
+            if (e.AckOKFrame.SentFrame is OhmFrame ohmFrame)
             {
-                OhmFrame ohmFrame = (OhmFrame)e.AckOKFrame.SentFrame;
                 if (ohmFrame.ReceiverAddress == _address)
                 {
                     _receptorAddressTested.Resistance = e.AckOKFrame.Ohm;
@@ -492,19 +504,17 @@ namespace fr.guiet.kquatre.business.receptor
 
         private void Transceiver_FrameAckKoEvent(object sender, FrameAckKOEventArgs e)
         {
-            if (e.AckKOFrame.SentFrame is PingFrame)
+            if (e.AckKOFrame.SentFrame is PingFrame pingFrame)
             {
-                PingFrame pingFrame = (PingFrame)e.AckKOFrame.SentFrame;
                 if (pingFrame.ReceiverAddress == _address)
                 {
-                    _messageLostCounterTemp = _messageLostCounterTemp + 1;
+                    _messageLostCounterTemp += 1;
                     MessageLostCounter = _messageLostCounterTemp.ToString();
                 }
             }
 
-            if (e.AckKOFrame.SentFrame is OhmFrame)
+            if (e.AckKOFrame.SentFrame is OhmFrame ohmFrame)
             {
-                OhmFrame ohmFrame = (OhmFrame)e.AckKOFrame.SentFrame;
                 if (ohmFrame.ReceiverAddress == _address)
                 {
                     _receptorAddressTested.Resistance = "No ack..receiver plugged?";
@@ -519,10 +529,7 @@ namespace fr.guiet.kquatre.business.receptor
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] String propertyName = "")
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         #endregion

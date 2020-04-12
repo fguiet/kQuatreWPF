@@ -11,9 +11,9 @@ namespace fr.guiet.kquatre.ui.viewsmodel
 {
     public class FireworkManagementViewModel
     {
-        private SoftwareConfiguration _softwareConfiguration = null;
-        private FireworkManager _fireworkManager = null;
-        private Line _line = null;         
+        private readonly SoftwareConfiguration _softwareConfiguration = null;
+        private readonly FireworkManager _fireworkManager = null;
+        private readonly Line _line = null;         
 
         public bool CanSelect
         {

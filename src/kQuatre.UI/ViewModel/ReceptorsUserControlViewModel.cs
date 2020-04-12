@@ -23,7 +23,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
         private RelayCommand _stopTestingReceptorCommand;
         private Receptor _selectedTestReceptor = null;
         private Receptor _previousTestReceptor = null;
-        private Dispatcher _userControlDispatcher = null;
+        private readonly Dispatcher _userControlDispatcher = null;
 
         #endregion
 
@@ -36,9 +36,9 @@ namespace fr.guiet.kquatre.ui.viewmodel
         public ReceptorsUserControlViewModel(FireworkManager fireworkManager, Dispatcher userControlDispatcher)
         {
             _fireworkManager = fireworkManager;
-            _fireworkManager.FireworkLoaded += _fireworkManager_FireworkLoaded;
-            _fireworkManager.TransceiverConnected += _fireworkManager_TransceiverConnected;
-            _fireworkManager.TransceiverDisconnected += _fireworkManager_TransceiverDisconnected;
+            _fireworkManager.FireworkLoaded += FireworkManager_FireworkLoaded;
+            _fireworkManager.TransceiverConnected += FireworkManager_TransceiverConnected;
+            _fireworkManager.TransceiverDisconnected += FireworkManager_TransceiverDisconnected;
 
             _userControlDispatcher = userControlDispatcher;
         }
@@ -108,17 +108,17 @@ namespace fr.guiet.kquatre.ui.viewmodel
 
         #region Events
 
-        private void _fireworkManager_TransceiverConnected(object sender, EventArgs e)
+        private void FireworkManager_TransceiverConnected(object sender, EventArgs e)
         {
             RefreshGUI();
         }
 
-        private void _fireworkManager_TransceiverDisconnected(object sender, EventArgs e)
+        private void FireworkManager_TransceiverDisconnected(object sender, EventArgs e)
         {
             RefreshGUI();
         }
 
-        private void _fireworkManager_FireworkLoaded(object sender, EventArgs e)
+        private void FireworkManager_FireworkLoaded(object sender, EventArgs e)
         {
             RefreshGUI();
         }
@@ -127,10 +127,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] String propertyName = "")
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         #endregion
@@ -154,13 +151,13 @@ namespace fr.guiet.kquatre.ui.viewmodel
             _selectedTestReceptor.StartPingTest();
 
             //Trick not to subscribe 2 times to the event
-            _selectedTestReceptor.PingTestStopped -= _selectedTestReceptor_PingTestStopped;
-            _selectedTestReceptor.PingTestStopped += _selectedTestReceptor_PingTestStopped;
+            _selectedTestReceptor.PingTestStopped -= SelectedTestReceptor_PingTestStopped;
+            _selectedTestReceptor.PingTestStopped += SelectedTestReceptor_PingTestStopped;
 
             RefreshGUI();
         }
 
-        private void _selectedTestReceptor_PingTestStopped(object sender, EventArgs e)
+        private void SelectedTestReceptor_PingTestStopped(object sender, EventArgs e)
         {
             RefreshGUI();
         }

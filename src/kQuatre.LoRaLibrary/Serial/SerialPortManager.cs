@@ -15,7 +15,7 @@ namespace fr.guiet.lora.serial
     public class SerialPortManager : IDisposable
     {
 
-        private static Logger _logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
         //Using SerialPortStream : https://github.com/jcurl/SerialPortStream
         //Because I was suffering from the issue below
@@ -31,13 +31,15 @@ namespace fr.guiet.lora.serial
         //Initialize Serial Port and Open it
         public SerialPortManager(string portname, int baudrate)
         {
-            _serialPort = new SerialPortStream();
-            _serialPort.PortName = portname;
-            _serialPort.BaudRate = baudrate;
-            _serialPort.Parity = Parity.None;
-            _serialPort.DataBits = 8;
-            _serialPort.StopBits = StopBits.One;
-            _serialPort.Handshake = Handshake.None;
+            _serialPort = new SerialPortStream
+            {
+                PortName = portname,
+                BaudRate = baudrate,
+                Parity = Parity.None,
+                DataBits = 8,
+                StopBits = StopBits.One,
+                Handshake = Handshake.None
+            };
             _serialPort.Open();
 
             //Start Serial Port Listener
@@ -56,10 +58,7 @@ namespace fr.guiet.lora.serial
 
         private void OnSerialPortErrorOccured()
         {
-            if (SerialPortErrorOccured != null)
-            {
-                SerialPortErrorOccured(this, new EventArgs());
-            }
+            SerialPortErrorOccured?.Invoke(this, new EventArgs());
         }
 
         /// <summary>

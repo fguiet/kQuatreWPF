@@ -64,12 +64,12 @@ namespace fr.guiet.kquatre.ui.views
             }
         }
 
-        private void _cbxTestReceptors_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void CbxTestReceptors_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             _viewModel.OnReceptorSelectionChanged();
         }
 
-        private void _btnTestResistance_Click(object sender, RoutedEventArgs e)
+        private void BtnTestResistance_Click(object sender, RoutedEventArgs e)
         {
             /*if (_viewModel.SelectedTestReceptor.IsResistanceTestInProgress)
             {

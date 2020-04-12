@@ -16,7 +16,7 @@ namespace fr.guiet.lora.core
     {
         #region Private Properties
 
-        private static Logger _logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
         private readonly SerialPortManager _serialPortManager = null;
         private readonly object _frameIdLock = new object();
@@ -30,7 +30,7 @@ namespace fr.guiet.lora.core
                 new ConcurrentDictionary<byte, FrameBase>();
 
         //Module Address
-        private string _address;
+        private readonly string _address;
 
         #endregion
 
@@ -90,20 +90,14 @@ namespace fr.guiet.lora.core
 
         private void OnTransceiverConnectedEvent()
         {
-            if (TransceiverConnected != null)
-            {
-                TransceiverConnected(this, new EventArgs());
-            }
+            TransceiverConnected?.Invoke(this, new EventArgs());
         }
 
         public event EventHandler TransceiverDisconnected;
 
         private void OnTransceiverDisconnectedEvent()
         {
-            if (TransceiverDisconnected != null)
-            {
-                TransceiverDisconnected(this, new EventArgs());
-            }
+            TransceiverDisconnected?.Invoke(this, new EventArgs());
         }
 
         #endregion
@@ -115,20 +109,20 @@ namespace fr.guiet.lora.core
             _address = address;
 
             _serialPortManager = new SerialPortManager(portname, baudrate);
-            _serialPortManager.DataReceived += _serialPortManager_DataReceived;
-            _serialPortManager.SerialPortErrorOccured += _serialPortManager_SerialPortErrorOccured;
+            _serialPortManager.DataReceived += SerialPortManager_DataReceived;
+            _serialPortManager.SerialPortErrorOccured += SerialPortManager_SerialPortErrorOccured;
 
             OnTransceiverConnectedEvent();
         }
 
-        private void _serialPortManager_SerialPortErrorOccured(object sender, EventArgs e)
+        private void SerialPortManager_SerialPortErrorOccured(object sender, EventArgs e)
         {
             OnTransceiverDisconnectedEvent();
         }
 
         #endregion
 
-        private void _serialPortManager_DataReceived(object sender, DataReceivedEventArgs e)
+        private void SerialPortManager_DataReceived(object sender, DataReceivedEventArgs e)
         {
             string packet = e.Data;
 
@@ -158,25 +152,23 @@ namespace fr.guiet.lora.core
                 //**********
                 //* ACK OK
                 //********** 
-                if (frame is AckOKFrame)
+                if (frame is AckOKFrame frameOK)
                 {
-                    AckOKFrame frameOK = (AckOKFrame)frame;
                     frameOK.SentFrame = sentFrame;
 
                     OnFrameAckOkEvent(new FrameAckOKEventArgs(frameOK));
-                    tcs.SetResult(frameOK);                    
+                    tcs.SetResult(frameOK);
                 }
 
                 //**********
                 //* ACK KO
                 //**********
-                if (frame is AckKOFrame)
+                if (frame is AckKOFrame frameKO)
                 {
-                    AckKOFrame frameKO = (AckKOFrame)frame;
                     frameKO.SentFrame = sentFrame;
 
                     OnFrameAckKoEvent(new FrameAckKOEventArgs(frameKO));
-                    tcs.SetResult(frameKO);                 
+                    tcs.SetResult(frameKO);
                 }
             }
             catch (InvalidPacketReceivedException ipre)
@@ -294,8 +286,9 @@ namespace fr.guiet.lora.core
         /// Need to be called that way in the code : var result = await  _core.SubmitLoRaFrameAsync();
         /// await will created a new thread so it is not block in the UI
         /// </summary>
+        /// <param name="frame">Frame to send</param>
+        /// <param name="timeout">Total Timeout in ms = time waited to send AND received a frame</param>
         /// <returns></returns>
-        /// TOTO : add a cancelation token here
         private Task<FrameBase> SubmitLoRaFrameAsync(FrameBase frame, int timeout)
         {
             var tcs = new TaskCompletionSource<FrameBase>();

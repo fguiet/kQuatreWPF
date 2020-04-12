@@ -71,16 +71,6 @@ namespace fr.guiet.kquatre.ui.views
             }
         }
 
-        /*private void _btnStart_Click(object sender, RoutedEventArgs e)
-        {
-            _viewModel.StartFirework();
-        }*/
-
-        /*private void _btnStop_Click(object sender, RoutedEventArgs e)
-        {
-            _viewModel.StopFirework();
-        }*/
-
         /// <summary>
         /// Reset Control panel to initial state
         /// </summary>
@@ -89,38 +79,7 @@ namespace fr.guiet.kquatre.ui.views
             _viewModel.ResetUserControlUI();
         }
 
-        /*private void _chkArming_Checked(object sender, RoutedEventArgs e)
-        {
-
-            MessageBoxResult result = MessageBox.Show("Vous êtes sur le point d'armer le feu d'artifice ! Voulez-vous continuer ?", "Information", MessageBoxButton.YesNo, MessageBoxImage.Exclamation);
-
-            if (result == MessageBoxResult.Yes)
-            {
-                //begins by reseting line and firework (case when user stop and restart firework)
-                _viewModel.ResetUI();
-
-                //TODO : A revoir
-                //_viewModel.RefreshControlPanelUI(MainWindowViewModel.RefreshControlPanelEventType.FireworkArmedEvent);
-            }
-            else
-            {
-                //Cancel event
-                _viewModel.IsFireworkArmed = false;
-            }
-        }*/
-
-        /*private void _chkArming_Unchecked(object sender, RoutedEventArgs e)
-        {
-            //TODO : A revoir
-            //_viewModel.RefreshControlPanelUI(MainWindowViewModel.RefreshControlPanelEventType.FireworkArmedEvent);
-        }*/
-
-        private void _btnRedoFailed_Click(object sender, RoutedEventArgs e)
-        {
-            _viewModel.ActivateRedoFailedLine();
-        }
-
-        private void _fireworkTimeline_SelectionChanged(object sender, Telerik.Windows.Controls.SelectionChangeEventArgs e)
+        private void FireworkTimeline_SelectionChanged(object sender, Telerik.Windows.Controls.SelectionChangeEventArgs e)
         {
             if (e.AddedItems.Count > 0)
             {
@@ -132,11 +91,6 @@ namespace fr.guiet.kquatre.ui.views
                 _fireworkTimeline.SelectedItem = null;
             }
         }
-
-
-        #endregion
-
-        #region Private Members
 
         #endregion
     }

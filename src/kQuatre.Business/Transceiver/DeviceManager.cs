@@ -19,7 +19,7 @@ namespace fr.guiet.kquatre.business.transceiver
         /// <summary>
         /// Singleton instane, used to count event
         /// </summary>
-        private Singleton _singleton = Singleton.Instance;
+        private readonly Singleton _singleton = Singleton.Instance;
 
         /// <summary>
         /// Emitter plugged to PC
@@ -31,7 +31,7 @@ namespace fr.guiet.kquatre.business.transceiver
 
         //private string _transceiverAddress = null;
 
-        private SoftwareConfiguration _softwareConfiguration = null;
+        private readonly SoftwareConfiguration _softwareConfiguration = null;
 
         #endregion
 
@@ -99,35 +99,23 @@ namespace fr.guiet.kquatre.business.transceiver
         public event EventHandler DeviceDisconnected;
 
         private void OnUSBConnection(USBConnectionEventArgs args)
-        {            
-            if (USBConnection != null)
-            {
-                USBConnection(this, args);
-            }
+        {
+            USBConnection?.Invoke(this, args);
         }
 
         private void OnDeviceConnectedEvent(ConnectionEventArgs args)
         {
-            if (DeviceConnected != null)
-            {
-                DeviceConnected(this, args);
-            }
+            DeviceConnected?.Invoke(this, args);
         }
 
         private void OnDeviceDisconnectedEvent()
         {
-            if (DeviceDisconnected != null)
-            {
-                DeviceDisconnected(this, new EventArgs());
-            }
+            DeviceDisconnected?.Invoke(this, new EventArgs());
         }
 
         private void OnDeviceErrorWhenConnecting(ConnectionErrorEventArgs args)
         {
-            if (DeviceErrorWhenConnecting != null)
-            {
-                DeviceErrorWhenConnecting(this, args); 
-            }
+            DeviceErrorWhenConnecting?.Invoke(this, args);
         }
 
         #endregion
@@ -206,8 +194,10 @@ namespace fr.guiet.kquatre.business.transceiver
             if (_timerHelper == null)
             {
                 _deviceWatcher.Stop();
-                _timerHelper = new Timer();
-                _timerHelper.Interval = 1000;
+                _timerHelper = new Timer
+                {
+                    Interval = 1000
+                };
                 _timerHelper.Elapsed += TimerHelper_Elapsed;
                 _timerHelper.Start();
                 _singleton.Reset();

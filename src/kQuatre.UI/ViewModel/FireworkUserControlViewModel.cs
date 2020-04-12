@@ -22,7 +22,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
     {
         #region Private Members
 
-        private Dispatcher _userControlDispatcher = null;
+        private readonly Dispatcher _userControlDispatcher = null;
         private RelayCommand _startFireworkCommand = null;
         private RelayCommand _stopFireworkCommand = null;
         private RelayCommand _armFireworkCommand = null;
@@ -32,7 +32,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
         /// <summary>
         /// Timeline control
         /// </summary>
-        private RadTimeline _fireworkTimeline = null;
+        private readonly RadTimeline _fireworkTimeline = null;
 
         private bool _isFireworkArmed = false;
 
@@ -139,23 +139,27 @@ namespace fr.guiet.kquatre.ui.viewmodel
         {
             _fireworkTimeline = fireworkTimeline;
 
-            MinuteInterval mi = new MinuteInterval();
-            mi.FormatterProvider = new MinuteIntervalFormatter();
+            MinuteInterval mi = new MinuteInterval
+            {
+                FormatterProvider = new MinuteIntervalFormatter()
+            };
 
-            SecondInterval si = new SecondInterval();
-            si.FormatterProvider = new SecondIntervalFormatter();
+            SecondInterval si = new SecondInterval
+            {
+                FormatterProvider = new SecondIntervalFormatter()
+            };
 
             _fireworkTimeline.Intervals.Add(mi);
             _fireworkTimeline.Intervals.Add(si);
 
             _fireworkManager = fireworkManager;
-            _fireworkManager.FireworkLoaded += _fireworkManager_FireworkLoaded;
+            _fireworkManager.FireworkLoaded += FireworkManager_FireworkLoaded;
             _fireworkManager.LineStarted += FireworkManager_LineStarted;
             _fireworkManager.LineFailed += FireworkManager_LineFailed;
             _fireworkManager.FireworkFinished += FireworkManager_FireworkFinished;
-            _fireworkManager.FireworkStarted += _fireworkManager_FireworkStarted;
-            _fireworkManager.TransceiverDisconnected += _fireworkManager_TransceiverDisconnected;
-            _fireworkManager.TransceiverConnected += _fireworkManager_TransceiverConnected;
+            _fireworkManager.FireworkStarted += FireworkManager_FireworkStarted;
+            _fireworkManager.TransceiverDisconnected += FireworkManager_TransceiverDisconnected;
+            _fireworkManager.TransceiverConnected += FireworkManager_TransceiverConnected;
 
             _userControlDispatcher = userControlDispatcher;
         }
@@ -164,16 +168,16 @@ namespace fr.guiet.kquatre.ui.viewmodel
 
         #region Events
 
-        private void _fireworkManager_TransceiverConnected(object sender, EventArgs e)
+        private void FireworkManager_TransceiverConnected(object sender, EventArgs e)
         {
             //Refresh firework UI
             RefreshControlPanelUI();
         }
 
-        private void _fireworkManager_TransceiverDisconnected(object sender, EventArgs e)
+        private void FireworkManager_TransceiverDisconnected(object sender, EventArgs e)
         {
-            //Refresh firework UI
-            RefreshControlPanelUI();
+            //Reset firework UI
+            ResetUserControlUI();
         }
 
         /// <summary>
@@ -181,16 +185,13 @@ namespace fr.guiet.kquatre.ui.viewmodel
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void _fireworkManager_FireworkLoaded(object sender, EventArgs e)
+        private void FireworkManager_FireworkLoaded(object sender, EventArgs e)
         {
             //Reset firework UI
-            ResetUserControlUI();
-
-            //Refresh control panel possibility
-            // RefreshControlPanelUI();
+            ResetUserControlUI();            
         }
 
-        private void _fireworkManager_FireworkStarted(object sender, EventArgs e)
+        private void FireworkManager_FireworkStarted(object sender, EventArgs e)
         {
             //Refresh control panel possibility
             RefreshControlPanelUI();
@@ -244,10 +245,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] String propertyName = "")
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         /// <summary>
@@ -303,12 +301,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
             if (result == MessageBoxResult.No) return;
 
             _fireworkManager.Stop();
-        }
-
-        public void ActivateRedoFailedLine()
-        {
-            _fireworkManager.ActivateRedoFailedLine();
-        }
+        }       
 
         public void LaunchFailedLine(string lineNumber)
         {

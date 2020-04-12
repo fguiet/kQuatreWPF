@@ -108,7 +108,6 @@
                             </telerik:RadToolTipService.ToolTipContentTemplate>
                         </Button>
                         <Button Grid.Column="2" Margin="5,5,5,5" Content="Arrêter"  Height="50" Width="75" Name="_btnStop" Command="{Binding Path=StopFireworkCommand}"/>
-                        <Button Style="{StaticResource TriggerStyle}" Grid.Column="3" Margin="5,5,5,5" Content="Tirer dernière(s) ligne(s) en échec" IsEnabled="{Binding FireworkManager.IsRedoFailedEnable}" Height="50" Width="180" Name="_btnRedoFailed" Click="_btnRedoFailed_Click" Visibility="Hidden" />
                         <!--<Button  Grid.Column="1" Margin="5,5,5,5" Content="Test RadTimeline" Height="50" Width="75" Name="_btnTest" Click="_btnTest_Click" />-->
                     </Grid>
                     <CheckBox Grid.Row="1" IsChecked="{Binding Path=AutomaticTimelineScroll}" Content="Défilement automatique de la ligne de temps du feu" />
@@ -133,7 +132,7 @@
                              SelectionMode="Single"
                              IsSelectionEnabled="True"
                              ScrollMode="ScrollOnly"
-                             AutoSort="False" SelectionChanged="_fireworkTimeline_SelectionChanged">
+                             AutoSort="False" SelectionChanged="FireworkTimeline_SelectionChanged">
 
                 <telerik:RadTimeline.ItemRowIndexGenerator>
                     <kQuatreUI:NewLineRowIndexGenerator />

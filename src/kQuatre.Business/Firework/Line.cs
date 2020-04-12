@@ -19,11 +19,8 @@ namespace fr.guiet.kquatre.business.firework
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] String propertyName = "")
-        {           
-            if (PropertyChanged != null)
-            {                
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         public event EventHandler LineStarted;
@@ -31,18 +28,12 @@ namespace fr.guiet.kquatre.business.firework
 
         private void OnLineStartedEvent()
         {
-            if (LineStarted != null)
-            {
-                LineStarted(this, new EventArgs());
-            }
+            LineStarted?.Invoke(this, new EventArgs());
         }
 
         private void OnLineFailedEvent()
         {
-            if (LineFailed != null)
-            {
-                LineFailed(this, new EventArgs());
-            }
+            LineFailed?.Invoke(this, new EventArgs());
         }
 
         #endregion
@@ -63,7 +54,7 @@ namespace fr.guiet.kquatre.business.firework
         private TimeSpan _ignition;
 
         //Firework(s) linked to this line
-        private ObservableCollection<Firework> _fireworks = new ObservableCollection<Firework>();
+        private readonly ObservableCollection<Firework> _fireworks = new ObservableCollection<Firework>();
 
         /// <summary>
         /// Line state
@@ -359,11 +350,13 @@ namespace fr.guiet.kquatre.business.firework
         /// <returns></returns>
         public Line PartialClone()
         {
-            Line l = new Line(_number);
-            l.Ignition = _ignition;
-            l.ReceptorAddress = _receptorAddress;
-            //l.IsDirty = false;
-            l.IsRescueLine = _isRescueLine;
+            Line l = new Line(_number)
+            {
+                Ignition = _ignition,
+                ReceptorAddress = _receptorAddress,
+                //l.IsDirty = false;
+                IsRescueLine = _isRescueLine
+            };
 
             return l;
         }

@@ -122,9 +122,9 @@ namespace fr.guiet.kquatre.ui.viewsmodel
 
             //Initialize new firework
             _fireworkManager = new FireworkManager(_configuration);
-            _fireworkManager.FireworkLoaded += _fireworkManager_FireworkLoaded;
-            _fireworkManager.FireworkDefinitionModified += _fireworkManager_FireworkDefinitionModified;
-            _fireworkManager.TransceiverInfoChanged += _fireworkManager_TransceiverInfoChanged;
+            _fireworkManager.FireworkLoaded += FireworkManager_FireworkLoaded;
+            _fireworkManager.FireworkDefinitionModified += FireworkManager_FireworkDefinitionModified;
+            _fireworkManager.TransceiverInfoChanged += FireworkManager_TransceiverInfoChanged;
 
             //Trasnceiver already plugged?
             _fireworkManager.DiscoverDevice();
@@ -134,17 +134,17 @@ namespace fr.guiet.kquatre.ui.viewsmodel
 
         #region Event
 
-        private void _fireworkManager_TransceiverInfoChanged(object sender, TransceiverInfoEventArgs e)
+        private void FireworkManager_TransceiverInfoChanged(object sender, TransceiverInfoEventArgs e)
         {
             DeviceConnectionInfo = e.TransceiverInfo;
         }
 
-        private void _fireworkManager_FireworkDefinitionModified(object sender, EventArgs e)
+        private void FireworkManager_FireworkDefinitionModified(object sender, EventArgs e)
         {
             RefreshGUI();
         }
 
-        private void _fireworkManager_FireworkLoaded(object sender, EventArgs e)
+        private void FireworkManager_FireworkLoaded(object sender, EventArgs e)
         {
             //Refresh GUI
             RefreshGUI();
@@ -154,10 +154,7 @@ namespace fr.guiet.kquatre.ui.viewsmodel
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] String propertyName = "")
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         #endregion
@@ -278,8 +275,10 @@ namespace fr.guiet.kquatre.ui.viewsmodel
             try
             {
 
-                OpenFileDialog ofd = new OpenFileDialog();
-                ofd.Multiselect = false;
+                OpenFileDialog ofd = new OpenFileDialog
+                {
+                    Multiselect = false
+                };
 
                 if (fromExcelFile)
                     ofd.Filter = "Fichier Excel (*.xlsx)|*.xlsx";
@@ -327,9 +326,11 @@ namespace fr.guiet.kquatre.ui.viewsmodel
 
         public void SaveAsFirework()
         {
-            SaveFileDialog sfd = new SaveFileDialog();
-            sfd.Filter = "Fichier kQuatre (*.k4)|*.k4";
-            sfd.RestoreDirectory = true;
+            SaveFileDialog sfd = new SaveFileDialog
+            {
+                Filter = "Fichier kQuatre (*.k4)|*.k4",
+                RestoreDirectory = true
+            };
 
             if (sfd.ShowDialog() == true)
             {

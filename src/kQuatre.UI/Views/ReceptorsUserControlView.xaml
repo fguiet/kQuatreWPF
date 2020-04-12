@@ -30,7 +30,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Label Grid.Row="0" Grid.Column="0" Content="Sélection d'un récepteur : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
-                <ComboBox Name="_cbxTestReceptors" Grid.Column="1" Grid.Row="0" SelectedValue="{Binding Path=SelectedTestReceptor}"  DisplayMemberPath="Name" ItemsSource="{Binding Path=FireworkManager.Receptors}" HorizontalAlignment="Left" VerticalAlignment="Center" Width="200" SelectionChanged="_cbxTestReceptors_SelectionChanged"  />
+                <ComboBox Name="_cbxTestReceptors" Grid.Column="1" Grid.Row="0" SelectedValue="{Binding Path=SelectedTestReceptor}"  DisplayMemberPath="Name" ItemsSource="{Binding Path=FireworkManager.Receptors}" HorizontalAlignment="Left" VerticalAlignment="Center" Width="200" SelectionChanged="CbxTestReceptors_SelectionChanged"  />
                 <Button Margin="10,0,0,0" Grid.Row="0" Grid.Column="2" x:Name="_btnDoReceptorTest" Width="120" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Lancer le test" Command="{Binding Path=StartTestingReceptorCommand}"></Button>
                 <Button Margin="10,0,0,0" Grid.Row="0" Grid.Column="3" x:Name="_btnStopReceptorTest" Width="120" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Arrêter le test" Command="{Binding Path=StopTestingReceptorCommand}" ></Button>
             </Grid>
@@ -112,7 +112,7 @@
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="{x:Type igDP:CellValuePresenter}">
-                                            <Button Name="_btnTestResistance" Content="Tester" Click="_btnTestResistance_Click" 
+                                            <Button Name="_btnTestResistance" Content="Tester" Click="BtnTestResistance_Click" 
                                                             IsEnabled="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}},Path=DataContext.SelectedTestReceptor.IsTestLaunchAllowed,  FallbackValue=false}"                                                            
                                                             FontStyle="Normal" />
                                         </ControlTemplate>

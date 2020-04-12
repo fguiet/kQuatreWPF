@@ -8,7 +8,7 @@
         xmlns:uc="clr-namespace:fr.guiet.kquatre.ui.views"
         x:Class="fr.guiet.kquatre.ui.views.MainWindow"        
         mc:Ignorable="d"
-        Title="{Binding Title}" Width="1600" WindowState="Maximized" WindowStartupLocation="CenterScreen" Closing="_mainWindow_Closing" Icon="/kQuatre;component/Resources/FireworksIcon.png" >
+        Title="{Binding Title}" Width="1600" WindowState="Maximized" WindowStartupLocation="CenterScreen" Closing="MainWindow_Closing" Icon="/kQuatre;component/Resources/FireworksIcon.png" >
     <Window.Resources>
        
     </Window.Resources>
@@ -23,18 +23,18 @@
         </Grid.ColumnDefinitions>
         <ig:XamMenu Grid.Row="0" x:Name="MainMenu" MenuOrientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,1,0.4,0">
             <ig:XamMenuItem Header="Fichier">
-                <ig:XamMenuItem Header="Nouveau..." Click="_miNewFirework_Click"/>
-                <ig:XamMenuItem x:Name="_miOpenExcel" Header="Ouvrir un fichier Excel..." Click="_miOpenExcel_Click"  />
-                <ig:XamMenuItem Name="_miOpenK4" Header="Ouvrir un fichier k4..." Click="_miOpenK4_Click" />
-                <ig:XamMenuItem Name="_miSave" Header="Enregistrer..." Click="_miSave_Click" />
-                <ig:XamMenuItem Name="_miSaveAs" Header="Enregistrer sous..." Click="_miSaveAs_Click" />
+                <ig:XamMenuItem Header="Nouveau..." Click="MiNewFirework_Click"/>
+                <ig:XamMenuItem x:Name="_miOpenExcel" Header="Ouvrir un fichier Excel..." Click="MiOpenExcel_Click"  />
+                <ig:XamMenuItem Name="_miOpenK4" Header="Ouvrir un fichier k4..." Click="MiOpenK4_Click" />
+                <ig:XamMenuItem Name="_miSave" Header="Enregistrer..." Click="MiSave_Click" />
+                <ig:XamMenuItem Name="_miSaveAs" Header="Enregistrer sous..." Click="MiSaveAs_Click" />
                 <ig:XamMenuSeparator/>
                 <ig:XamMenuItem Header="Configuration..." Click="XamMenuItem_Click"/>
                 <ig:XamMenuSeparator/>
-                <ig:XamMenuItem Header="Quitter" Click="_miQuit_Click"/>
+                <ig:XamMenuItem Header="Quitter" Click="MiQuit_Click"/>
             </ig:XamMenuItem>
             <ig:XamMenuItem Header="Artifices">
-                <ig:XamMenuItem Name="_miFireworkManagement" Header="Gestion..." Click="_miFireworkManagement_Click"  />
+                <ig:XamMenuItem Name="_miFireworkManagement" Header="Gestion..." Click="MiFireworkManagement_Click"  />
             </ig:XamMenuItem>
             <ig:XamMenuItem Header="Emetteur/Récepteurs">
                 <ig:XamMenuItem Header="Gestion..."/>
