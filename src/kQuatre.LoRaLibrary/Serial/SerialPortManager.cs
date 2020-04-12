@@ -22,7 +22,7 @@ namespace fr.guiet.lora.serial
         //https://stackoverflow.com/questions/41777981/serialport-basestream-readasync-drops-or-scrambles-bytes-when-reading-from-a-usb
         //
         private readonly SerialPortStream _serialPort = null;
-        private CancellationTokenSource _cancellationToken = new CancellationTokenSource();
+        private CancellationTokenSource _cancellationToken = null;
         private readonly SemaphoreSlim _serialWriteLock = new SemaphoreSlim(1);
 
         public event EventHandler<DataReceivedEventArgs> DataReceived;
@@ -81,7 +81,6 @@ namespace fr.guiet.lora.serial
             }
             catch (Exception e)
             {
-
                 _logger.Error(e, "Exception occured in WriteThreadSafeAsync");
 
                 OnSerialPortErrorOccured();
@@ -99,14 +98,22 @@ namespace fr.guiet.lora.serial
         /// Main serial listening loop
         /// </summary>
         private void SerialPortListener()
-        {            
+        {
+            //New Cancellation Token
+            _cancellationToken = new CancellationTokenSource();
+
             Task.Run(async () =>
             {
                 try
                 {
                     while (!_cancellationToken.IsCancellationRequested)
                     {
+                        //Throw Exception when serial port is disconnected
+                        bool carrierDetect = _serialPort.CDHolding; 
+
                         //Data received?
+                        //Unpluging serial USB does not throw an error
+                        //_serialPort.BytesToRead return 0...so SerialPortListener is still working
                         int byteToRead = _serialPort.BytesToRead;
                         if (byteToRead > 0)
                         {
@@ -146,6 +153,8 @@ namespace fr.guiet.lora.serial
         public void Dispose()
         {
             _cancellationToken.Cancel();
+
+            _cancellationToken.Dispose();
 
             if (_serialPort != null && _serialPort.IsOpen)
                 _serialPort.Close();

@@ -26,18 +26,14 @@ namespace fr.guiet.kquatre.business.receptor
         private DeviceManager _deviceManager = null;
 
         /// <summary>
-        /// Background worker for testing receptor
+        /// Jeton d'annulation
         /// </summary>
-        //private BackgroundWorker _receptorWorker = null;
-        private Task _receptorTask = null;
-        private CancellationTokenSource _receptorCancellationToken = new CancellationTokenSource();
-
+        private CancellationTokenSource _pingTestCancellationToken = null;
+        
         /// <summary>
-        /// Background worker for testing resistance
+        /// Jeton d'annulation
         /// </summary>
-        //private BackgroundWorker _receptorWorkerOhm = null;
-        private Task _receptorOhmTask = null;
-        private CancellationTokenSource _receptorOhmCancellationToken = new CancellationTokenSource();
+        private CancellationTokenSource _ohmTestCancellationToken = null;
 
         /// <summary>
         /// Receptor name
@@ -79,15 +75,23 @@ namespace fr.guiet.kquatre.business.receptor
         /// </summary>
         private String _messageSnr = "NA";
 
-        private bool _isTestLaunchAllowed = true;
+        //private bool _isTestLaunchAllowed = true;
 
-        private bool _isTestStopAllowed = false;
+        //private bool _isTestStopAllowed = false;
 
         private ReceptorAddress _receptorAddressTested = null;
 
         private int _messageSentCounterTemp = 0;
         private int _messageLostCounterTemp = 0;
         private int _messageReceivedCounterTemp = 0;
+
+        private bool _isPingTestRunning = false;
+        private bool _isPingOhmRunning = false;
+
+        //public event EventHandler OnTransceiverDisconnected;
+        //public event EventHandler OnTransceiverConnected;
+
+        public event EventHandler PingTestStopped;
 
         /// <summary>
         /// Get Current Receptor Channel associated with a line
@@ -108,40 +112,11 @@ namespace fr.guiet.kquatre.business.receptor
 
         #region Public Members
 
-        public bool IsTestLaunchAllowed
+        public bool IsPingTestRunning
         {
             get
             {
-                if (_deviceManager == null || !_deviceManager.IsEmitterConnected)
-                    return false;
-                else
-                    return _isTestLaunchAllowed;
-            }
-
-            set
-            {
-                if (_isTestLaunchAllowed != value)
-                {
-                    _isTestLaunchAllowed = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public bool IsTestStopAllowed
-        {
-            get
-            {
-                return _isTestStopAllowed;
-            }
-
-            set
-            {
-                if (_isTestStopAllowed != value)
-                {
-                    _isTestStopAllowed = value;
-                    OnPropertyChanged();
-                }
+                return _isPingTestRunning;
             }
         }
 
@@ -286,32 +261,44 @@ namespace fr.guiet.kquatre.business.receptor
             SetDeviceManager(deviceManager);
         }
 
-        private void DeviceManager_DeviceConnected(object sender, ConnectionEventArgs e)
+        private void OnPingTestStoppedEvent()
         {
-            //Refresh GUI
-            OnPropertyChanged("IsTestLaunchAllowed");
+            if (PingTestStopped != null)
+            {
+                PingTestStopped(this, new EventArgs());
+            }
         }
 
         private void DeviceManager_DeviceDisconnected(object sender, EventArgs e)
         {
-            if (_receptorTask != null && _receptorTask.Status == TaskStatus.WaitingForActivation)
-            {
-                _receptorCancellationToken.Cancel();
-            }                
-
-            //Stop test in case transceiver has been dettached..
-            /*if (_receptorWorker != null && _receptorWorker.IsBusy)
-            {
-                _receptorWorker.CancelAsync();
-            }*/
-
-            //Refresh GUI
-            OnPropertyChanged("IsTestLaunchAllowed");
+            //Test Running?
+            if (_isPingTestRunning)
+                _pingTestCancellationToken.Cancel();
         }
 
         #endregion
 
         #region Public methods 
+
+        public bool IsStartPingTestAllowed()
+        {
+            //Test not possible if no transceiver available
+            if (_deviceManager == null || !_deviceManager.IsTransceiverConnected)
+                return false;
+
+            if (_isPingTestRunning)
+                return false;
+
+            return true;
+        }
+
+        public bool IsStopPingAllowed()
+        {
+            if (_isPingTestRunning)
+                return true;
+
+            return false;
+        }
 
         public ReceptorAddress GetAddress(int channel)
         {
@@ -327,19 +314,10 @@ namespace fr.guiet.kquatre.business.receptor
             return receptorAddress;
         }
 
-        public void StopTest()
+        public void StopPingTest()
         {
-            if (_receptorTask != null && _receptorTask.Status == TaskStatus.WaitingForActivation)
-            {
-                _receptorCancellationToken.Cancel();
-
-                IsTestLaunchAllowed = true;
-                IsTestStopAllowed = false;
-            }
-                
-
-            /*if (_receptorWorker.IsBusy)
-                _receptorWorker.CancelAsync();*/
+            if (_isPingTestRunning)
+                _pingTestCancellationToken.Cancel();
         }
 
         public void SetDeviceManager(DeviceManager dm)
@@ -348,7 +326,7 @@ namespace fr.guiet.kquatre.business.receptor
             {
                 _deviceManager = dm;
                 _deviceManager.DeviceDisconnected += DeviceManager_DeviceDisconnected;
-                _deviceManager.DeviceConnected += DeviceManager_DeviceConnected;
+                //_deviceManager.DeviceConnected += DeviceManager_DeviceConnected;
             }
         }
 
@@ -358,48 +336,20 @@ namespace fr.guiet.kquatre.business.receptor
         /// <param name="ra"></param>
         public void TestResistance(ReceptorAddress ra)
         {
-            if (_receptorOhmTask != null && _receptorOhmTask.Status == TaskStatus.Running)
-            {
-                return;
-            }
-
-
-           // if (_receptorWorkerOhm != null && _receptorWorkerOhm.IsBusy) return;
-
             _receptorAddressTested = ra;
 
+            _isPingOhmRunning = true;
+
             DoReceptionOhmWorkAsync(ra);
-
-            //_receptorWorkerOhm = new BackgroundWorker();
-            //_receptorWorkerOhm.DoWork += ReceptorWorkerOhm_DoWork;
-            // _receptorWorkerOhm.RunWorkerCompleted += ReceptorWorkerOhm_RunWorkerCompleted;
-            //_receptorWorkerOhm.RunWorkerAsync(ra);
-
         }
 
-
-        public bool IsReceptionTestInProgress
+        public bool IsOhmTestRunning
         {
             get
             {
-                return (_receptorTask != null && _receptorTask.Status == TaskStatus.Running);
-                //return (_receptorWorker != null && _receptorWorker.IsBusy);
+                return (_isPingOhmRunning);                
             }
         }
-
-        public bool IsResistanceTestInProgress
-        {
-            get
-            {
-                return (_receptorOhmTask != null && _receptorOhmTask.Status == TaskStatus.Running);
-                //turn (_receptorWorkerOhm != null && _receptorWorkerOhm.IsBusy);
-            }
-        }
-
-        //private void ReceptorWorkerOhm_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        // {
-        //_receptorAddressTested.Resistance = e.Result.ToString();
-        // }
 
 
         /// <summary>
@@ -408,57 +358,43 @@ namespace fr.guiet.kquatre.business.receptor
         /// <returns></returns>
         public void DoReceptionOhmWorkAsync(ReceptorAddress args)
         {
-
-            _receptorOhmTask = Task.Run(async () =>
-            {
-
-                _deviceManager.Transceiver.FrameAckKoEvent += Transceiver_FrameAckKoEvent;
-                _deviceManager.Transceiver.FrameAckOkEvent += Transceiver_FrameAckOkEvent;
-                _deviceManager.Transceiver.FrameTimeOutEvent += Transceiver_FrameTimeOutEvent;
-
-                ReceptorAddress ra = args;
-
-                await _deviceManager.Transceiver.SendOhmFrame(_address, ra.Channel.ToString(), 2000, 2000);
-            }); 
-
-            //Task finished here
-            IsTestLaunchAllowed = true;
-            IsTestStopAllowed = false;
-        }
-
-        /*private void ReceptorWorkerOhm_DoWork(object sender, DoWorkEventArgs e)
-        {
-
             _deviceManager.Transceiver.FrameAckKoEvent += Transceiver_FrameAckKoEvent;
             _deviceManager.Transceiver.FrameAckOkEvent += Transceiver_FrameAckOkEvent;
             _deviceManager.Transceiver.FrameTimeOutEvent += Transceiver_FrameTimeOutEvent;
 
-            ReceptorAddress ra = (ReceptorAddress)e.Argument;
+            //New token
+            _ohmTestCancellationToken = new CancellationTokenSource();
 
-            _deviceManager.Transceiver.SendOhmFrame(_address, ra.Channel.ToString(), 2000, 2000);            
-        }*/
+            Task.Run(() =>
+            {
+                ReceptorAddress ra = args;
 
-        public void StartTest()
-        {
-            IsTestLaunchAllowed = false;
-            IsTestStopAllowed = true;
+                //TODO : Timeout a revoir?
+                Task ohmTask = _deviceManager.Transceiver.SendOhmFrame(_address, ra.Channel.ToString(), 2000, 2000);
+                ohmTask.Wait();
 
+            }).ContinueWith(t =>
+            {
+                _isPingOhmRunning = false;
 
-            DoReceptorWorkAsync();
-            /*_receptorWorker = new BackgroundWorker();
-            _receptorWorker.WorkerSupportsCancellation = true;
-            _receptorWorker.DoWork += ReceptorWorker_DoWork;
-            _receptorWorker.RunWorkerCompleted += ReceptorWorker_RunWorkerCompleted;
-            _receptorWorker.RunWorkerAsync();*/
+                //Be sure events are thrown other null value can happen below
+                //await Task.Delay(_deviceManager.SoftwareConfiguration.TransceiverReceptionTimeout);
+
+                _deviceManager.Transceiver.FrameAckKoEvent -= Transceiver_FrameAckKoEvent;
+                _deviceManager.Transceiver.FrameAckOkEvent -= Transceiver_FrameAckOkEvent;
+                _deviceManager.Transceiver.FrameTimeOutEvent -= Transceiver_FrameTimeOutEvent;
+
+            }).ConfigureAwait(false);
         }
 
-        /*private void ReceptorWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        public void StartPingTest()
         {
-            IsTestLaunchAllowed = true;
-            IsTestStopAllowed = false;
-        }*/
+            _isPingTestRunning = true;
 
-        private void DoReceptorWorkAsync()
+            DoReceptorPingWorkAsync();
+        }
+
+        private void DoReceptorPingWorkAsync()
         {
             _messageSentCounterTemp = 0;
             _messageLostCounterTemp = 0;
@@ -471,19 +407,17 @@ namespace fr.guiet.kquatre.business.receptor
             MessageRssi = "NA";
             MessageSnr = "NA";
 
+            //Abonnement aux événements
             _deviceManager.Transceiver.FrameAckKoEvent += Transceiver_FrameAckKoEvent;
             _deviceManager.Transceiver.FrameAckOkEvent += Transceiver_FrameAckOkEvent;
             _deviceManager.Transceiver.FrameTimeOutEvent += Transceiver_FrameTimeOutEvent;
 
-            _receptorTask = Task.Run( async() =>
+            //New token
+            _pingTestCancellationToken = new CancellationTokenSource();
+
+            Task.Run(async () =>
             {
-
-                //while (!_receptorWorker.CancellationPending)
-                //{
-                //try
-                //{                    
-
-                while (!_receptorCancellationToken.IsCancellationRequested)
+                while (!_pingTestCancellationToken.IsCancellationRequested)
                 {
 
                     _messageSentCounterTemp = _messageSentCounterTemp + 1;
@@ -491,27 +425,27 @@ namespace fr.guiet.kquatre.business.receptor
 
                     await _deviceManager.Transceiver.SendPingFrame(_address, _deviceManager.SoftwareConfiguration.TransceiverReceptionTimeout, _deviceManager.SoftwareConfiguration.TransceiverACKTimeout);
 
-                    //Thread.Sleep(500);
-                    await Task.Delay(300);
+                    await Task.Delay(300, _pingTestCancellationToken.Token);
+
                 }
-                //}
-                
 
-                /*if (_receptorWorker.CancellationPending)
-                {
-                    e.Cancel = true;
-                }*/
-            });
+            }).ContinueWith(t =>
+            {
+                _isPingTestRunning = false;
 
-           /* _deviceManager.Transceiver.FrameAckKoEvent -= Transceiver_FrameAckKoEvent;
-            _deviceManager.Transceiver.FrameAckOkEvent -= Transceiver_FrameAckOkEvent;
-            _deviceManager.Transceiver.FrameTimeOutEvent -= Transceiver_FrameTimeOutEvent;*/
+                //Annulation abonnement
+                _deviceManager.Transceiver.FrameAckKoEvent -= Transceiver_FrameAckKoEvent;
+                _deviceManager.Transceiver.FrameAckOkEvent -= Transceiver_FrameAckOkEvent;
+                _deviceManager.Transceiver.FrameTimeOutEvent -= Transceiver_FrameTimeOutEvent;
+
+                OnPingTestStoppedEvent();
+
+            }).ConfigureAwait(false);
         }
-
-       
 
         private void Transceiver_FrameTimeOutEvent(object sender, FrameTimeOutEventArgs e)
         {
+
             if (e.FrameSent is PingFrame)
             {
                 PingFrame pingFrame = (PingFrame)e.FrameSent;
@@ -529,10 +463,6 @@ namespace fr.guiet.kquatre.business.receptor
                 {
                     _receptorAddressTested.Resistance = "Timeout! Transceiver plugged?";
                 }
-
-                _deviceManager.Transceiver.FrameAckKoEvent -= Transceiver_FrameAckKoEvent;
-                _deviceManager.Transceiver.FrameAckOkEvent -= Transceiver_FrameAckOkEvent;
-                _deviceManager.Transceiver.FrameTimeOutEvent -= Transceiver_FrameTimeOutEvent;
             }
         }
 
@@ -557,10 +487,6 @@ namespace fr.guiet.kquatre.business.receptor
                 {
                     _receptorAddressTested.Resistance = e.AckOKFrame.Ohm;
                 }
-
-                _deviceManager.Transceiver.FrameAckKoEvent -= Transceiver_FrameAckKoEvent;
-                _deviceManager.Transceiver.FrameAckOkEvent -= Transceiver_FrameAckOkEvent;
-                _deviceManager.Transceiver.FrameTimeOutEvent -= Transceiver_FrameTimeOutEvent;
             }
         }
 
@@ -583,10 +509,6 @@ namespace fr.guiet.kquatre.business.receptor
                 {
                     _receptorAddressTested.Resistance = "No ack..receiver plugged?";
                 }
-
-                _deviceManager.Transceiver.FrameAckKoEvent -= Transceiver_FrameAckKoEvent;
-                _deviceManager.Transceiver.FrameAckOkEvent -= Transceiver_FrameAckOkEvent;
-                _deviceManager.Transceiver.FrameTimeOutEvent -= Transceiver_FrameTimeOutEvent;
             }
         }
 

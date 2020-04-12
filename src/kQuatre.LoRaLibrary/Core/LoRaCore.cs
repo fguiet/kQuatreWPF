@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 
 namespace fr.guiet.lora.core
 {
-
     public class LoRaCore
     {
         #region Private Properties
@@ -58,6 +57,7 @@ namespace fr.guiet.lora.core
         {
             if (FrameAckOkEvent != null)
             {
+                //TODO : set log message inside ackKOFrame and deal with the fact that sentframe can be null!!!!
                 _logger.Info("+++ ACK OK received."
                            + Environment.NewLine
                            + string.Format("=> Frame sent info : frame of type : {0} with ID : {1}, timeout set to : {2}, ack timeout set to : {3}, receiver address : {4}, RSSI : {5}", args.AckOKFrame.SentFrame.FrameOrder, args.AckOKFrame.SentFrame.FrameId, args.AckOKFrame.SentFrame.TotalTimeOut, args.AckOKFrame.SentFrame.AckTimeOut, args.AckOKFrame.SentFrame.ReceiverAddress, args.AckOKFrame.Rssi)
@@ -73,6 +73,7 @@ namespace fr.guiet.lora.core
         {
             if (FrameAckKoEvent != null)
             {
+                //TODO : set log message inside ackKOFrame and deal with the fact that sentframe can be null!!!!
                 _logger.Warn("--- ACK KO received."
                            + Environment.NewLine
                            + string.Format("=> Frame sent info : frame of type : {0} with ID : {1}, timeout set to : {2}, ack timeout set to : {3}, expected receiver address : {4}", args.AckKOFrame.SentFrame.FrameOrder, args.AckKOFrame.SentFrame.FrameId, args.AckKOFrame.SentFrame.TotalTimeOut, args.AckKOFrame.SentFrame.AckTimeOut, args.AckKOFrame.SentFrame.ReceiverAddress)
@@ -150,7 +151,8 @@ namespace fr.guiet.lora.core
                 } 
                 else
                 {
-                    sentFrame.ArrivedTime = DateTime.Now.TimeOfDay.TotalMilliseconds;
+                    if (sentFrame != null)
+                        sentFrame.ArrivedTime = DateTime.Now.TimeOfDay.TotalMilliseconds;
                 }
 
                 //**********
@@ -159,10 +161,10 @@ namespace fr.guiet.lora.core
                 if (frame is AckOKFrame)
                 {
                     AckOKFrame frameOK = (AckOKFrame)frame;
-                    frameOK.SentFrame = sentFrame;                    
-                    tcs.SetResult(frameOK);
+                    frameOK.SentFrame = sentFrame;
 
                     OnFrameAckOkEvent(new FrameAckOKEventArgs(frameOK));
+                    tcs.SetResult(frameOK);                    
                 }
 
                 //**********
@@ -173,9 +175,8 @@ namespace fr.guiet.lora.core
                     AckKOFrame frameKO = (AckKOFrame)frame;
                     frameKO.SentFrame = sentFrame;
 
-                    tcs.SetResult(frameKO);
-
                     OnFrameAckKoEvent(new FrameAckKOEventArgs(frameKO));
+                    tcs.SetResult(frameKO);                 
                 }
             }
             catch (InvalidPacketReceivedException ipre)
@@ -229,7 +230,14 @@ namespace fr.guiet.lora.core
 
         public async Task SendFrame(FrameBase frame, int timeout)
         {
-            await SubmitLoRaFrameAsync(frame, timeout);
+            try
+            {
+                await SubmitLoRaFrameAsync(frame, timeout);
+            }
+            catch (AckNotReceivedTimeoutException)
+            {
+                //TimeOut are handle via Event
+            }
         }
 
         public async Task SendFireFrame(string receiverAddress, List<string> receiverChannels, List<string> lineNumbers, int timeOut, int ackTimeOut, int frameSentMaxRetry)
@@ -287,6 +295,7 @@ namespace fr.guiet.lora.core
         /// await will created a new thread so it is not block in the UI
         /// </summary>
         /// <returns></returns>
+        /// TOTO : add a cancelation token here
         private Task<FrameBase> SubmitLoRaFrameAsync(FrameBase frame, int timeout)
         {
             var tcs = new TaskCompletionSource<FrameBase>();
@@ -309,14 +318,14 @@ namespace fr.guiet.lora.core
                 if (_pendingLoRaFrames.TryRemove(frame.FrameId, out tcs))
                 {
                     //Remove task from concurrent dictionary
-                    _sentLoRaFrames.TryRemove(frame.FrameId, out var sentFrame);                    
-
-                    tcs.TrySetException(new AckNotReceivedTimeoutException("Timeout : Ack Not received"));
+                    _sentLoRaFrames.TryRemove(frame.FrameId, out var sentFrame);
 
                     //TimeOut event here
                     sentFrame.ArrivedTime = DateTime.Now.TimeOfDay.TotalMilliseconds;
                     FrameTimeOutEventArgs args = new FrameTimeOutEventArgs(sentFrame);
                     OnFrameTimeOutEvent(args);
+
+                    tcs.TrySetException(new AckNotReceivedTimeoutException("Timeout : Ack Not received"));                    
                 }
 
             }).ConfigureAwait(false);

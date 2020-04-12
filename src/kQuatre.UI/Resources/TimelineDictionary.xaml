@@ -1,16 +1,13 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"                    
-                    xmlns:kQuatreUI="clr-namespace:fr.guiet.kquatre.ui.timeline"
+                    xmlns:kQuatreUI="clr-namespace:fr.guiet.kquatre.ui.timeline"                    
                     xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation">
-    
+
     <SolidColorBrush x:Key="FireworkLineItem_Background" Color="#66D6D4D4" />
     <SolidColorBrush x:Key="FireworkLineItem_Background_MouseOver" Color="#CCD6D4D4" />
     <SolidColorBrush x:Key="AccentBrush" Color="#4CBBE6" />
-	<SolidColorBrush x:Key="BasicBrush" Color="#FFD6D4D4" />
-	<kQuatreUI:MinuteIntervalFormatter x:Key="MinuteIntervalFormatter"/>
-    <kQuatreUI:SecondIntervalFormatter x:Key="SecondIntervalFormatter"/>
+    <SolidColorBrush x:Key="BasicBrush" Color="#FFD6D4D4" />
 
-	
     <Style x:Key="FireworkLinesStyle" TargetType="kQuatreUI:CustomTimelineControl">
         <Setter Property="Template">
             <Setter.Value>

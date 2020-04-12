@@ -13,7 +13,7 @@ namespace fr.guiet.kquatre.ui.viewsmodel
     {
         private SoftwareConfiguration _softwareConfiguration = null;
         private FireworkManager _fireworkManager = null;
-        private Line _line = null;        
+        private Line _line = null;         
 
         public bool CanSelect
         {
@@ -36,8 +36,6 @@ namespace fr.guiet.kquatre.ui.viewsmodel
             {
                 return _softwareConfiguration;
             }           
-        }
-
-       
+        }       
     }
 }

@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace fr.guiet.kquatre.business.firework
 {
-
     public enum FireworkManagerState
     {
-        Editing,
-        FireInProgress
+        FireworkStopped,
+        FireworkRunning
     }
 
 }

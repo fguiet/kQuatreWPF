@@ -81,6 +81,7 @@
     <Compile Include="Transceiver\ConnectionEventArgs.cs" />
     <Compile Include="Transceiver\DeviceManager.cs" />
     <Compile Include="Transceiver\Singleton.cs" />
+    <Compile Include="Transceiver\TransceiverInfoEventArgs.cs" />
     <Compile Include="Transceiver\USBConnectionEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -19,10 +19,7 @@ namespace fr.guiet.kquatre.business.firework
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] String propertyName = "")
-        {
-            //Make it...dirty
-            _isDirty = true;
-
+        {           
             if (PropertyChanged != null)
             {                
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
@@ -54,7 +51,7 @@ namespace fr.guiet.kquatre.business.firework
 
         private bool _isRescueLine = false;
 
-        private bool _isDirty = false;
+        //private bool _isDirty = false;
 
         //Line number
         private int _number = -1;
@@ -116,7 +113,7 @@ namespace fr.guiet.kquatre.business.firework
             }
         }
 
-        public bool IsDirty
+        /*public bool IsDirty
         {
             get
             {
@@ -126,7 +123,7 @@ namespace fr.guiet.kquatre.business.firework
             {
                 _isDirty = value;
             }
-        }
+        }*/
 
         public LineState State
         {
@@ -365,7 +362,7 @@ namespace fr.guiet.kquatre.business.firework
             Line l = new Line(_number);
             l.Ignition = _ignition;
             l.ReceptorAddress = _receptorAddress;
-            l.IsDirty = false;
+            //l.IsDirty = false;
             l.IsRescueLine = _isRescueLine;
 
             return l;

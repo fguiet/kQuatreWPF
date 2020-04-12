@@ -35,8 +35,13 @@ namespace fr.guiet.kquatre.business.transceiver
 
         #endregion
 
-        #region Public Members   
-        
+        #region Public Members  
+
+        public const string DEFAULT_NOT_TRANSCEIVER_CONNECTED_MESSAGE = "Aucun émetteur connecté...";
+        public const string DEFAULT_TRANSCEIVER_CONNECTED_MESSAGE = "Emetteur connecté sur le port {0}";
+        public const string DEFAULT_ERROR_TRANSCEIVER_WHEN_CONNECTING_MESSAGE = "Connexion avec l'émetteur impossible (erreur : {0}) - Essayer de relancer l'application";
+        public const string DEFAULT_USB_CONNECTING_MESSAGE = "Connexion avec l'émetteur en cours...Etape(s) {0}/{1}";
+
         public SoftwareConfiguration SoftwareConfiguration
         {
             get
@@ -55,7 +60,8 @@ namespace fr.guiet.kquatre.business.transceiver
         }
        
 
-        public bool IsEmitterConnected
+        public bool IsTransceiverConnected
+
         {
             get
             {                

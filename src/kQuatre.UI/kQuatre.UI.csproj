@@ -110,8 +110,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Command\RelayCommand.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\CountToVisibilityConverter.cs" />
+    <Compile Include="Events\FireworkLoadedEventArgs.cs" />
     <Compile Include="Helpers\DialogBoxHelper.cs" />
     <Compile Include="Timeline\CustomTimelineControl.cs" />
     <Compile Include="Timeline\MinuteIntervalFormatter.cs" />
@@ -119,10 +121,13 @@
     <Compile Include="Timeline\SecondInternalFormatter.cs" />
     <Compile Include="ViewModel\ComboBoxItem.cs" />
     <Compile Include="ViewModel\ConfigurationWindowViewModel.cs" />
+    <Compile Include="ViewModel\DesignUserControlViewModel.cs" />
     <Compile Include="ViewModel\FireworkManagementViewModel.cs" />
+    <Compile Include="ViewModel\FireworkUserControlViewModel.cs" />
     <Compile Include="ViewModel\LineViewModel.cs" />
     <Compile Include="ViewModel\RadTimelineTestView.cs" />
     <Compile Include="ViewModel\SanityCheckViewModel.cs" />
+    <Compile Include="ViewModel\ReceptorsUserControlViewModel.cs" />
     <Compile Include="ViewModel\WindowMode.cs" />
     <Compile Include="Views\AboutBox1.cs">
       <SubType>Form</SubType>
@@ -136,8 +141,14 @@
     <Compile Include="Views\ConfigurationWindow.xaml.cs">
       <DependentUpon>ConfigurationWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\DesignUserControlView.xaml.cs">
+      <DependentUpon>DesignUserControlView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\FireworkManagementWindow.xaml.cs">
       <DependentUpon>FireworkManagementWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FireworkUserControlView.xaml.cs">
+      <DependentUpon>FireworkUserControlView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\LineWindow.xaml.cs">
       <DependentUpon>LineWindow.xaml</DependentUpon>
@@ -151,15 +162,14 @@
     <Compile Include="Views\SplashScreenWindow.xaml.cs">
       <DependentUpon>SplashScreenWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ReceptorsUserControlView.xaml.cs">
+      <DependentUpon>ReceptorsUserControlView.xaml</DependentUpon>
+    </Compile>
     <Page Include="Resources\TimelineDictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\ToggleButton.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Timeline\TimelineResource.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -171,7 +181,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\DesignUserControlView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\FireworkManagementWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\FireworkUserControlView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -201,6 +219,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\SplashScreenWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ReceptorsUserControlView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

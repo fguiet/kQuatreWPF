@@ -7,8 +7,10 @@
   </ExcelFile>
   <Transceiver>
     <Baudrate>115200</Baudrate>
-    <RetryPingTransceiver>3</RetryPingTransceiver>
+    <RetryPingTransceiver>3</RetryPingTransceiver>    
+    <!-- Temps d'attente de réception d'un ACK en provenance d'un récepteur une fois une trame envoyée -->
     <ACKReceptionTimeout>200</ACKReceptionTimeout>
+    <!-- Temps d'attente total envoi d'une trame + réception d'une trame -->
     <ReceptionTimeout>500</ReceptionTimeout>  
     <RetryMessageEmission>2</RetryMessageEmission>    
     <Address>0</Address>    

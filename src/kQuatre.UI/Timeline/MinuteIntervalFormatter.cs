@@ -12,7 +12,7 @@ namespace fr.guiet.kquatre.ui.timeline
         public Func<DateTime, string>[] GetFormatters(IntervalBase interval)
         {
             return new Func<DateTime, string>[]
-            {
+            {                
                 date => string.Format("Minute : {0}", date.ToString("mm"))
             };
         }
@@ -20,8 +20,8 @@ namespace fr.guiet.kquatre.ui.timeline
         public Func<DateTime, string>[] GetIntervalSpanFormatters(IntervalBase interval)
         {
             return new Func<DateTime, string>[]
-            {
-            date => date.ToString("mm")
+            {                
+                date => date.ToString("mm")
             };
         }
     }
