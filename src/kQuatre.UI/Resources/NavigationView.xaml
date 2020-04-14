@@ -1,0 +1,22 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:command="clr-namespace:fr.guiet.kquatre.ui.command"
+                    xmlns:views="clr-namespace:fr.guiet.kquatre.ui.views">
+
+
+    <DataTemplate x:Key="DesignTemplate">
+        <views:DesignUserControlView x:Name="_ucDesignUserControlView" SoftwareConfiguration="{Binding Path=DataContext.SoftwareConfiguration, RelativeSource={RelativeSource AncestorType=Window}}" FireworkManager="{Binding Path=DataContext.FireworkManager, RelativeSource={RelativeSource AncestorType=Window}}"></views:DesignUserControlView>
+    </DataTemplate>
+    <DataTemplate x:Key="TestTemplate">
+        <views:ReceptorsUserControlView x:Name="_ucReceptorsUserControlView"  FireworkManager="{Binding Path=DataContext.FireworkManager, RelativeSource={RelativeSource AncestorType=Window}}"></views:ReceptorsUserControlView>
+    </DataTemplate>
+    <DataTemplate x:Key="FireworkTemplate">
+        <views:FireworkUserControlView x:Name="_ucFireworkUserControlView" FireworkManager="{Binding Path=DataContext.FireworkManager, RelativeSource={RelativeSource AncestorType=Window}}"></views:FireworkUserControlView>
+    </DataTemplate>
+
+    <command:NavigationContentTemplateSelector x:Key="NavigationContentTemplateSelector" 
+                                                       DesignTemplate="{StaticResource DesignTemplate}"
+                                                       TestTemplate="{StaticResource TestTemplate}"
+                                                       FireworkTemplate="{StaticResource FireworkTemplate}"/>
+
+</ResourceDictionary>
