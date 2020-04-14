@@ -33,23 +33,6 @@ namespace fr.guiet.kquatre.ui.viewsmodel
 
         #region Public Members
 
-        /*public bool IsStopFireworkEnable
-        {
-            get
-            {
-                return (FireworkManager.State == FireworkManagerState.FireInProgress);
-            }
-        }    */    
-
-        /*public bool IsArmingEnable
-        {
-            get
-            {
-                if (FireworkManager.State == FireworkManagerState.Editing && FireworkManager.IsSanityCheckOk) return true;
-                else return false;
-            }
-        }*/
-
         public string Title
         {
             get

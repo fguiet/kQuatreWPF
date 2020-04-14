@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Telerik.Windows.Controls;
 using Line = fr.guiet.kquatre.business.firework.Line;
 
 namespace fr.guiet.kquatre.ui.views
@@ -53,6 +54,8 @@ namespace fr.guiet.kquatre.ui.views
         public FireworkUserControlView()
         {
             InitializeComponent();
+
+            StyleManager.SetTheme(_fireworkTimeline, new FluentTheme());
 
             this.Loaded += FireworkUserControlView_Loaded;
         }

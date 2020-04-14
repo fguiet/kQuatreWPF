@@ -56,7 +56,11 @@ namespace fr.guiet.kquatre.ui.views
         {
             InitializeComponent();
 
-            this.Loaded += DesignUserControlView_Loaded;
+            //Only in runtime mode, not design mode
+            if (!System.ComponentModel.DesignerProperties.GetIsInDesignMode(this))
+            {
+                this.Loaded += DesignUserControlView_Loaded;
+            }
         }
 
         #endregion

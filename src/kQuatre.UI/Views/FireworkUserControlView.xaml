@@ -28,7 +28,7 @@
             <conv:CountToVisibilityConverter x:Key="CountToVisibilityConverter"></conv:CountToVisibilityConverter>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
+    <Grid Margin="10 10 0 0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>

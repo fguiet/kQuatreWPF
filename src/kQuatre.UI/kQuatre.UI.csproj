@@ -111,6 +111,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Command\NavigationContentTemplateSelector.cs" />
     <Compile Include="Command\RelayCommand.cs" />
     <Compile Include="Controls\ArrangedPanel.cs" />
     <Compile Include="Controls\CharItem.cs" />
@@ -169,9 +170,6 @@
     <Compile Include="Views\LineWindow.xaml.cs">
       <DependentUpon>LineWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\NewMainWindowView.xaml.cs">
-      <DependentUpon>NewMainWindowView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\RadTimelineTest.xaml.cs">
       <DependentUpon>RadTimelineTest.xaml</DependentUpon>
     </Compile>
@@ -191,6 +189,10 @@
     <Page Include="Controls\SegmentsStack\SixteenSegmentsStack..xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\NavigationView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\TimelineDictionary.xaml">
       <SubType>Designer</SubType>
@@ -237,10 +239,6 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Views\NewMainWindowView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\RadTimelineTest.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

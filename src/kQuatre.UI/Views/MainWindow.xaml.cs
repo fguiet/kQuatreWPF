@@ -7,6 +7,7 @@ using Infragistics.Controls.Schedules;
 using Infragistics.Windows.DataPresenter;
 using System;
 using System.Windows;
+using Telerik.Windows.Controls;
 
 namespace fr.guiet.kquatre.ui.views
 {
@@ -26,6 +27,10 @@ namespace fr.guiet.kquatre.ui.views
         public MainWindow()
         {
             InitializeComponent();
+
+            //Setting theme for RadNavigationView
+            //StyleManager.SetTheme(_nvRadnavigationView, new Office2016Theme());
+            StyleManager.SetTheme(_nvRadnavigationView, new FluentTheme());
 
             this.Loaded += MainWindow_Loaded;            
         }         
@@ -118,7 +123,7 @@ namespace fr.guiet.kquatre.ui.views
             }
         }
 
-        private void XamTabControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        /*private void XamTabControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             if (_tabFire.IsSelected)
             {
@@ -127,7 +132,7 @@ namespace fr.guiet.kquatre.ui.views
 
             //TODO : Vérifier qu'un feu n'est pas en cours et sinon 
             //interdir le changement !!
-        }
+        }*/
 
         #endregion
 

@@ -21,16 +21,15 @@ namespace fr.guiet.kquatre.ui
 
         public App()
         {
-            //this.MainWindow = new MainWindow();
-            this.MainWindow = new NewMainWindowView();
+            this.MainWindow = new MainWindow();          
             this.ShutdownMode = ShutdownMode.OnMainWindowClose;
         }
 
         protected override void OnStartup(StartupEventArgs e)
         {            
-            _splashScreen.Show();
+            //_splashScreen.Show();
 
-            Thread.Sleep(3000);
+            //Thread.Sleep(3000);
 
             this.MainWindow.Show();
 

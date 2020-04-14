@@ -4,12 +4,16 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"            
         xmlns:Custom="http://infragistics.com/Windows" x:Name="_mainWindow" 
-        xmlns:uc="clr-namespace:fr.guiet.kquatre.ui.views"
-        x:Class="fr.guiet.kquatre.ui.views.MainWindow"        
+        xmlns:uc="clr-namespace:fr.guiet.kquatre.ui.views" xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
+    x:Class="fr.guiet.kquatre.ui.views.MainWindow"        
         mc:Ignorable="d"
         Title="{Binding Title}" Width="1600" WindowState="Maximized" WindowStartupLocation="CenterScreen" Closing="MainWindow_Closing" Icon="/kQuatre;component/Resources/FireworksIcon.png" >
     <Window.Resources>
-       
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Resources/NavigationView.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -51,6 +55,51 @@
                 <MenuItem Header="A Propos..."/>
             </MenuItem>
         </Menu>
+
+        <!-- RadNavigationView -->
+        <telerik:RadNavigationView x:Name="_nvRadnavigationView" Grid.Row="1" SelectedIndex="0" >
+            <telerik:RadNavigationView.Items>
+                <telerik:RadNavigationViewItem Name="_nviDesign" Content="Conception du feu">
+                    <telerik:RadNavigationViewItem.Icon>
+                        <Image Source="/kQuatre;component/Resources/IdeaIcon_32x32.png" Height="16" Width="16" />
+                        <!--<telerik:RadGlyph Glyph="&#xe653;" FontSize="16"/>-->
+                    </telerik:RadNavigationViewItem.Icon>
+                </telerik:RadNavigationViewItem>
+                <telerik:RadNavigationViewItem Name="_nviTest" Content="Tests radio">
+                    <telerik:RadNavigationViewItem.Icon>
+                        <Image Source="/kQuatre;component/Resources/TestIcon_32x32.png" Height="16" Width="16" />
+                        <!--<telerik:RadGlyph Glyph="&#xe653;" FontSize="16"/>-->
+                    </telerik:RadNavigationViewItem.Icon>
+                </telerik:RadNavigationViewItem>
+                <telerik:RadNavigationViewItem Name="_nviFirework" Content="Gestion feu d'artifice">
+                    <telerik:RadNavigationViewItem.Icon>
+                        <Image Source="/kQuatre;component/Resources/ExecutionIcon_32x32.png" Height="16" Width="16" />
+                        <!--<telerik:RadGlyph Glyph="&#xe654;" FontSize="16"/>-->
+                    </telerik:RadNavigationViewItem.Icon>
+                </telerik:RadNavigationViewItem>
+            </telerik:RadNavigationView.Items>
+            <telerik:RadNavigationView.Content>
+
+                <telerik:RadTransitionControl Content="{Binding SelectedItem, ElementName=_nvRadnavigationView}"
+                                              ContentTemplateSelector="{DynamicResource NavigationContentTemplateSelector}" 
+                                              Duration="0:0:0.4">
+                    <telerik:RadTransitionControl.Transition>
+                        <telerik:FadeTransition />
+                    </telerik:RadTransitionControl.Transition>
+                </telerik:RadTransitionControl>
+            </telerik:RadNavigationView.Content>
+            <!--<telerik:RadNavigationView.PaneFooter>
+                <telerik:RadNavigationViewItem Content="Settings" 
+                                               Command="{x:Static common:NavigationViewSettingsCommands.OpenSettingsDialogCommand}"
+                                               CommandParameter="{Binding ElementName=navigationView}"
+                                               IconTemplate="{x:Null}">
+                    <telerik:RadNavigationViewItem.Icon>
+                        <telerik:RadGlyph Glyph="&#xe13a;" FontSize="20" />
+                    </telerik:RadNavigationViewItem.Icon>
+                </telerik:RadNavigationViewItem>
+            </telerik:RadNavigationView.PaneFooter>-->
+        </telerik:RadNavigationView>
+
         <StatusBar Grid.Row="3" Height="20">
             <StatusBar.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -69,7 +118,7 @@
                 <TextBlock x:Name="_fireworkSanityStatus" Text="{Binding DeviceConnectionInfo}"/>
             </StatusBarItem>-->
         </StatusBar>
-        <Custom:XamTabControl   Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" SelectionChanged="XamTabControl_SelectionChanged">
+        <!--<Custom:XamTabControl   Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" SelectionChanged="XamTabControl_SelectionChanged">
             <Custom:TabItemEx x:Name="_tabDesign">
                 <Custom:TabItemEx.Header>
                     <StackPanel Height="50" Width="60">
@@ -97,6 +146,6 @@
                 </Custom:TabItemEx.Header>
                 <uc:FireworkUserControlView x:Name="_ucFireworkUserControlView" FireworkManager="{Binding Path=DataContext.FireworkManager, RelativeSource={RelativeSource AncestorType=Window}}"></uc:FireworkUserControlView>
             </Custom:TabItemEx>
-        </Custom:XamTabControl>
+        </Custom:XamTabControl>-->
     </Grid>
 </Window>
