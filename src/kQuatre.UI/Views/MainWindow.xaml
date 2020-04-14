@@ -2,8 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"    
-        xmlns:ig="http://schemas.infragistics.com/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"            
         xmlns:Custom="http://infragistics.com/Windows" x:Name="_mainWindow" 
         xmlns:uc="clr-namespace:fr.guiet.kquatre.ui.views"
         x:Class="fr.guiet.kquatre.ui.views.MainWindow"        
@@ -21,28 +20,37 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <ig:XamMenu Grid.Row="0" x:Name="MainMenu" MenuOrientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,1,0.4,0">
-            <ig:XamMenuItem Header="Fichier">
-                <ig:XamMenuItem Header="Nouveau..." Click="MiNewFirework_Click"/>
-                <ig:XamMenuItem x:Name="_miOpenExcel" Header="Ouvrir un fichier Excel..." Click="MiOpenExcel_Click"  />
-                <ig:XamMenuItem Name="_miOpenK4" Header="Ouvrir un fichier k4..." Click="MiOpenK4_Click" />
-                <ig:XamMenuItem Name="_miSave" Header="Enregistrer..." Click="MiSave_Click" />
-                <ig:XamMenuItem Name="_miSaveAs" Header="Enregistrer sous..." Click="MiSaveAs_Click" />
-                <ig:XamMenuSeparator/>
-                <ig:XamMenuItem Header="Configuration..." Click="XamMenuItem_Click"/>
-                <ig:XamMenuSeparator/>
-                <ig:XamMenuItem Header="Quitter" Click="MiQuit_Click"/>
-            </ig:XamMenuItem>
-            <ig:XamMenuItem Header="Artifices">
-                <ig:XamMenuItem Name="_miFireworkManagement" Header="Gestion..." Click="MiFireworkManagement_Click"  />
-            </ig:XamMenuItem>
-            <ig:XamMenuItem Header="Emetteur/Récepteurs">
-                <ig:XamMenuItem Header="Gestion..."/>
-            </ig:XamMenuItem>
-            <ig:XamMenuItem Header="?">
-                <ig:XamMenuItem Header="A Propos..."/>
-            </ig:XamMenuItem>
-        </ig:XamMenu>
+        <Menu Grid.Row="0" x:Name="MainMenu" HorizontalAlignment="Stretch" >
+            <MenuItem Header="Fichier">
+                <MenuItem Header="Nouveau..." Click="MiNewFirework_Click"/>
+                <MenuItem x:Name="_miOpenExcel" Header="Ouvrir un fichier Excel..." Click="MiOpenExcel_Click"  />
+                <MenuItem Name="_miOpenK4" Header="Ouvrir un fichier k4..." Click="MiOpenK4_Click" />
+                <MenuItem Name="_miSave" Header="Enregistrer..." Click="MiSave_Click" />
+                <MenuItem Name="_miSaveAs" Header="Enregistrer sous..." Click="MiSaveAs_Click" />
+                <Separator/>
+                <MenuItem Header="Configuration..." Click="XamMenuItem_Click"/>
+                <Separator/>
+                <MenuItem Header="Quitter" Click="MiQuit_Click"/>
+            </MenuItem>
+            <!-- As of 2020/04 not terminated yet so hidden for now
+            TODO : to implement
+            -->
+            <MenuItem Header="Artifices" Visibility="Hidden" >
+                <MenuItem Name="_miFireworkManagement" Header="Gestion..." Click="MiFireworkManagement_Click"  />
+            </MenuItem>
+            <!-- As of 2020/04 not terminated yet so hidden for now
+            TODO : to implement
+            -->
+            <MenuItem Header="Emetteur/Récepteurs" Visibility="Hidden">
+                <MenuItem Header="Gestion..."/>
+            </MenuItem>
+            <!-- As of 2020/04 not terminated yet so hidden for now
+            TODO : to implement
+            -->
+            <MenuItem Header="?" Visibility="Hidden">
+                <MenuItem Header="A Propos..."/>
+            </MenuItem>
+        </Menu>
         <StatusBar Grid.Row="3" Height="20">
             <StatusBar.ItemsPanel>
                 <ItemsPanelTemplate>

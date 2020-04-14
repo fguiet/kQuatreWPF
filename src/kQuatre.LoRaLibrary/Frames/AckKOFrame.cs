@@ -10,6 +10,32 @@ namespace fr.guiet.lora.frames
         private AckKOReason _ackKO_Reason = AckKOReason.UNKNOWN;
         private FrameBase _sentFrame = null;
 
+        public string Log
+        {
+
+            get
+            {
+                string log;
+
+                if (_sentFrame == null)
+                {
+                    log = "ACK KO : sent frame object is null"
+                        + Environment.NewLine
+                        + string.Format("=> ACK KO info : Reason : {0}", GetACKKOReason());
+                }
+                else
+                {
+                    log = string.Format("=> Frame sent info : frame of type : {0} with ID : {1}, timeout set to : {2}, ack timeout set to : {3}, expected receiver address : {4}", _sentFrame.FrameOrder, _sentFrame.FrameId, _sentFrame.TotalTimeOut, _sentFrame.AckTimeOut, _sentFrame.ReceiverAddress)
+                           + Environment.NewLine
+                           + string.Format("=> ACK KO info : Reason : {0}", GetACKKOReason())
+                           + Environment.NewLine
+                           + string.Format("=> flight time : {0}  ", _sentFrame.FlightTime);
+                }
+
+                return log;
+            }            
+        }
+
         public FrameBase SentFrame
         {
             set
@@ -28,7 +54,7 @@ namespace fr.guiet.lora.frames
             _ackKO_Reason = ackKO_Reason;
         }
 
-        public string GetACKKOReason()
+        private string GetACKKOReason()
         {
             switch (_ackKO_Reason)
             {

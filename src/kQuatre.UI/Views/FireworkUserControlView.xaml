@@ -5,11 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:igDP="http://schemas.infragistics.com/xaml/wpf" 
              xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation" 
-             xmlns:kQuatreUI="clr-namespace:fr.guiet.kquatre.ui.timeline" 
-             xmlns:ig="http://schemas.infragistics.com/xaml"
-             xmlns:conv="clr-namespace:fr.guiet.kquatre.ui.converters"
+             xmlns:kQuatreUI="clr-namespace:fr.guiet.kquatre.ui.timeline"
+             xmlns:conv="clr-namespace:fr.guiet.kquatre.ui.converters" 
+             xmlns:controls="clr-namespace:fr.guiet.kquatre.ui.controls.segments"
              mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="1000" Background="White">
-    
+
     <UserControl.Resources >
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -48,19 +48,23 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <GroupBox Grid.Row="0" Grid.Column="0" Margin="2,2,2,2" Header="Durée totale du feu">
-                <ig:XamSegmentedDisplay  VerticalAlignment="Center" Margin="10,10,10,10" Text="{Binding FireworkManager.TotalDurationUI}" Name="_segTotalTime" SegmentMode="SevenSegment"
-                                    Digits="6" Width="150" Height="50" >
-                    <ig:XamSegmentedDisplay.TextForeground>
-                        <RadialGradientBrush>
-                            <GradientStop Color="AliceBlue" Offset="0"/>
-                            <GradientStop Color="#006DF0" Offset="1"/>
-                        </RadialGradientBrush>
-                    </ig:XamSegmentedDisplay.TextForeground>
-                </ig:XamSegmentedDisplay>
+            <GroupBox Grid.Row="0" Grid.Column="0" Margin="2,2,20,2" Header="Durée totale du feu">
+                <!--Credit for segment control : Yury Yuhno from Latvia
+                https://www.codeproject.com/Articles/1277331/Seven-Segment-and-Sixteen-Segment-Controls-for-WPF-->
+                <controls:SixteenSegmentsStack             
+        	        Value="{Binding FireworkManager.TotalDurationUI}"
+        	        ElementsCount="5"
+        	        ShowColon="True"
+        	        ShowDot="False"
+        	        RoundedCorners="False"
+                    SelectedFillBrush="Black"
+        	        HorizontalAlignment="Center" 
+                    Height="50" 
+                    VerticalAlignment="Center" 
+                    Width="200"/>        
             </GroupBox>
-            <GroupBox Grid.Row="0" Grid.Column="1" Margin="2,2,2,2" Header="Temps écoulé">
-                <ig:XamSegmentedDisplay VerticalAlignment="Center" Margin="10,10,10,10" Text="{Binding FireworkManager.ElapsedTimeString}" Name="_segChrono" SegmentMode="SevenSegment"
+            <GroupBox Grid.Row="0" Grid.Column="1" Margin="2,2,20,2" Header="Temps écoulé">
+                <!--<ig:XamSegmentedDisplay VerticalAlignment="Center" Margin="10,10,10,10" Text="{Binding FireworkManager.ElapsedTimeString}" Name="_segChrono" SegmentMode="SevenSegment"
                                     Digits="6" Width="150" Height="50" >
                     <ig:XamSegmentedDisplay.TextForeground>
                         <RadialGradientBrush>
@@ -69,9 +73,36 @@
                         </RadialGradientBrush>
                     </ig:XamSegmentedDisplay.TextForeground>
                 </ig:XamSegmentedDisplay>
+                -->
+                <!--Credit for segment control : Yury Yuhno from Latvia
+                https://www.codeproject.com/Articles/1277331/Seven-Segment-and-Sixteen-Segment-Controls-for-WPF-->
+                <controls:SixteenSegmentsStack             
+        	        Value="{Binding FireworkManager.ElapsedTimeString}"
+        	        ElementsCount="5"
+        	        ShowColon="True"
+        	        ShowDot="False"
+        	        RoundedCorners="False"
+                    SelectedFillBrush="Green"
+        	        HorizontalAlignment="Center" 
+                    Height="50" 
+                    VerticalAlignment="Center" 
+                    Width="200"/>
             </GroupBox>
-            <GroupBox Grid.Row="0" Grid.Column="2" Margin="2,2,2,2" Header="Prochain tir">
-                <ig:XamSegmentedDisplay VerticalAlignment="Center" Margin="10,10,10,10" Text="{Binding FireworkManager.NextLaunchCountDownString}" Name="_segNextFirework" SegmentMode="SevenSegment"
+            <GroupBox Grid.Row="0" Grid.Column="2" Margin="2,2,20,2" Header="Prochain tir">
+                <!--Credit for segment control : Yury Yuhno from Latvia
+                https://www.codeproject.com/Articles/1277331/Seven-Segment-and-Sixteen-Segment-Controls-for-WPF-->
+                <controls:SixteenSegmentsStack             
+        	        Value="{Binding FireworkManager.NextLaunchCountDownString}"
+        	        ElementsCount="5"
+        	        ShowColon="True"
+        	        ShowDot="False"
+        	        RoundedCorners="False"
+                    SelectedFillBrush="Orange"
+        	        HorizontalAlignment="Center" 
+                    Height="50" 
+                    VerticalAlignment="Center" 
+                    Width="200"/>
+                <!--<ig:XamSegmentedDisplay VerticalAlignment="Center" Margin="10,10,10,10" Text="{Binding FireworkManager.NextLaunchCountDownString}" Name="_segNextFirework" SegmentMode="SevenSegment"
                                     Digits="6" Width="150" Height="50" >
                     <ig:XamSegmentedDisplay.TextForeground>
                         <RadialGradientBrush>
@@ -80,6 +111,7 @@
                         </RadialGradientBrush>
                     </ig:XamSegmentedDisplay.TextForeground>
                 </ig:XamSegmentedDisplay>
+                -->
             </GroupBox>
             <GroupBox Grid.Row="0" Grid.Column="3" Margin="2,2,2,2" Header="Panneau de contrôle">
                 <Grid>
@@ -115,7 +147,7 @@
             </GroupBox>
         </Grid>
         <Grid Grid.Row="1" VerticalAlignment="Stretch">
-            <telerik:RadTimeline                              
+            <telerik:RadTimeline                             
                              VerticalScrollBarVisibility="Auto"
                              Name="_fireworkTimeline" 
                              Content="Firework Timeline" 

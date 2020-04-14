@@ -56,13 +56,10 @@ namespace fr.guiet.lora.core
         private void OnFrameAckOkEvent(FrameAckOKEventArgs args)
         {
             if (FrameAckOkEvent != null)
-            {
-                //TODO : set log message inside ackKOFrame and deal with the fact that sentframe can be null!!!!
+            {                
                 _logger.Info("+++ ACK OK received."
                            + Environment.NewLine
-                           + string.Format("=> Frame sent info : frame of type : {0} with ID : {1}, timeout set to : {2}, ack timeout set to : {3}, receiver address : {4}, RSSI : {5}", args.AckOKFrame.SentFrame.FrameOrder, args.AckOKFrame.SentFrame.FrameId, args.AckOKFrame.SentFrame.TotalTimeOut, args.AckOKFrame.SentFrame.AckTimeOut, args.AckOKFrame.SentFrame.ReceiverAddress, args.AckOKFrame.Rssi)
-                           + Environment.NewLine
-                           + string.Format("=> flight time : {0}  ", args.AckOKFrame.SentFrame.FlightTime));
+                           + args.AckOKFrame.Log);
                 FrameAckOkEvent(this, args);
             }
         }
@@ -72,15 +69,10 @@ namespace fr.guiet.lora.core
         private void OnFrameAckKoEvent(FrameAckKOEventArgs args)
         {
             if (FrameAckKoEvent != null)
-            {
-                //TODO : set log message inside ackKOFrame and deal with the fact that sentframe can be null!!!!
+            {                
                 _logger.Warn("--- ACK KO received."
                            + Environment.NewLine
-                           + string.Format("=> Frame sent info : frame of type : {0} with ID : {1}, timeout set to : {2}, ack timeout set to : {3}, expected receiver address : {4}", args.AckKOFrame.SentFrame.FrameOrder, args.AckKOFrame.SentFrame.FrameId, args.AckKOFrame.SentFrame.TotalTimeOut, args.AckKOFrame.SentFrame.AckTimeOut, args.AckKOFrame.SentFrame.ReceiverAddress)
-                           + Environment.NewLine
-                           + string.Format("=> ACK KO info : Reason : {0}", args.AckKOFrame.GetACKKOReason())
-                           + Environment.NewLine
-                           + string.Format("=> flight time : {0}  ", args.AckKOFrame.SentFrame.FlightTime));
+                           + args.AckKOFrame.Log);
 
                 FrameAckKoEvent(this, args);
             }

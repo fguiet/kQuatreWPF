@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>fr.guiet.kquatre.ui</RootNamespace>
     <AssemblyName>kQuatre</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -43,9 +43,6 @@
     </Reference>
     <Reference Include="InfragisticsWPF4.Controls.Grids.XamGrid.v17.1, Version=17.1.20171.1000, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL">
       <HintPath>..\packages\Infragistics.17.1\InfragisticsWPF4.Controls.Grids.XamGrid.v17.1.dll</HintPath>
-    </Reference>
-    <Reference Include="InfragisticsWPF4.Controls.Menus.XamMenu.v17.1, Version=17.1.20171.1000, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL">
-      <HintPath>..\packages\Infragistics.17.1\InfragisticsWPF4.Controls.Menus.XamMenu.v17.1.dll</HintPath>
     </Reference>
     <Reference Include="InfragisticsWPF4.Controls.Schedules.v17.1, Version=17.1.20171.1000, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL">
       <HintPath>..\packages\Infragistics.17.1\InfragisticsWPF4.Controls.Schedules.v17.1.dll</HintPath>
@@ -87,17 +84,21 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="Telerik.Windows.Controls, Version=2017.3.913.45, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
+    <Reference Include="Telerik.Windows.Controls, Version=2020.1.218.45, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Telerik UI for WPF R3 2017\Telerik.Windows.Controls.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R1 2020\Binaries\WPF45\Telerik.Windows.Controls.dll</HintPath>
     </Reference>
-    <Reference Include="Telerik.Windows.Controls.DataVisualization, Version=2017.3.913.45, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
+    <Reference Include="Telerik.Windows.Controls.DataVisualization, Version=2020.1.218.45, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Telerik UI for WPF R3 2017\Telerik.Windows.Controls.DataVisualization.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R1 2020\Binaries\WPF45\Telerik.Windows.Controls.DataVisualization.dll</HintPath>
     </Reference>
-    <Reference Include="Telerik.Windows.Data, Version=2017.3.913.45, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
+    <Reference Include="Telerik.Windows.Controls.Navigation, Version=2020.1.218.45, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Telerik UI for WPF R3 2017\Telerik.Windows.Data.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R1 2020\Binaries\WPF45\Telerik.Windows.Controls.Navigation.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Data, Version=2020.1.218.45, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R1 2020\Binaries\WPF45\Telerik.Windows.Data.dll</HintPath>
     </Reference>
     <Reference Include="UIAutomationProvider" />
     <Reference Include="UIAutomationTypes" />
@@ -111,6 +112,21 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Command\RelayCommand.cs" />
+    <Compile Include="Controls\ArrangedPanel.cs" />
+    <Compile Include="Controls\CharItem.cs" />
+    <Compile Include="Controls\SegmentsStack\SegmentsStackBase.cs" />
+    <Compile Include="Controls\SegmentsStack\SevenSegmentsStack.xaml.cs">
+      <DependentUpon>SevenSegmentsStack.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\SegmentsStack\SixteenSegmentsStack..xaml.cs">
+      <DependentUpon>SixteenSegmentsStack..xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Segments\GeometryWithSegm.cs" />
+    <Compile Include="Controls\Segments\iSegment.cs" />
+    <Compile Include="Controls\Segments\SegmentBase.cs" />
+    <Compile Include="Controls\Segments\SegmentsEnum.cs" />
+    <Compile Include="Controls\Segments\SevenSegments.cs" />
+    <Compile Include="Controls\Segments\SixteenSegments.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\CountToVisibilityConverter.cs" />
     <Compile Include="Events\FireworkLoadedEventArgs.cs" />
@@ -153,6 +169,9 @@
     <Compile Include="Views\LineWindow.xaml.cs">
       <DependentUpon>LineWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\NewMainWindowView.xaml.cs">
+      <DependentUpon>NewMainWindowView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\RadTimelineTest.xaml.cs">
       <DependentUpon>RadTimelineTest.xaml</DependentUpon>
     </Compile>
@@ -165,6 +184,14 @@
     <Compile Include="Views\ReceptorsUserControlView.xaml.cs">
       <DependentUpon>ReceptorsUserControlView.xaml</DependentUpon>
     </Compile>
+    <Page Include="Controls\SegmentsStack\SevenSegmentsStack.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\SegmentsStack\SixteenSegmentsStack..xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Resources\TimelineDictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -210,6 +237,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\NewMainWindowView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\RadTimelineTest.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -286,6 +317,7 @@
       <Name>kQuatre.Business</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

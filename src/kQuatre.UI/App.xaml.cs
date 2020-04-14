@@ -21,7 +21,8 @@ namespace fr.guiet.kquatre.ui
 
         public App()
         {
-            this.MainWindow = new MainWindow();
+            //this.MainWindow = new MainWindow();
+            this.MainWindow = new NewMainWindowView();
             this.ShutdownMode = ShutdownMode.OnMainWindowClose;
         }
 

@@ -3,20 +3,8 @@ using fr.guiet.kquatre.business.firework;
 using fr.guiet.kquatre.ui.helpers;
 using fr.guiet.kquatre.ui.viewModel;
 using Infragistics.Windows.DataPresenter;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Line = fr.guiet.kquatre.business.firework.Line;
 
 namespace fr.guiet.kquatre.ui.views
@@ -59,17 +47,7 @@ namespace fr.guiet.kquatre.ui.views
             get { return (SoftwareConfiguration)GetValue(SoftwareConfigurationManagerProperty); }
             set { SetValue(SoftwareConfigurationManagerProperty, (SoftwareConfiguration)value); }
         }
-
-        /// <summary>
-        /// Update FireworkManager objet on usercontrol
-        /// </summary>
-        /// <param name="fireworkManager"></param>
-        /*public void UpdateViewModel(FireworkManager fireworkManager)
-        {
-            this.FireworkManager = fireworkManager;            
-            _viewModel.FireworkManager = fireworkManager;            
-        }*/
-
+     
         #endregion
 
         #region Constructor
@@ -85,7 +63,7 @@ namespace fr.guiet.kquatre.ui.views
 
         #region Events
 
-        private void _btnCheckFirework_Click(object sender, RoutedEventArgs e)
+        private void BtnCheckFirework_Click(object sender, RoutedEventArgs e)
         {
             _viewModel.OpenSanityCheckWindow();
         }
@@ -143,19 +121,18 @@ namespace fr.guiet.kquatre.ui.views
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void _btnAddFirework_Click(object sender, RoutedEventArgs e)
+        private void BtnAddFirework_Click(object sender, RoutedEventArgs e)
         {
             Line line = _fireworkDatagrid.ActiveDataItem as Line;
 
             _viewModel.OpenFireworkManagementWindow(line);
         }
 
-        private void _btnAlterLine_Click(object sender, RoutedEventArgs e)
+        private void BtnAlterLine_Click(object sender, RoutedEventArgs e)
         {
             //Get Active Row
-            Line line = _fireworkDatagrid.ActiveDataItem as Line;
 
-            if (line != null)
+            if (_fireworkDatagrid.ActiveDataItem is Line line)
             {
                 _viewModel.OpenLineWindow(line);
                 RefreshDataGrid();
@@ -168,7 +145,7 @@ namespace fr.guiet.kquatre.ui.views
 
         }
 
-        private void _btnDeleteLine_Click(object sender, RoutedEventArgs e)
+        private void BtnDeleteLine_Click(object sender, RoutedEventArgs e)
         {
             //Get Active Row
             Line line = _fireworkDatagrid.ActiveDataItem as Line;
@@ -180,7 +157,7 @@ namespace fr.guiet.kquatre.ui.views
             }
         }
 
-        private void _btnAddLine_Click(object sender, RoutedEventArgs e)
+        private void BtnAddLine_Click(object sender, RoutedEventArgs e)
         {
             _viewModel.OpenLineWindow(null);
             RefreshDataGrid();

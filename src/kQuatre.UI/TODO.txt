@@ -8,5 +8,10 @@
 //TODO : Revoir task du feu d'artifice (ajout d'un canceltoken)
 //TODO : Gérer l'état des boutons des menus en fonction de l'état du feu
 //TODO : Ohm test à realiser
+//TODO : Remove Infragistics Dependencies...
+	SegmentDisplay => Done
+	DataGrid =>
+	Excel => 
+
 
 //DONE : 2020/04/11 - Test de IsDirty = a peu près fait

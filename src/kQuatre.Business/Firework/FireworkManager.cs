@@ -4,7 +4,6 @@ using fr.guiet.kquatre.business.configuration;
 using fr.guiet.kquatre.business.exceptions;
 using fr.guiet.kquatre.business.receptor;
 using fr.guiet.kquatre.business.transceiver;
-using Infragistics.Documents.Excel;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -16,6 +15,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Xml.Linq;
+using OfficeOpenXml;
 
 namespace fr.guiet.kquatre.business.firework
 {
@@ -181,24 +181,8 @@ namespace fr.guiet.kquatre.business.firework
             LineStarted?.Invoke(sender, new EventArgs());
         }
 
-        #endregion        
+        #endregion
 
-        /*public bool IsRedoFailedEnable
-        {
-            get
-            {
-                return _isRedoFailedEnable;
-            }
-
-            set
-            {
-                if (_isRedoFailedEnable != value)
-                {
-                    _isRedoFailedEnable = value;
-                    OnPropertyChanged();
-                }
-            }
-        }*/
 
         public bool IsSanityCheckOk
         {
@@ -343,7 +327,7 @@ namespace fr.guiet.kquatre.business.firework
         {
             get
             {
-                return $"{TotalDuration:hh\\:mm\\:ss}";
+                return $"{TotalDuration:mm\\:ss}";
             }
         }
 
@@ -352,7 +336,7 @@ namespace fr.guiet.kquatre.business.firework
             get
             {
                 if (string.IsNullOrEmpty(_elapsedTimeString))
-                    return "00:00:00";
+                    return "00:00";
                 else
                     return _elapsedTimeString;
             }
@@ -371,7 +355,7 @@ namespace fr.guiet.kquatre.business.firework
             get
             {
                 if (string.IsNullOrEmpty(_nextLaunchCountDownString))
-                    return "00:00:00";
+                    return "00:00";
                 else
                     return _nextLaunchCountDownString;
             }
@@ -614,7 +598,7 @@ namespace fr.guiet.kquatre.business.firework
         private void DeviceManager_DeviceDisconnected(object sender, EventArgs e)
         {
             string info = DeviceManager.DEFAULT_NOT_TRANSCEIVER_CONNECTED_MESSAGE;
-            
+
             if (_state == FireworkManagerState.FireworkRunning)
             {
                 Stop();
@@ -890,49 +874,52 @@ namespace fr.guiet.kquatre.business.firework
 
                 _lines = new ObservableCollection<Line>();
 
-                Workbook fireworkDefWb = Workbook.Load(fullFileName);
+                //https://epplussoftware.com/developers/licenseexception
+                ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
 
-                Worksheet fireworkDefWs = fireworkDefWb.Worksheets[_configuration.ExcelSheetNumber];
+                OfficeOpenXml.ExcelPackage ep = new OfficeOpenXml.ExcelPackage(new System.IO.FileInfo(fullFileName));
 
-                _name = fireworkDefWs.GetCell(_configuration.ExcelFireworkName).GetText();
+                ExcelWorksheet excelWorkSheet = ep.Workbook.Worksheets[_configuration.ExcelSheetNumber];
+
+                int rows = excelWorkSheet.Dimension.Rows;                
+
+                _name = excelWorkSheet.Cells[_configuration.ExcelFireworkName].Value.ToString();
 
                 int firstRowDataIndex = _configuration.ExcelFirstRowData;
-                int rowIndex = 1;
+
                 Line line = null;
-                //int fireworkOrderNumber = 0;
-                foreach (WorksheetRow row in fireworkDefWs.Rows)
+                for (int i = firstRowDataIndex; i <= rows; i++)
                 {
-                    if (rowIndex >= firstRowDataIndex)
+
+                    //Last line read maybe empty
+                    if (excelWorkSheet.Cells[i, 1].Value == null) continue;
+
+                    string lineNumber = excelWorkSheet.Cells[i, 1].Value.ToString();
+
+                    //First line number
+                    if (GetLineByNumber(lineNumber) == null)
                     {
-                        //end of firework definition...no more line number...
-                        if (row.GetCellText(0) == string.Empty) break;
+                        line = new Line(Convert.ToInt32(lineNumber));
 
-                        //First line number
-                        if (GetLineByNumber(row.GetCellText(0)) == null)
-                        {
-                            line = new Line(Convert.ToInt32(row.GetCellText(0)));
+                        line.LineStarted += Line_LineStarted;
+                        line.LineFailed += Line_LineFailed;
+                        line.PropertyChanged += Line_PropertyChanged;
 
-                            line.LineStarted += Line_LineStarted;
-                            line.LineFailed += Line_LineFailed;
-                            line.PropertyChanged += Line_PropertyChanged;
-
-                            line.Ignition = TimeSpan.Parse(row.GetCellText(1));
-                            AddLine(line);
-                        }
-
-                        //Get Data for firework
-                        string reference = row.GetCellText(7);
-                        string designation = row.GetCellText(4);
-                        TimeSpan duration = TimeSpan.Parse(row.GetCellText(5));
-                        Firework firework = new Firework(reference, designation, duration);
-
-                        //Add firework reference if it does not exists in the fireworks reference list
-                        _configuration.TryAddFireworksReference(firework);
-
-                        AddFireworkToLine(firework, line);
+                        line.Ignition = ((DateTime)excelWorkSheet.Cells[i, 2].Value).TimeOfDay;
+                        AddLine(line);
                     }
 
-                    rowIndex++;
+                    //Get Data for firework
+                    string reference = excelWorkSheet.Cells[i, 8].Value.ToString(); 
+                    string designation = excelWorkSheet.Cells[i, 5].Value.ToString();  
+                    TimeSpan duration = ((DateTime)excelWorkSheet.Cells[i, 6].Value).TimeOfDay;
+                    Firework firework = new Firework(reference, designation, duration);
+
+                    //Add firework reference if it does not exists in the fireworks reference list
+                    _configuration.TryAddFireworksReference(firework);
+
+                    AddFireworkToLine(firework, line);
+
                 }
 
                 //Set new name here !
@@ -1359,15 +1346,6 @@ namespace fr.guiet.kquatre.business.firework
                         lineHelper = PrepareNextLines();
                     }
 
-                    //User want to redo last failed firework
-                    /*if (_activateRedoFailedLine)
-                    {
-                        _activateRedoFailedLine = false;
-
-                        //TODO : A Revoir
-                        //RedoFailedLine();
-                    }*/
-
                     //Failed lignes to launch?
                     //User can click on the screen 
                     //to launch failed line
@@ -1397,10 +1375,6 @@ namespace fr.guiet.kquatre.business.firework
 
                         await Fire(lineHelper);
                     }
-
-                    // if (_lastLinesLaunchFailed.Count > 0)
-                    //Set redo failed to enable
-                    // IsRedoFailedEnable = true;
                 }
             }, _fireworkCancellationToken.Token).ContinueWith(t =>
             {
@@ -1413,9 +1387,6 @@ namespace fr.guiet.kquatre.business.firework
                     _deviceManager.Transceiver.FrameAckOkEvent -= Transceiver_FrameAckOkEvent;
                     _deviceManager.Transceiver.FrameTimeOutEvent -= Transceiver_FrameTimeOutEvent;
                 }
-
-                //When finished Redo of failed line is disabled!
-                //IsRedoFailedEnable = false;
 
                 _elapsedTime.Stop();
                 _elapsedTime = null;
@@ -1452,16 +1423,16 @@ namespace fr.guiet.kquatre.business.firework
 
         private void TimerHelper_Elapsed(object sender, ElapsedEventArgs e)
         {
-            ElapsedTimeString = $"{_elapsedTime.Elapsed:hh\\:mm\\:ss}";
+            ElapsedTimeString = $"{_elapsedTime.Elapsed:mm\\:ss}";
 
             if (_nextIgnition.CompareTo(_elapsedTime.Elapsed) == -1)
             {
-                NextLaunchCountDownString = "00:00:00";
+                NextLaunchCountDownString = "00:00";
             }
             else
             {
                 TimeSpan nextIgnitionCountDown = _nextIgnition - _elapsedTime.Elapsed;
-                NextLaunchCountDownString = $"{nextIgnitionCountDown:hh\\:mm\\:ss}";
+                NextLaunchCountDownString = $"{nextIgnitionCountDown:mm\\:ss}";
             }
         }
 
