@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:fr.guiet.kquatre.ui.views"
-        xmlns:ig="http://schemas.infragistics.com/xaml" xmlns:Custom="http://infragistics.com/DataPresenter" x:Class="fr.guiet.kquatre.ui.views.ConfigurationWindow"
+        xmlns:ig="http://schemas.infragistics.com/xaml" xmlns:Custom="http://infragistics.com/DataPresenter" xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation" x:Class="fr.guiet.kquatre.ui.views.ConfigurationWindow"
         mc:Ignorable="d"
         Title="Configuration" Height="500" Width="600" MinHeight="265" MinWidth="444" WindowStartupLocation="CenterScreen" Icon="/kQuatre;component/Resources/FireworksIcon.png">
     <Grid>
@@ -22,7 +22,26 @@
         <Border Grid.Row="2" Grid.Column="2"  Background="LightGray" />
         <Button Name="_btnClose" Content="Fermer" Grid.Column="2" HorizontalAlignment="Center"  Grid.Row="1" VerticalAlignment="Center" Width="75" Click="_btnClose_Click"/>
         <Button Content="Enregistrer" IsEnabled="{Binding IsDirty}"  Grid.Column="1" HorizontalAlignment="Center"  Grid.Row="1" VerticalAlignment="Center" Width="75" Name="_btnSave" Click="_btnSave_Click"/>
-        <Custom:XamTreeGrid Name="_configTreeGrid" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch"  Grid.Row="0"  Grid.ColumnSpan="3" DataSource="{Binding ConfTreeViewDataSource}" InitializeRecord="_configTreeGrid_InitializeRecord" EditModeEnding="_configTreeGrid_EditModeEnding" CellUpdated="_configTreeGrid_CellUpdated">
+
+        <telerik:RadTreeListView IsReadOnly="True" 
+                                 AutoGenerateColumns="False" 
+                                 ItemsSource="{Binding ConfTreeViewDataSource}"
+                                 
+                                 >
+            <telerik:RadTreeListView.ChildTableDefinitions>
+                <telerik:TreeListViewTableDefinition ItemsSource="{Binding PropertyNodes}" />
+            </telerik:RadTreeListView.ChildTableDefinitions>
+            <telerik:RadTreeListView.Columns>
+                <telerik:GridViewDataColumn DataMemberBinding="{Binding FolderName}" 
+                                    Header="Paramètre" />
+                <telerik:GridViewDataColumn DataMemberBinding="{Binding PropertyName}" 
+                                     />
+                <telerik:GridViewDataColumn DataMemberBinding="{Binding PropertyValue}" 
+                                    Header="Valeur" />
+            </telerik:RadTreeListView.Columns>
+        </telerik:RadTreeListView>     
+        
+        <!--<Custom:XamTreeGrid Name="_configTreeGrid" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch"  Grid.Row="0"  Grid.ColumnSpan="3" DataSource="{Binding ConfTreeViewDataSource}" InitializeRecord="_configTreeGrid_InitializeRecord" EditModeEnding="_configTreeGrid_EditModeEnding" CellUpdated="_configTreeGrid_CellUpdated">
             <Custom:XamTreeGrid.FieldLayoutSettings>
                 <Custom:FieldLayoutSettings AutoGenerateFields="False" />
             </Custom:XamTreeGrid.FieldLayoutSettings>
@@ -39,7 +58,7 @@
             </Custom:XamTreeGrid.FieldLayouts>
         </Custom:XamTreeGrid>
 
-
+-->
 
     </Grid>
 </Window>

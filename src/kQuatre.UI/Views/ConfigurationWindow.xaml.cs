@@ -57,10 +57,11 @@ namespace fr.guiet.kquatre.ui.views
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void _configTreeGrid_InitializeRecord(object sender, Infragistics.Windows.DataPresenter.Events.InitializeRecordEventArgs e)
+        /*private void _configTreeGrid_InitializeRecord(object sender, Infragistics.Windows.DataPresenter.Events.InitializeRecordEventArgs e)
         {
+            //TODO : replace by telerik
             _configTreeGrid.ExecuteCommand(DataPresenterCommands.ToggleRecordIsExpanded, e.Record);
-        }
+        }*/
 
         #endregion
 
