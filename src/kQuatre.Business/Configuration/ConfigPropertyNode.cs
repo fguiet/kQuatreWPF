@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace fr.guiet.kquatre.business.configuration
 {
-    public class ConfigPropertyNode 
+    public class ConfigPropertyNode
     {
         private readonly string _propertyId;
         private readonly string _propertyName;
-        private string _propertyValue;       
+        private string _propertyValue;
 
         public string PropertyId
         {
@@ -22,12 +22,24 @@ namespace fr.guiet.kquatre.business.configuration
             }
         }
 
+        /// <summary>
+        /// Used in RadTreeListView to display UI properly
+        /// </summary>
+        public string FolderName
+        {
+
+            get
+            {
+                return _propertyName;
+            }
+        }
+
         public string PropertyName
         {
             get
             {
                 return _propertyName;
-            }           
+            }
         }
 
         public string PropertyValue
@@ -40,7 +52,7 @@ namespace fr.guiet.kquatre.business.configuration
             {
                 if (_propertyValue != value)
                 {
-                    _propertyValue = value;                    
+                    _propertyValue = value;
                 }
             }
         }

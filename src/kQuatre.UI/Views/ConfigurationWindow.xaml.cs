@@ -1,19 +1,8 @@
 ﻿using fr.guiet.kquatre.business.configuration;
 using fr.guiet.kquatre.ui.viewsmodel;
-using Infragistics.Windows.DataPresenter;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace fr.guiet.kquatre.ui.views
 {
@@ -52,37 +41,8 @@ namespace fr.guiet.kquatre.ui.views
 
         }
 
-        /// <summary>
-        /// Expand all TreeGrid Node
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        /*private void _configTreeGrid_InitializeRecord(object sender, Infragistics.Windows.DataPresenter.Events.InitializeRecordEventArgs e)
-        {
-            //TODO : replace by telerik
-            _configTreeGrid.ExecuteCommand(DataPresenterCommands.ToggleRecordIsExpanded, e.Record);
-        }*/
-
         #endregion
 
-        private void _configTreeGrid_EditModeEnding(object sender, Infragistics.Windows.DataPresenter.Events.EditModeEndingEventArgs e)
-        {
-            string newValue = e.Editor.Value.ToString();
-            bool isValid = _viewModel.CheckConfigPropertyValue(e.Cell.Record.DataItem, newValue);
-
-            if (!isValid)
-            {
-                e.Cancel = true;
-                _viewModel.ShowErrorMessage(e.Cell.Record.DataItem);
-            }
-        }
-
-        private void _configTreeGrid_CellUpdated(object sender, Infragistics.Windows.DataPresenter.Events.CellUpdatedEventArgs e)
-        {
-            _viewModel.IsDirty = true;
-        }
-
-       
         private void _btnSave_Click(object sender, RoutedEventArgs e)
         {
             _viewModel.Save();
@@ -101,6 +61,54 @@ namespace fr.guiet.kquatre.ui.views
             }
 
             this.Close();
+        }
+
+        private void MarkCell(Control cell, string validationText)
+        {
+            ToolTipService.SetToolTip(cell, validationText);
+        }
+
+        private void RestoreCell(Control cell)
+        {
+            ToolTipService.SetToolTip(cell, null);
+        }
+
+        private void RadTreeListView_CellValidated(object sender, Telerik.Windows.Controls.GridViewCellValidatedEventArgs e)
+        {
+            _viewModel.IsDirty = true;
+        }
+
+        private void RadTreeListView_CellValidating(object sender, Telerik.Windows.Controls.GridViewCellValidatingEventArgs e)
+        {
+            string newValue = e.NewValue.ToString();
+            string validationText = string.Empty;
+            bool isValid = true;
+
+            if (e.Cell.DataContext is ConfigPropertyNode)
+            {
+                isValid = _viewModel.CheckConfigPropertyValue(e.Cell.DataContext, newValue);
+                if (!isValid)
+                {
+                    validationText = _viewModel.GetErrorMessage(e.Cell.DataContext);
+                }
+            }
+            else
+            {
+                isValid = false;
+                validationText = "Impossible de modifier cette cellule";
+            }
+
+            if (!isValid)
+            {
+                this.MarkCell(e.Cell, validationText);
+            }
+            else
+            {
+                this.RestoreCell(e.Cell);
+            }
+
+            e.ErrorMessage = validationText;
+            e.IsValid = isValid;
         }
     }
 }

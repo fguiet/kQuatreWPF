@@ -184,7 +184,37 @@
         </Grid>
         <GridSplitter Visibility="{Binding Path=FireworkManager.RescueLines.Count, Converter={StaticResource CountToVisibilityConverter}}" ShowsPreview="True" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Center" ResizeDirection="Rows" Grid.Row="2" BorderThickness="5" BorderBrush="Black"></GridSplitter>
         <Grid Grid.Row="3">
-            <igDP:XamDataGrid DataSource="{Binding FireworkManager.AllRescueFireworks}" 
+            <telerik:RadGridView GroupRenderMode="Flat"                                
+                                 x:Name="_gvRescueLines"                                 
+                                 CanUserGroupColumns="False" 
+                                 ShowGroupPanel="False" 
+                                 CanUserSortColumns="False" 
+                                 CanUserFreezeColumns="False" 
+                                 CanUserReorderColumns="False"
+                                 ItemsSource="{Binding FireworkManager.AllRescueFireworks}" 
+                                 AutoGenerateColumns="False" 
+                                 IsReadOnly="True"   
+                                 IsFilteringAllowed="False"
+                                 GridLinesVisibility="Horizontal"                                
+                                 HorizontalGridLinesBrush="#0099BC" 
+                                 RowIndicatorVisibility="Collapsed"
+                                 telerik:StyleManager.Theme="Fluent">
+                <telerik:RadGridView.Columns>
+                    <telerik:GridViewDataColumn  Header="Désignation feu de secours"
+														DataMemberBinding="{Binding Designation}" Width="Auto" />
+                    <telerik:GridViewDataColumn Header="Ligne/Liaison"
+														 DataMemberBinding="{Binding SummaryUI}" Width="250" />
+                    <telerik:GridViewDataColumn Header="Etat"
+														 DataMemberBinding="{Binding StateText}" Width="150" />
+                    <telerik:GridViewDataColumn Header="Durée théorique"
+														 DataMemberBinding="{Binding DurationText}" Width="150" />
+                    <telerik:GridViewDataColumn Header="Durée réalisée"
+														 DataMemberBinding="{Binding ElapsedTimeText}" Width="Auto" />
+                </telerik:RadGridView.Columns>
+            </telerik:RadGridView >
+            
+            
+            <!--<igDP:XamDataGrid DataSource="{Binding FireworkManager.AllRescueFireworks}" 
                           ScrollingMode="Immediate"
                           HorizontalAlignment="Stretch" 
                           SelectedDataItemsScope="RecordsOnly" GroupByAreaLocation="None"
@@ -201,12 +231,6 @@
                             <igDP:Field IsReadOnly="True"  Width="Auto" Label="Désignation feu de secours" Name="Designation" />
                             <igDP:Field IsReadOnly="True" Width="Auto" Label="Ligne/Liaison" Name="SummaryUI" />
                             <igDP:TextField  IsReadOnly="True" Width="Auto" Label="Etat" Name="StateText">
-                                <!-- Cause a thread problem exception .... -->
-                                <!--<igDP:TextField.CellBindings>
-                                                <igDP:CellBinding Property="Foreground"
-                                          Target="CellValuePresenter"
-                                          Binding="{Binding Path=DataItem.ColorPresentation}" />
-                                            </igDP:TextField.CellBindings>-->
                             </igDP:TextField>
                         </igDP:FieldLayout.Fields>
                         <igDP:Field IsReadOnly="True" Width="Auto" Label="Durée théorique" Name="DurationText" />
@@ -214,7 +238,7 @@
                     </igDP:FieldLayout>
                 </igDP:XamDataGrid.FieldLayouts>
 
-            </igDP:XamDataGrid>
+            </igDP:XamDataGrid>-->
         </Grid>
     </Grid>
 </UserControl>

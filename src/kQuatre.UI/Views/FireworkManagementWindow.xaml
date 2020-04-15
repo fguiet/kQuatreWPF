@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:fr.guiet.kquatre.ui.views"        
         xmlns:igDP="http://infragistics.com/DataPresenter" x:Class="fr.guiet.kquatre.ui.views.FireworkManagementWindow"
-        xmlns:conv="clr-namespace:fr.guiet.kquatre.ui.converters"
-        mc:Ignorable="d"
+        xmlns:conv="clr-namespace:fr.guiet.kquatre.ui.converters" xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
+    mc:Ignorable="d"
         Title="Gestion des artifices" Height="500" Width="600" WindowStartupLocation="CenterScreen" Icon="/kQuatre;component/Resources/FireworksIcon.png">
     <Window.Resources>
         <conv:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"></conv:BooleanToVisibilityConverter>
@@ -39,7 +39,33 @@
             <Button Margin="0,0,5,0" Content="Modifier" Grid.Column="2" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="75" x:Name="_btnModify" />
             <Button Margin="0,0,5,0" x:Name="_btnClose" Content="Fermer" Grid.Column="3" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="75" />
         </Grid>
-        <igDP:XamDataGrid DataSource="{Binding SoftwareConfiguration.Fireworks}" 
+        <telerik:RadGridView     GroupRenderMode="Flat"                                
+                                 x:Name="_dvFireworks"                                 
+                                 CanUserGroupColumns="False" 
+                                 ShowGroupPanel="False" 
+                                 CanUserSortColumns="True" 
+                                 CanUserReorderColumns="False"
+                                 CanUserFreezeColumns="False" 
+                                 ItemsSource="{Binding SoftwareConfiguration.Fireworks}" 
+                                 AutoGenerateColumns="False" 
+                                 IsReadOnly="True"   
+                                 IsFilteringAllowed="False"
+                                 GridLinesVisibility="Horizontal"                                
+                                 HorizontalGridLinesBrush="#0099BC" 
+                                 RowIndicatorVisibility="Collapsed"
+                                 SelectionMode="Multiple"
+                                 telerik:StyleManager.Theme="Fluent">
+            <telerik:RadGridView.Columns>
+                <telerik:GridViewSelectColumn Name="Select" />
+                <telerik:GridViewDataColumn  Header="Référence"
+														DataMemberBinding="{Binding Reference}" Width="120" />
+                <telerik:GridViewDataColumn Header="Désignation"
+														 DataMemberBinding="{Binding Designation}" Width="300" />
+                <telerik:GridViewDataColumn Header="Durée"
+														 DataMemberBinding="{Binding Duration}" />
+            </telerik:RadGridView.Columns>
+        </telerik:RadGridView >
+        <!--<igDP:XamDataGrid DataSource="{Binding SoftwareConfiguration.Fireworks}" 
                           ScrollingMode="Immediate"
                           Grid.Row="0" HorizontalAlignment="Stretch" 
                           SelectedDataItemsScope="RecordsOnly" GroupByAreaLocation="None"
@@ -64,6 +90,6 @@
                 </igDP:FieldLayout>
             </igDP:XamDataGrid.FieldLayouts>
 
-        </igDP:XamDataGrid>
+        </igDP:XamDataGrid>-->
     </Grid>
 </Window>

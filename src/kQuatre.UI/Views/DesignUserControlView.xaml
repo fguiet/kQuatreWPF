@@ -64,13 +64,15 @@
                                  ShowGroupPanel="False" 
                                  CanUserSortColumns="False" 
                                  CanUserFreezeColumns="False" 
+                                 CanUserReorderColumns="False"
                                  ItemsSource="{Binding FireworkManager.AllLines}" 
                                  AutoGenerateColumns="False" 
                                  IsReadOnly="True"   
                                  IsFilteringAllowed="False"
                                  GridLinesVisibility="Horizontal"                                
-                                 HorizontalGridLinesBrush="#0099BC"                                 
-                                 telerik:StyleManager.Theme="Fluent"  >
+                                 HorizontalGridLinesBrush="#0099BC" 
+                                 RowIndicatorVisibility="Collapsed"
+                                 telerik:StyleManager.Theme="Fluent">
                 <telerik:RadGridView.Columns>
                     <telerik:GridViewToggleRowDetailsColumn />
                     <telerik:GridViewDataColumn Width="110"  Header="Numéro de ligne"
@@ -81,7 +83,7 @@
 											DataMemberBinding="{Binding ReceptorAddressUI}" />
                     <telerik:GridViewDataColumn Header="Ligne de secours"
 											DataMemberBinding="{Binding IsRescueLineText}" />
-                    <telerik:GridViewColumn Header="Action" telerik:StyleManager.Theme="Fluent"  >
+                    <telerik:GridViewColumn Header="Action">
                         <telerik:GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <telerik:RadButton Content="Ajouter un artifice"
@@ -97,13 +99,14 @@
                                              GroupRenderMode="Flat"
                                              IsReadOnly="True"                                                                                         
 										     IsFilteringAllowed="False"                                             
-										     ItemsSource="{Binding Fireworks}"
+										     ItemsSource="{Binding Fireworks}"                                             
 										     CanUserReorderColumns="False"
 										     CanUserFreezeColumns="False"
 										     CanUserResizeColumns="False"
                                              CanUserSortColumns="False" 
-										     ShowGroupPanel="False"                                             
-										     Margin="6" telerik:StyleManager.Theme="Fluent">
+										     ShowGroupPanel="False"  
+                                             RowIndicatorVisibility="Collapsed"
+										     Margin="25 10 10 30" telerik:StyleManager.Theme="Fluent">
                             <telerik:RadGridView.Columns>
                                 <telerik:GridViewDataColumn  Header="Référence"
 														DataMemberBinding="{Binding Reference}" Width="120" />

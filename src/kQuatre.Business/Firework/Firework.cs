@@ -113,7 +113,6 @@ namespace fr.guiet.kquatre.business.firework
         #endregion
 
         #region Public Members 
-
         public String StateText
         {
             get

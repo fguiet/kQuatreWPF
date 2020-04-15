@@ -60,16 +60,18 @@ namespace fr.guiet.kquatre.ui.viewsmodel
             }
         }
 
-        public void ShowErrorMessage(object propertyNode)
+        public string GetErrorMessage(object propertyNode)
         {
             ConfigPropertyNode cpn = propertyNode as ConfigPropertyNode;
 
             switch (cpn.PropertyId)
             {
                 case SoftwareConfiguration.EXCEL_FIRST_ROW_DATA_PROP_ID:
-                    MessageBox.Show(EXCEL_FIRST_ROW_VALIDATION_ERROR, "Erreur de validation", MessageBoxButton.OK, MessageBoxImage.Exclamation, MessageBoxResult.OK);
-                    break;
-            }            
+                    return EXCEL_FIRST_ROW_VALIDATION_ERROR;
+                    //MessageBox.Show(EXCEL_FIRST_ROW_VALIDATION_ERROR, "Erreur de validation", MessageBoxButton.OK, MessageBoxImage.Exclamation, MessageBoxResult.OK);                    
+            }
+
+            return "Erreur de validation";
         }
 
         public bool CheckConfigPropertyValue(object propertyNode, string newValue) 

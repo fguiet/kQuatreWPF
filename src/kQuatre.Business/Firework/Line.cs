@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -52,6 +53,9 @@ namespace fr.guiet.kquatre.business.firework
 
         //Time at which firework(s) is/are launched
         private TimeSpan _ignition;
+
+        //Use on the UI
+        private string _ignitionUI = "00:00:00"; //default value
 
         //Firework(s) linked to this line
         private readonly ObservableCollection<Firework> _fireworks = new ObservableCollection<Firework>();
@@ -148,7 +152,36 @@ namespace fr.guiet.kquatre.business.firework
                 return string.Format("Ligne n° {0}", _number.ToString());
             }
         }
+
+        [RegularExpression(@"^(?:2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$", ErrorMessage = "Mise à feu invalide")]
+        public string IgnitionUI
+        {
+            get
+            {
+                return _ignitionUI;
+            }
+
+            set
+            {
+                if (_ignitionUI != value)
+                {
+                    if (String.IsNullOrEmpty(value))
+                    {
+                        Ignition = TimeSpan.Parse("00:00:00");
+                        _ignitionUI = "00:00:00";
+                    }
+                    else
+                    {
+
+                        Validator.ValidateProperty(value, new ValidationContext(this, null, null) { MemberName = "IgnitionUI" });
+                        Ignition = TimeSpan.Parse(value);
+                        _ignitionUI = value;
+                    }                    
+                }
+            }
+        }
         
+
         public TimeSpan Ignition
         {
             get
@@ -160,7 +193,7 @@ namespace fr.guiet.kquatre.business.firework
             {
                 if (_ignition != value)
                 {
-                    _ignition = value;
+                    _ignition = value;                    
                     OnPropertyChanged();
                 }
             }

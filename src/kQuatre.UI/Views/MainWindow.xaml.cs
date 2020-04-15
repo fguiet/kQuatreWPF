@@ -1,13 +1,7 @@
-﻿using fr.guiet.kquatre.business.configuration;
-using fr.guiet.kquatre.business.firework;
-using fr.guiet.kquatre.business.receptor;
-using fr.guiet.kquatre.ui.helpers;
+﻿using fr.guiet.kquatre.ui.helpers;
 using fr.guiet.kquatre.ui.viewsmodel;
-using Infragistics.Controls.Schedules;
-using Infragistics.Windows.DataPresenter;
 using System;
 using System.Windows;
-using Telerik.Windows.Controls;
 
 namespace fr.guiet.kquatre.ui.views
 {

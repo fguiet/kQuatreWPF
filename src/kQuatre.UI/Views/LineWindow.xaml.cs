@@ -1,7 +1,9 @@
 ﻿using fr.guiet.kquatre.business.firework;
+using fr.guiet.kquatre.ui.helpers;
 using fr.guiet.kquatre.ui.viewsmodel;
 using System;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace fr.guiet.kquatre.ui.views
 {
@@ -55,9 +57,19 @@ namespace fr.guiet.kquatre.ui.views
         /// <param name="e"></param>
         private void _btnSave_Click(object sender, RoutedEventArgs e)
         {
-            _viewModel.Save();
+            bool isFormValid = !Validation.GetHasError(_mkeIgnition);
 
-            this.Close();
+            if (isFormValid)
+            {
+
+                _viewModel.Save();
+
+                this.Close();
+            }
+            else
+            {
+                DialogBoxHelper.ShowErrorMessage("Il existe des erreurs dans le formulaire. Merci de corriger.");
+            }
         }
 
         private void _btnDissociate_Click(object sender, RoutedEventArgs e)

@@ -2,20 +2,11 @@
 using fr.guiet.kquatre.business.firework;
 using fr.guiet.kquatre.ui.helpers;
 using fr.guiet.kquatre.ui.viewsmodel;
-using Infragistics.Windows.DataPresenter;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using Telerik.Windows.Controls;
+using Telerik.Windows.Controls.GridView;
 using Line = fr.guiet.kquatre.business.firework.Line;
 
 namespace fr.guiet.kquatre.ui.views
@@ -25,10 +16,16 @@ namespace fr.guiet.kquatre.ui.views
     /// </summary>
     public partial class FireworkManagementWindow : Window
     {
+        #region Private Members
+
         private FireworkManagementViewModel _viewModel = null;
         private FireworkManager _fireworkManager = null;
         private SoftwareConfiguration _softwareConfiguration = null;
-        private Line _line = null;        
+        private Line _line = null;
+
+        #endregion
+
+        #region Constructor
 
         public FireworkManagementWindow(FireworkManager fm, SoftwareConfiguration softwareConfiguration)
         {
@@ -38,25 +35,10 @@ namespace fr.guiet.kquatre.ui.views
             _softwareConfiguration = softwareConfiguration;
 
             this.Loaded += FireworkManagementWindow_Loaded;            
-
-            //Datagrid
-            _dgFireworks.DataSourceChanged += DgFireworks_DataSourceChanged; ;
         }
 
-        private void DgFireworks_DataSourceChanged(object sender, RoutedPropertyChangedEventArgs<System.Collections.IEnumerable> e)
-        {
-            //Initialize Checkbox unbound colum
-            foreach (Record r in _dgFireworks.Records)
-            {
-                DataRecord dr = r as DataRecord;
-                if (dr != null)
-                {
-                    Cell cell = dr.Cells["Select"];
-                    cell.Value = false;
-                }
-            }
-        }         
-        
+        #endregion
+
         public FireworkManagementWindow(FireworkManager fm, SoftwareConfiguration softwareConfiguration, Line line) : this(fm, softwareConfiguration)
         {            
             _line = line;
@@ -72,21 +54,14 @@ namespace fr.guiet.kquatre.ui.views
         {
             List<Firework> fireworkList = new List<Firework>();
 
-            foreach (Record r in _dgFireworks.Records)
+            foreach(var firework in _dvFireworks.SelectedItems)
             {
-                DataRecord dr = r as DataRecord;
-                if (dr != null)
-                {
-                    if (Convert.ToBoolean(dr.Cells["Select"].Value) == true)
-                    {
-                        fireworkList.Add(dr.DataItem as Firework);
-                    }                    
-                }
-            }
+                fireworkList.Add((Firework)firework);
+            }            
 
             if (fireworkList.Count == 0)
             {
-                DialogBoxHelper.ShowWarningMessage("Veuillez sélectionner au moins un feu d'aritfice");
+                DialogBoxHelper.ShowWarningMessage("Veuillez sélectionner au moins un feu d'artifice");
                 return;
             }
 
@@ -109,19 +84,6 @@ namespace fr.guiet.kquatre.ui.views
 
             this.Close();
             
-        }
-
-        /// <summary>
-        /// Hide Select Column in certain circumstances
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void _dgFireworks_LayoutUpdated(object sender, EventArgs e)
-        {
-            if ((_line == null))
-            {
-                _dgFireworks.FieldLayouts["Firework"].Fields["Select"].Visibility = Visibility.Collapsed;
-            }            
-        }
+        }        
     }
 }

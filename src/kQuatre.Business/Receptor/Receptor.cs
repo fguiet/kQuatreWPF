@@ -277,6 +277,21 @@ namespace fr.guiet.kquatre.business.receptor
 
         #region Public methods 
 
+        public bool IsOhmTestAllowed()
+        {
+            //Test not possible if no transceiver available
+            if (_deviceManager == null || !_deviceManager.IsTransceiverConnected)
+                return false;
+
+            if (_isPingTestRunning)
+                return false;
+
+            if (_isPingOhmRunning)
+                return false;
+
+            return true;
+        }
+
         public bool IsStartPingTestAllowed()
         {
             //Test not possible if no transceiver available
@@ -284,6 +299,9 @@ namespace fr.guiet.kquatre.business.receptor
                 return false;
 
             if (_isPingTestRunning)
+                return false;
+
+            if (_isPingOhmRunning)
                 return false;
 
             return true;

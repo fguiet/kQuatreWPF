@@ -2,7 +2,6 @@
 using fr.guiet.kquatre.business.firework;
 using fr.guiet.kquatre.ui.helpers;
 using fr.guiet.kquatre.ui.viewModel;
-using Infragistics.Windows.DataPresenter;
 using System.Windows;
 using System.Windows.Controls;
 using Line = fr.guiet.kquatre.business.firework.Line;
