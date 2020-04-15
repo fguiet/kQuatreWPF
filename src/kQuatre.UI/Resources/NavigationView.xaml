@@ -8,7 +8,7 @@
         <views:DesignUserControlView x:Name="_ucDesignUserControlView" SoftwareConfiguration="{Binding Path=DataContext.SoftwareConfiguration, RelativeSource={RelativeSource AncestorType=Window}}" FireworkManager="{Binding Path=DataContext.FireworkManager, RelativeSource={RelativeSource AncestorType=Window}}"></views:DesignUserControlView>
     </DataTemplate>
     <DataTemplate x:Key="TestTemplate">
-        <views:ReceptorsUserControlView x:Name="_ucReceptorsUserControlView"  FireworkManager="{Binding Path=DataContext.FireworkManager, RelativeSource={RelativeSource AncestorType=Window}}"></views:ReceptorsUserControlView>
+        <views:TestUserControlView x:Name="_ucTestUserControlView"  FireworkManager="{Binding Path=DataContext.FireworkManager, RelativeSource={RelativeSource AncestorType=Window}}"></views:TestUserControlView>
     </DataTemplate>
     <DataTemplate x:Key="FireworkTemplate">
         <views:FireworkUserControlView x:Name="_ucFireworkUserControlView" FireworkManager="{Binding Path=DataContext.FireworkManager, RelativeSource={RelativeSource AncestorType=Window}}"></views:FireworkUserControlView>

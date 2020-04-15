@@ -92,6 +92,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R1 2020\Binaries\WPF45\Telerik.Windows.Controls.DataVisualization.dll</HintPath>
     </Reference>
+    <Reference Include="Telerik.Windows.Controls.GridView, Version=2020.1.218.45, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R1 2020\Binaries\WPF45\Telerik.Windows.Controls.GridView.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Controls.Input, Version=2020.1.218.45, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R1 2020\Binaries\WPF45\Telerik.Windows.Controls.Input.dll</HintPath>
+    </Reference>
     <Reference Include="Telerik.Windows.Controls.Navigation, Version=2020.1.218.45, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R1 2020\Binaries\WPF45\Telerik.Windows.Controls.Navigation.dll</HintPath>
@@ -114,6 +122,7 @@
     <Compile Include="Command\NavigationContentTemplateSelector.cs" />
     <Compile Include="Command\RelayCommand.cs" />
     <Compile Include="Controls\ArrangedPanel.cs" />
+    <Compile Include="Controls\Gridview\ButtonColumn.cs" />
     <Compile Include="Controls\CharItem.cs" />
     <Compile Include="Controls\SegmentsStack\SegmentsStackBase.cs" />
     <Compile Include="Controls\SegmentsStack\SevenSegmentsStack.xaml.cs">
@@ -144,7 +153,7 @@
     <Compile Include="ViewModel\LineViewModel.cs" />
     <Compile Include="ViewModel\RadTimelineTestView.cs" />
     <Compile Include="ViewModel\SanityCheckViewModel.cs" />
-    <Compile Include="ViewModel\ReceptorsUserControlViewModel.cs" />
+    <Compile Include="ViewModel\TestUserControlViewModel.cs" />
     <Compile Include="ViewModel\WindowMode.cs" />
     <Compile Include="Views\AboutBox1.cs">
       <SubType>Form</SubType>
@@ -179,8 +188,8 @@
     <Compile Include="Views\SplashScreenWindow.xaml.cs">
       <DependentUpon>SplashScreenWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ReceptorsUserControlView.xaml.cs">
-      <DependentUpon>ReceptorsUserControlView.xaml</DependentUpon>
+    <Compile Include="Views\TestUserControlView.xaml.cs">
+      <DependentUpon>TestUserControlView.xaml</DependentUpon>
     </Compile>
     <Page Include="Controls\SegmentsStack\SevenSegmentsStack.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -251,7 +260,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ReceptorsUserControlView.xaml">
+    <Page Include="Views\TestUserControlView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

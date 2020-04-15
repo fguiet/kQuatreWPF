@@ -28,10 +28,6 @@ namespace fr.guiet.kquatre.ui.views
         {
             InitializeComponent();
 
-            //Setting theme for RadNavigationView
-            //StyleManager.SetTheme(_nvRadnavigationView, new Office2016Theme());
-            StyleManager.SetTheme(_nvRadnavigationView, new FluentTheme());
-
             this.Loaded += MainWindow_Loaded;            
         }         
 

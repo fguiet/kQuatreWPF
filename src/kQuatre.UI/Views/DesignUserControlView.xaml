@@ -3,7 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:igDP="http://schemas.infragistics.com/xaml/wpf"
+             xmlns:igDP="http://schemas.infragistics.com/xaml/wpf" 
+             xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
+             xmlns:custom="clr-namespace:fr.guiet.kquatre.ui.controls.gridview"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" Background="White">
     <Grid Margin="20 20 0 0">
@@ -16,7 +18,7 @@
 
         <TextBlock Grid.Row="0" Text="Conception du feu d'artifice" FontSize="16" Foreground="#0099BC" FontWeight="Medium"/>
 
-        <Grid Margin="0 15 0 0" Grid.Row="1">
+        <Grid Margin="0 15 0 15" Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition/>
             </Grid.RowDefinitions>
@@ -49,13 +51,73 @@
             <Button Name="_btnCheckFirework" Width="120" Margin="5,5,5,5" HorizontalAlignment="left" VerticalAlignment="Center" Grid.Column="3" Content="Vérifier la validité" Click="BtnCheckFirework_Click" ></Button>
         </Grid>
 
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="3">
 
             <Grid.RowDefinitions>
                 <RowDefinition  />
             </Grid.RowDefinitions>
 
-            <igDP:XamDataGrid Background="Beige" Width="Auto" Height="Auto" ScrollingMode="Immediate" Name="_fireworkDatagrid"  DataSource="{Binding FireworkManager.AllLines}" HorizontalAlignment="Stretch" SelectedDataItemsScope="RecordsOnly" GroupByAreaLocation="None">
+            <telerik:RadGridView RowDetailsVisibilityMode="Visible"
+                                 GroupRenderMode="Flat"                                
+                                 x:Name="_fireworkGridView"                                 
+                                 CanUserGroupColumns="False" 
+                                 ShowGroupPanel="False" 
+                                 CanUserSortColumns="False" 
+                                 CanUserFreezeColumns="False" 
+                                 ItemsSource="{Binding FireworkManager.AllLines}" 
+                                 AutoGenerateColumns="False" 
+                                 IsReadOnly="True"   
+                                 IsFilteringAllowed="False"
+                                 GridLinesVisibility="Horizontal"                                
+                                 HorizontalGridLinesBrush="#0099BC"                                 
+                                 telerik:StyleManager.Theme="Fluent"  >
+                <telerik:RadGridView.Columns>
+                    <telerik:GridViewToggleRowDetailsColumn />
+                    <telerik:GridViewDataColumn Width="110"  Header="Numéro de ligne"
+											DataMemberBinding="{Binding NumberUI}" />
+                    <telerik:GridViewDataColumn  Header="Mise à feu" Width="100"
+											DataMemberBinding="{Binding Ignition}" />
+                    <telerik:GridViewDataColumn   Header="Liaison" Width="150"
+											DataMemberBinding="{Binding ReceptorAddressUI}" />
+                    <telerik:GridViewDataColumn Header="Ligne de secours"
+											DataMemberBinding="{Binding IsRescueLineText}" />
+                    <telerik:GridViewColumn Header="Action" telerik:StyleManager.Theme="Fluent"  >
+                        <telerik:GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <telerik:RadButton Content="Ajouter un artifice"
+                                                   Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type telerik:RadGridView}},Path=DataContext.AddFireworkCommand}"
+                                                   CommandParameter="{Binding}" />
+                            </DataTemplate>
+                        </telerik:GridViewColumn.CellTemplate>
+                    </telerik:GridViewColumn>
+                </telerik:RadGridView.Columns>
+                <telerik:RadGridView.RowDetailsTemplate>
+                    <DataTemplate>
+                        <telerik:RadGridView AutoGenerateColumns="False"                                             
+                                             GroupRenderMode="Flat"
+                                             IsReadOnly="True"                                                                                         
+										     IsFilteringAllowed="False"                                             
+										     ItemsSource="{Binding Fireworks}"
+										     CanUserReorderColumns="False"
+										     CanUserFreezeColumns="False"
+										     CanUserResizeColumns="False"
+                                             CanUserSortColumns="False" 
+										     ShowGroupPanel="False"                                             
+										     Margin="6" telerik:StyleManager.Theme="Fluent">
+                            <telerik:RadGridView.Columns>
+                                <telerik:GridViewDataColumn  Header="Référence"
+														DataMemberBinding="{Binding Reference}" Width="120" />
+                                <telerik:GridViewDataColumn Header="Désignation"
+														 DataMemberBinding="{Binding Designation}" Width="300" />
+                                <telerik:GridViewDataColumn Header="Durée"
+														 DataMemberBinding="{Binding Duration}" />
+                            </telerik:RadGridView.Columns>
+                        </telerik:RadGridView>
+                    </DataTemplate>
+                </telerik:RadGridView.RowDetailsTemplate>
+            </telerik:RadGridView >
+
+            <!--<igDP:XamDataGrid Background="Beige" Width="Auto" Height="Auto" ScrollingMode="Immediate" Name="_fireworkDatagrid"  DataSource="{Binding FireworkManager.AllLines}" HorizontalAlignment="Stretch" SelectedDataItemsScope="RecordsOnly" GroupByAreaLocation="None">
                 <igDP:XamDataGrid.Resources>
                     <Style x:Key="lineRowColorStyle" TargetType="igDP:DataRecordCellArea">
                         <Setter Property="Background" Value="Gray"/>
@@ -122,7 +184,7 @@
                         </igDP:FieldLayout.Fields>
                     </igDP:FieldLayout>
                 </igDP:XamDataGrid.FieldLayouts>
-            </igDP:XamDataGrid>
+            </igDP:XamDataGrid>-->
         </Grid>
 
     </Grid>

@@ -55,8 +55,6 @@ namespace fr.guiet.kquatre.ui.views
         {
             InitializeComponent();
 
-            StyleManager.SetTheme(_fireworkTimeline, new FluentTheme());
-
             this.Loaded += FireworkUserControlView_Loaded;
         }
 

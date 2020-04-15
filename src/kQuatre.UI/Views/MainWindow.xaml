@@ -1,10 +1,10 @@
-﻿<Window  
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"            
-        xmlns:Custom="http://infragistics.com/Windows" x:Name="_mainWindow" 
-        xmlns:uc="clr-namespace:fr.guiet.kquatre.ui.views" xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
+﻿<Window
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
+    x:Name="_mainWindow"
     x:Class="fr.guiet.kquatre.ui.views.MainWindow"        
         mc:Ignorable="d"
         Title="{Binding Title}" Width="1600" WindowState="Maximized" WindowStartupLocation="CenterScreen" Closing="MainWindow_Closing" Icon="/kQuatre;component/Resources/FireworksIcon.png" >
@@ -57,7 +57,7 @@
         </Menu>
 
         <!-- RadNavigationView -->
-        <telerik:RadNavigationView x:Name="_nvRadnavigationView" Grid.Row="1" SelectedIndex="0" >
+        <telerik:RadNavigationView telerik:StyleManager.Theme="Fluent" x:Name="_nvRadnavigationView" Grid.Row="1" SelectedIndex="0" >
             <telerik:RadNavigationView.Items>
                 <telerik:RadNavigationViewItem Name="_nviDesign" Content="Conception du feu">
                     <telerik:RadNavigationViewItem.Icon>
@@ -135,7 +135,7 @@
                         <TextBlock Text="Tests"   HorizontalAlignment="Center" />
                     </StackPanel>
                 </Custom:TabItemEx.Header>
-                <uc:ReceptorsUserControlView x:Name="_ucReceptorsUserControlView"  FireworkManager="{Binding Path=DataContext.FireworkManager, RelativeSource={RelativeSource AncestorType=Window}}"></uc:ReceptorsUserControlView>
+                <uc:ReceptorsUserControlView x:Name="_ucTestUserControlView"  FireworkManager="{Binding Path=DataContext.FireworkManager, RelativeSource={RelativeSource AncestorType=Window}}"></uc:ReceptorsUserControlView>
             </Custom:TabItemEx>
             <Custom:TabItemEx x:Name="_tabFire">
                 <Custom:TabItemEx.Header>

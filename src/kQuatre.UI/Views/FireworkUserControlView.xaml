@@ -147,7 +147,7 @@
             </GroupBox>
         </Grid>
         <Grid Grid.Row="1" VerticalAlignment="Stretch">
-            <telerik:RadTimeline                             
+            <telerik:RadTimeline telerik:StyleManager.Theme="Fluent"                             
                              VerticalScrollBarVisibility="Auto"
                              Name="_fireworkTimeline" 
                              Content="Firework Timeline" 

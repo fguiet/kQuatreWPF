@@ -8,6 +8,7 @@
 //TODO : Revoir task du feu d'artifice (ajout d'un canceltoken)
 //TODO : Gérer l'état des boutons des menus en fonction de l'état du feu
 //TODO : Ohm test à realiser
+//TODO : enregistrement d'un nouveau feu ne change pas le titre
 //TODO : Remove Infragistics Dependencies...
 	SegmentDisplay => Done
 	DataGrid =>

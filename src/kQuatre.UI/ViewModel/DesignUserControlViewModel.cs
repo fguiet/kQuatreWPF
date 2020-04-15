@@ -1,11 +1,13 @@
 ﻿using fr.guiet.kquatre.business.configuration;
 using fr.guiet.kquatre.business.firework;
+using fr.guiet.kquatre.ui.command;
 using fr.guiet.kquatre.ui.helpers;
 using fr.guiet.kquatre.ui.views;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Input;
 
 namespace fr.guiet.kquatre.ui.viewModel
 {
@@ -16,10 +18,24 @@ namespace fr.guiet.kquatre.ui.viewModel
 
         private FireworkManager _fireworkManager = null;
         private SoftwareConfiguration _configuration = null;
+        private RelayCommand _addFireworkCommand;
 
         #endregion
 
         #region Public Members
+
+        public RelayCommand AddFireworkCommand
+        {
+            get
+            {
+                if (_addFireworkCommand == null)
+                {
+                    _addFireworkCommand = new RelayCommand(new Action<object>((l) => AddFirework(l)));
+                }
+
+                return _addFireworkCommand;
+            }
+        }
 
         public FireworkManager FireworkManager
         {
@@ -77,6 +93,7 @@ namespace fr.guiet.kquatre.ui.viewModel
 
         #region Public Members
 
+
         public void OpenLineWindow(Line line)
         {
             LineWindow window = new LineWindow(_fireworkManager, line);
@@ -129,6 +146,14 @@ namespace fr.guiet.kquatre.ui.viewModel
         #endregion
 
         #region Private Members 
+
+        private void AddFirework(object l)
+        {
+            if (l is Line line)
+            {
+                OpenFireworkManagementWindow(line);
+            }            
+        }
 
         private void RefreshGUI()
         {
