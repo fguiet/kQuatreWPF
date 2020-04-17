@@ -15,8 +15,7 @@ namespace fr.guiet.kquatre.ui.views
     {
         #region Private property
 
-        private DesignUserControlViewModel _viewModel = null;
-        //public FireworkManager _fireworkManager = null;
+        private DesignUserControlViewModel _viewModel = null;       
 
         #endregion
 
@@ -86,44 +85,7 @@ namespace fr.guiet.kquatre.ui.views
         #region Private Method
 
         //TODO : ajouter un row context menu avec options ajout, delete, modify) à la gridview (voir exemple telerik)
-
-        //private void ExpandAllLine()
-       // {
-            //TODO : A Remplacer Telerik
-            //Expands all lines...
-            //Updating a property (here NumberUI) removes expand state...dunno why
-            //So force an expandall...
-            //_fireworkDatagrid.Records.ExpandAll(true);
-        //}
-
-        //manually refresh the control UI when bound to a data source which is not raising property change notifications for its data items
-        //Here Line.ReceptorAddressUI is not bound and not raising property change
-        //private void RefreshDataGrid()
-        //{
-            /*
-            foreach (Record record in this._fireworkDatagrid.Records)
-            {
-                if (record is DataRecord)
-                {
-                    ((DataRecord)record).RefreshCellValues();
-                }
-            }
-            */
-        //}
-
-        /// <summary>
-        /// Add new firework to a line
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void BtnAddFirework_Click(object sender, RoutedEventArgs e)
-        {
-            //TODO : A Remplacer Telerik
-            //Line line = _fireworkDatagrid.ActiveDataItem as Line;
-
-            //_viewModel.OpenFireworkManagementWindow(line);
-        }
-
+              
         private void BtnAlterLine_Click(object sender, RoutedEventArgs e)
         {
 

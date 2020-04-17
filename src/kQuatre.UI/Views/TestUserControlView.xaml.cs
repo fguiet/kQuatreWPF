@@ -32,18 +32,31 @@ namespace fr.guiet.kquatre.ui.views
 
         #endregion
 
-        public static readonly DependencyProperty FireworkManagerProperty
-            = DependencyProperty.Register("FireworkManager", typeof(FireworkManager), typeof(TestUserControlView));
+        public static readonly DependencyProperty TestUserControlViewModelProperty
+            = DependencyProperty.Register("ViewModel", typeof(TestUserControlViewModel), typeof(TestUserControlView));
 
-        public FireworkManager FireworkManager
+
+/*        public static readonly DependencyProperty FireworkManagerProperty
+            = DependencyProperty.Register("FireworkManager", typeof(FireworkManager), typeof(TestUserControlView));*/
+
+        /*public FireworkManager FireworkManager
         {
             get { return (FireworkManager)GetValue(FireworkManagerProperty); }
             set { SetValue(FireworkManagerProperty, (FireworkManager)value); }
-        }  
-        
+        }*/
+
+        public TestUserControlViewModel ViewModel
+        {
+            get { return (TestUserControlViewModel)GetValue(TestUserControlViewModelProperty); }
+            set
+            { 
+                SetValue(TestUserControlViewModelProperty, (TestUserControlViewModel)value);                
+            }
+        }
+
         public TestUserControlView()
         {
-            InitializeComponent();
+            InitializeComponent();            
 
             this.Loaded += TestUserControlView_Loaded;            
         }
@@ -58,11 +71,16 @@ namespace fr.guiet.kquatre.ui.views
         private void TestUserControlView_Loaded(object sender, RoutedEventArgs e)
         {
             //Careful - Initialiaze ViewModel only once!
-            if (_viewModel == null)
+            /*if (_viewModel == null)
             {
                 _viewModel = new TestUserControlViewModel(FireworkManager, this.Dispatcher);
                 DataContext = _viewModel;
-            }
+            }*/
+
+            //Initialize private memeber
+            _viewModel = ViewModel;
+
+            DataContext = _viewModel;
         }
 
         private void CbxTestReceptors_SelectionChanged(object sender, SelectionChangedEventArgs e)

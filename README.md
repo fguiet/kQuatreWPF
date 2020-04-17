@@ -11,7 +11,25 @@ This is how this project is born...
 
 Written in C#, kQuatre software aims at creating and firing fireworks automatically. No more cables, system is wireless (works thanks to LoRa technology).
 
+## Electronic Datasheet
+
+Wanna realise your own firework receiver....
+
+Here is a link to the datasheet : <https://easyeda.com/fguiet/kquatre>
+
 ## In real life
+
+* kQuatre software - Design your firework
+
+![Sweet](pictures/DesigningFirework.jpg)
+
+* kQuatre software - Testing LoRa communication
+
+![Sweet](pictures/TestingLoRa.jpg)
+
+* kQuatre software - real time fire work management console
+
+![Sweet](pictures/FireworkManagement.jpg)
 
 * LoRa 868Mhz Arduino based transceiver and Arduino Mega based receiver
 

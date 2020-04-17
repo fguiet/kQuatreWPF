@@ -70,14 +70,9 @@ namespace fr.guiet.kquatre.ui.views
                 _viewModel = new FireworkUserControlViewModel(FireworkManager, _fireworkTimeline, this.Dispatcher);
                 DataContext = _viewModel;                
             }
-        }
 
-        /// <summary>
-        /// Reset Control panel to initial state
-        /// </summary>
-        public void ResetControlPanel()
-        {
-            _viewModel.ResetUserControlUI();
+            //Reset control each time it is loaded
+            ResetControlPanel();
         }
 
         private void FireworkTimeline_SelectionChanged(object sender, Telerik.Windows.Controls.SelectionChangeEventArgs e)
@@ -91,6 +86,18 @@ namespace fr.guiet.kquatre.ui.views
 
                 _fireworkTimeline.SelectedItem = null;
             }
+        }
+
+        #endregion
+
+        #region Private methods
+
+        /// <summary>
+        /// Reset Control panel to initial state
+        /// </summary>
+        private void ResetControlPanel()
+        {
+            _viewModel.ResetUserControlUI();
         }
 
         #endregion

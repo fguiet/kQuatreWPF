@@ -99,9 +99,7 @@ namespace fr.guiet.lora.frames
                         }
                         else
                         {
-                            //TODO : Receive a syntaxycally correct frame which is not ACK_OK or ACK_KO...
-                            //Not possible but we have to deal with that
-                            resultFrame = new AckKOFrame(Convert.ToByte(frameId), senderAddress, receiverAddress, AckKOReason.ACK_KO_UNKNOWN_FRAME_ACK_STATE);
+                            throw new InvalidPacketReceivedException(string.Format("Could not parse received packet : {0}", packet));
                         }
                     }
                 }
@@ -116,7 +114,6 @@ namespace fr.guiet.lora.frames
             }
 
             return resultFrame;
-
         }
     }
 }

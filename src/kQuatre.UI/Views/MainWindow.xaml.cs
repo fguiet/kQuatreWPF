@@ -2,6 +2,7 @@
 using fr.guiet.kquatre.ui.viewsmodel;
 using System;
 using System.Windows;
+using Telerik.Windows.Controls;
 
 namespace fr.guiet.kquatre.ui.views
 {
@@ -113,6 +114,18 @@ namespace fr.guiet.kquatre.ui.views
             }
         }
 
+        /*private void _nvRadnavigationView_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Count > 0 && e.AddedItems[0] is RadNavigationViewItem rnvi) {
+                /*switch (rnvi.Name)
+                {
+                    case "_nviFirework":
+                        _ucFireworkUserControlView.ResetControlPanel();
+                        break;
+                }*/
+          //  }          
+        //}
+
         /*private void XamTabControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             if (_tabFire.IsSelected)
@@ -125,6 +138,7 @@ namespace fr.guiet.kquatre.ui.views
         }*/
 
         #endregion
+
 
     }
 }

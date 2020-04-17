@@ -4,12 +4,8 @@ using fr.guiet.kquatre.ui.command;
 using fr.guiet.kquatre.ui.helpers;
 using fr.guiet.kquatre.ui.timeline;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using Telerik.Windows.Controls;
@@ -153,6 +149,16 @@ namespace fr.guiet.kquatre.ui.viewmodel
             _fireworkTimeline.Intervals.Add(si);
 
             _fireworkManager = fireworkManager;
+
+            //
+            _fireworkManager.FireworkLoaded += FireworkManager_FireworkLoaded;
+            _fireworkManager.LineStarted += FireworkManager_LineStarted;
+            _fireworkManager.LineFailed += FireworkManager_LineFailed;
+            _fireworkManager.FireworkFinished += FireworkManager_FireworkFinished;
+            _fireworkManager.FireworkStarted += FireworkManager_FireworkStarted;
+            _fireworkManager.TransceiverDisconnected += FireworkManager_TransceiverDisconnected;
+            _fireworkManager.TransceiverConnected += FireworkManager_TransceiverConnected;
+
             _fireworkManager.FireworkLoaded += FireworkManager_FireworkLoaded;
             _fireworkManager.LineStarted += FireworkManager_LineStarted;
             _fireworkManager.LineFailed += FireworkManager_LineFailed;

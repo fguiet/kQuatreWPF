@@ -1,18 +1,30 @@
-﻿//TODO : Vérifier les inputs utilisateurs pour le fichier de configuration
+﻿###
+### TODO
+###
+
+//TODO : Vérifier les inputs utilisateurs pour le fichier de configuration
 //TODO : Revoir les notions de timeout dans les frames + ajustement + documentation 
 //TODO : Revoir tous les controles avec des Actions => voir projet DBA Manager
 //TODO : Faire tests de deconnexions transceiver + bien blinder la librairie LoRa
 //TODO : Tester l'événement disconnect du transceiver = ne semble pas marcher
-//TODO : deal with the fact that sentframe can be null!!!!
 //TODO : mettre un test au changement d'onglet pour dire à l'utilisateur qu'il doit d'abord arreter son test de recepteur avant de pouvoir changer
-//TODO : Revoir task du feu d'artifice (ajout d'un canceltoken)
 //TODO : Gérer l'état des boutons des menus en fonction de l'état du feu
 //TODO : Ohm test à realiser
-//TODO : enregistrement d'un nouveau feu ne change pas le titre
-//TODO : Remove Infragistics Dependencies...
-	SegmentDisplay => Done
-	DataGrid =>
-	Excel => 
+//TODO : 2020/04/17 - L'ajout d'un artifice à une ligne, n'affecte pas la valeur IsDirty
+//TODO : Cacher les boutons dont les fonctionnalités ne sont pas terminées
+//TODO : Changer le mode de fonctionnement du chargement des datatemplates
 
+### 
+### DONE
+###
 
+//DONE : 2020/04 : deal with the fact that sentframe can be null!!!!
 //DONE : 2020/04/11 - Test de IsDirty = a peu près fait
+//DONE : 2020/04 - Remove Infragistics Dependencies...
+	SegmentDisplay => Done
+	DataGrid => Done
+	Excel => Done
+	PropertyGridView => Done
+	MaskInputTest => Done
+//DONE : 2020/04 - enregistrement d'un nouveau feu ne change pas le titre
+//DONE : 2020/04 - Revoir task du feu d'artifice (ajout d'un canceltoken)

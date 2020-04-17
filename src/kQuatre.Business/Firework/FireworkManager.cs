@@ -114,6 +114,7 @@ namespace fr.guiet.kquatre.business.firework
         public event EventHandler FireworkFinished;
         public event EventHandler FireworkStarted;
         public event EventHandler FireworkLoaded;
+        public event EventHandler FireworkSaved;
         public event EventHandler FireworkDefinitionModified;
         public event EventHandler<TransceiverInfoEventArgs> TransceiverInfoChanged;
         public event EventHandler TransceiverDisconnected;
@@ -152,6 +153,12 @@ namespace fr.guiet.kquatre.business.firework
         {
             FireworkLoaded?.Invoke(this, new EventArgs());
         }
+
+        private void OnFireworkSavedEvent()
+        {
+            FireworkSaved?.Invoke(this, new EventArgs());
+        }
+
 
         private void OnFireworkStartedEvent()
         {
@@ -1105,8 +1112,15 @@ namespace fr.guiet.kquatre.business.firework
 
                 doc.Save(fullFilename);
 
+                //Set new name here !
+                _fireworkFullFileName = fullFilename;
+
                 //No more dirty here
                 MakeItDirty(false);
+
+                //Throw saved event
+                OnFireworkSavedEvent();
+
             }
             catch (Exception e)
             {

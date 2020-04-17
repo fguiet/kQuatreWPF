@@ -207,8 +207,11 @@ namespace fr.guiet.kquatre.ui.viewmodel
             //Careful must be called from UI Thread
             _userControlDispatcher.Invoke(() =>
             {
-                _startTestingReceptorCommand.RaiseCanExecuteChanged();
-                _stopTestingReceptorCommand.RaiseCanExecuteChanged();
+                if (_startTestingReceptorCommand != null)
+                    _startTestingReceptorCommand.RaiseCanExecuteChanged();
+
+                if (_stopTestingReceptorCommand != null)
+                    _stopTestingReceptorCommand.RaiseCanExecuteChanged();
 
                 if (_testResistanceCommand != null)
                     _testResistanceCommand.RaiseCanExecuteChanged();

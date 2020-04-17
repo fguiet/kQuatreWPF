@@ -57,15 +57,15 @@
         </Menu>
 
         <!-- RadNavigationView -->
-        <telerik:RadNavigationView telerik:StyleManager.Theme="Fluent" x:Name="_nvRadnavigationView" Grid.Row="1" SelectedIndex="0" >
+        <telerik:RadNavigationView telerik:StyleManager.Theme="Fluent" x:Name="_nvRadnavigationView" Grid.Row="1" SelectedIndex="0">
             <telerik:RadNavigationView.Items>
-                <telerik:RadNavigationViewItem Name="_nviDesign" Content="Conception du feu">
+                <telerik:RadNavigationViewItem IsEnabled="{Binding IsNavigationEnabled}" Name="_nviDesign" Content="Conception du feu">
                     <telerik:RadNavigationViewItem.Icon>
                         <Image Source="/kQuatre;component/Resources/IdeaIcon_32x32.png" Height="16" Width="16" />
                         <!--<telerik:RadGlyph Glyph="&#xe653;" FontSize="16"/>-->
                     </telerik:RadNavigationViewItem.Icon>
                 </telerik:RadNavigationViewItem>
-                <telerik:RadNavigationViewItem Name="_nviTest" Content="Tests radio">
+                <telerik:RadNavigationViewItem IsEnabled="{Binding IsNavigationEnabled}" Name="_nviTest" Content="Tests radio">
                     <telerik:RadNavigationViewItem.Icon>
                         <Image Source="/kQuatre;component/Resources/TestIcon_32x32.png" Height="16" Width="16" />
                         <!--<telerik:RadGlyph Glyph="&#xe653;" FontSize="16"/>-->
@@ -79,7 +79,6 @@
                 </telerik:RadNavigationViewItem>
             </telerik:RadNavigationView.Items>
             <telerik:RadNavigationView.Content>
-
                 <telerik:RadTransitionControl Content="{Binding SelectedItem, ElementName=_nvRadnavigationView}"
                                               ContentTemplateSelector="{DynamicResource NavigationContentTemplateSelector}" 
                                               Duration="0:0:0.4">

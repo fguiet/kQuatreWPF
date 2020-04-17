@@ -4,6 +4,7 @@ using fr.guiet.kquatre.business.firework;
 using fr.guiet.kquatre.business.transceiver;
 using fr.guiet.kquatre.ui.events;
 using fr.guiet.kquatre.ui.helpers;
+using fr.guiet.kquatre.ui.viewmodel;
 using fr.guiet.kquatre.ui.views;
 using Microsoft.Win32;
 using System;
@@ -23,15 +24,37 @@ namespace fr.guiet.kquatre.ui.viewsmodel
 
         private FireworkManager _fireworkManager = null;
 
-        private SoftwareConfiguration _configuration = null;        
+        private SoftwareConfiguration _configuration = null;
+
+        private TestUserControlViewModel _testUserControlViewModel = null;
 
         private string _deviceConnectionInfo = DeviceManager.DEFAULT_NOT_TRANSCEIVER_CONNECTED_MESSAGE;
 
-        private const string SOFTWARE_TITLE = "kQuatre";        
-        
+        private const string SOFTWARE_TITLE = "kQuatre";
+
+        private bool _isNavigationEnabled = true;
+
         #endregion
 
         #region Public Members
+
+        public bool IsNavigationEnabled
+        {
+            get
+            {
+                return _isNavigationEnabled;                
+            }
+
+            set
+            {
+                if (_isNavigationEnabled != value)
+                {
+                    _isNavigationEnabled = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
 
         public string Title
         {
@@ -41,6 +64,14 @@ namespace fr.guiet.kquatre.ui.viewsmodel
                     return string.Format("{0} - {1} {2}", SOFTWARE_TITLE, FireworkManager.FireworkFullFileName, "*");
                 else
                     return string.Format("{0} - {1}", SOFTWARE_TITLE, FireworkManager.FireworkFullFileName);
+            }
+        }
+
+        public TestUserControlViewModel TestUserControlViewModel
+        {
+            get
+            {
+                return _testUserControlViewModel;
             }
         }
 
@@ -106,8 +137,13 @@ namespace fr.guiet.kquatre.ui.viewsmodel
             //Initialize new firework
             _fireworkManager = new FireworkManager(_configuration);
             _fireworkManager.FireworkLoaded += FireworkManager_FireworkLoaded;
+            _fireworkManager.FireworkSaved += FireworkManager_FireworkSaved;
             _fireworkManager.FireworkDefinitionModified += FireworkManager_FireworkDefinitionModified;
             _fireworkManager.TransceiverInfoChanged += FireworkManager_TransceiverInfoChanged;
+            _fireworkManager.FireworkStarted += FireworkManager_FireworkStarted;
+            _fireworkManager.FireworkFinished += FireworkManager_FireworkFinished;
+
+            _testUserControlViewModel = new TestUserControlViewModel(_fireworkManager, Dispatcher.CurrentDispatcher);
 
             //Trasnceiver already plugged?
             _fireworkManager.DiscoverDevice();
@@ -116,6 +152,21 @@ namespace fr.guiet.kquatre.ui.viewsmodel
         #endregion
 
         #region Event
+        private void FireworkManager_FireworkFinished(object sender, EventArgs e)
+        {
+            IsNavigationEnabled = true;
+        }
+
+        private void FireworkManager_FireworkStarted(object sender, EventArgs e)
+        {
+            //As long as a firework is running...no more navigation is allowed..
+            IsNavigationEnabled = false;
+        }
+
+        private void FireworkManager_FireworkSaved(object sender, EventArgs e)
+        {
+            RefreshGUI();
+        }
 
         private void FireworkManager_TransceiverInfoChanged(object sender, TransceiverInfoEventArgs e)
         {
@@ -276,12 +327,7 @@ namespace fr.guiet.kquatre.ui.viewsmodel
                     if (fromExcelFile)
                         _fireworkManager.LoadFireworkFromExcel(ofd.FileName);
                     else
-                        _fireworkManager.LoadFirework(ofd.FileName);
-
-                    //OnPropertyChanged("FireworkManager");
-
-                    //TODO : A revoir
-                    //RefreshControlPanelUI(RefreshControlPanelEventType.FireworkLoadedEvent);
+                        _fireworkManager.LoadFirework(ofd.FileName);                   
                 }
             }
             catch (Exception e)

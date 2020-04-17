@@ -106,7 +106,8 @@
                                              CanUserSortColumns="False" 
 										     ShowGroupPanel="False"  
                                              RowIndicatorVisibility="Collapsed"
-										     Margin="25 10 10 30" telerik:StyleManager.Theme="Fluent">
+										     Margin="25 10 10 30" 
+                                             telerik:StyleManager.Theme="Fluent">
                             <telerik:RadGridView.Columns>
                                 <telerik:GridViewDataColumn  Header="Référence"
 														DataMemberBinding="{Binding Reference}" Width="120" />
