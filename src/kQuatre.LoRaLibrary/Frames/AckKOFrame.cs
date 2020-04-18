@@ -33,7 +33,15 @@ namespace fr.guiet.lora.frames
                 }
 
                 return log;
-            }            
+            }
+        }
+
+        public bool HasSentFrame
+        {
+            get
+            {
+                return (_sentFrame != null);
+            }
         }
 
         public FrameBase SentFrame

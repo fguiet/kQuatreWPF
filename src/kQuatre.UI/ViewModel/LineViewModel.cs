@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace fr.guiet.kquatre.ui.viewsmodel
+namespace fr.guiet.kquatre.ui.viewmodel
 {
     public class LineViewModel : INotifyPropertyChanged
     {

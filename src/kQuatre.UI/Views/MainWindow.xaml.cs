@@ -1,8 +1,7 @@
 ﻿using fr.guiet.kquatre.ui.helpers;
-using fr.guiet.kquatre.ui.viewsmodel;
+using fr.guiet.kquatre.ui.viewmodel;
 using System;
 using System.Windows;
-using Telerik.Windows.Controls;
 
 namespace fr.guiet.kquatre.ui.views
 {
@@ -113,29 +112,6 @@ namespace fr.guiet.kquatre.ui.views
                 e.Cancel = true;
             }
         }
-
-        /*private void _nvRadnavigationView_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            if (e.AddedItems.Count > 0 && e.AddedItems[0] is RadNavigationViewItem rnvi) {
-                /*switch (rnvi.Name)
-                {
-                    case "_nviFirework":
-                        _ucFireworkUserControlView.ResetControlPanel();
-                        break;
-                }*/
-          //  }          
-        //}
-
-        /*private void XamTabControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            if (_tabFire.IsSelected)
-            {
-                _ucFireworkUserControlView.ResetControlPanel();
-            }
-
-            //TODO : Vérifier qu'un feu n'est pas en cours et sinon 
-            //interdir le changement !!
-        }*/
 
         #endregion
 

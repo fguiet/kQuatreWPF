@@ -1,7 +1,5 @@
-﻿using fr.guiet.kquatre.business.configuration;
-using fr.guiet.kquatre.business.firework;
-using fr.guiet.kquatre.ui.helpers;
-using fr.guiet.kquatre.ui.viewModel;
+﻿using fr.guiet.kquatre.ui.helpers;
+using fr.guiet.kquatre.ui.viewmodel;
 using System.Windows;
 using System.Windows.Controls;
 using Line = fr.guiet.kquatre.business.firework.Line;
@@ -15,37 +13,24 @@ namespace fr.guiet.kquatre.ui.views
     {
         #region Private property
 
-        private DesignUserControlViewModel _viewModel = null;       
+        private DesignUserControlViewModel _viewModel = null;
 
         #endregion
 
         #region Public property
 
-        public static readonly DependencyProperty FireworkManagerProperty
-            = DependencyProperty.Register("FireworkManager", typeof(FireworkManager), typeof(DesignUserControlView));
+        public static readonly DependencyProperty DesignUserControlViewModelProperty
+            = DependencyProperty.Register("ViewModel", typeof(DesignUserControlViewModel), typeof(DesignUserControlView));
 
-        public FireworkManager FireworkManager
+        public DesignUserControlViewModel ViewModel
         {
-            get
-            {
-                return (FireworkManager)GetValue(FireworkManagerProperty);
-            }
+            get { return (DesignUserControlViewModel)GetValue(DesignUserControlViewModelProperty); }
             set
             {
-                SetValue(FireworkManagerProperty, (FireworkManager)value);
-                //_fireworkManager = value;
+                SetValue(DesignUserControlViewModelProperty, (DesignUserControlViewModel)value);
             }
         }
 
-        public static readonly DependencyProperty SoftwareConfigurationManagerProperty
-            = DependencyProperty.Register("SoftwareConfiguration", typeof(SoftwareConfiguration), typeof(DesignUserControlView));
-
-        public SoftwareConfiguration SoftwareConfiguration
-        {
-            get { return (SoftwareConfiguration)GetValue(SoftwareConfigurationManagerProperty); }
-            set { SetValue(SoftwareConfigurationManagerProperty, (SoftwareConfiguration)value); }
-        }
-     
         #endregion
 
         #region Constructor
@@ -72,12 +57,14 @@ namespace fr.guiet.kquatre.ui.views
 
         private void DesignUserControlView_Loaded(object sender, RoutedEventArgs e)
         {
-            //Careful - Initialiaze ViewModel only once!
-            if (_viewModel == null)
-            {
-                _viewModel = new DesignUserControlViewModel(FireworkManager, SoftwareConfiguration);
-                DataContext = _viewModel;                
-            }
+            //http://paulstovell.com/blog/mvvm-instantiation-approaches
+            //With datatemplate usercontrol is loaded everytime...so viewmodel must be instanciate ones 
+            //but outside of usercontrol
+
+            //Initialize private memeber
+            _viewModel = ViewModel;
+
+            DataContext = _viewModel;
         }
 
         #endregion

@@ -3,7 +3,7 @@
  * 
  * F. Guiet 
  * Creation           : 29/04/2019
- * Last modification  : 26/05/2019
+ * Last modification  : 26/04/2020
  * 
  * Version            : 5
  * 
@@ -11,11 +11,12 @@
  *                      
  *                      3.1 : 26/05/2019 : Remove Enqueue library (not working very well)              
  *                      5   : 26/05/2019 : Add asynchronous fire handling
+ *                      5.1 : 26/04/2020 : Update LoRa library to 0.7.2
  *                      
  * Librairies used    :
  * 
  *  - https://github.com/sandeepmistry/arduino-LoRa
- *  version 0.5
+ *  version 0.7.2
  *   
  * 
  */
@@ -27,13 +28,15 @@
 // 1 - debug mode
 #define DEBUG 0
 
+#define VERSION "2020/04/18 - v5.1 - LoRa 0.7.2"
+
 const long FREQ = 868E6;
 const int SF = 7;
 const long BW = 125E3;
 
 #define NUMBER_OF_RELAY 16 //Nb of relay
 #define STATUS_PIN 13
-#define OHMETER_PIN 0
+#define VOLTAGE_PIN A0
 #define FIRST_RELAY_DIGITAL_PIN 29 //first digital relay pin minus 1
 #define RELAY1_TEST_PIN 22 //Relay pin (test mode)
 #define RELAY2_TEST_PIN 23 //Relay pin (test mode)
@@ -108,9 +111,9 @@ void setup() {
   // put the radio into receive mode
   LoRa.receive();
   
-  if (!DEBUG) {
+  //if (!DEBUG) {
     initRelays();
-  }
+  //}
 
   //Init Pin status 
   pinMode(STATUS_PIN, OUTPUT);
@@ -193,8 +196,8 @@ void handleReceivedFrame(String frameStr, int rssi, int snr) {
 
       printDebug("trame received is for me :  " + frameStr);  
 
-      if (message != "OHM") {
-        //Send always ACK here ... except when message is OHM ... will send ACK later
+      if (message != "COND" && message != "INFO") {
+        //Send always ACK here ... except when message is COND ... will send ACK later
         sendLoRaPacket(createFrame(getFrameIdValue(frameStr), MODULE_ADDRESS, getSenderAddressValue(frameStr), ACK_OK, ACK_OK_FRAME_RECEIVED + "+" + String(rssi) + "+" + String(snr)));    
       }
       
@@ -204,7 +207,7 @@ void handleReceivedFrame(String frameStr, int rssi, int snr) {
   } 
 }
 
-String GetResistance(String frame) {
+String GetConductivite(String frame) {
 
   String messageComplement = getFrameMessageCompValue(frame);
 
@@ -217,61 +220,68 @@ String GetResistance(String frame) {
   digitalWrite(RELAY2_TEST_PIN,HIGH); 
 
   //Wait a litlle
-  delay(500);
+  delay(250);
 
   digitalWrite(FIRST_RELAY_DIGITAL_PIN + relayToCheck, LOW); //Le relay 1 doit être branché sur le digital 30 et ainsi de suite
   
   //Wait a little
-  delay(500);
+  delay(250);
     
-  //Read resistance
-  float resistance = ComputeResistance();
+  //Read conductivity
+  String conductivity = ComputeConductivite();
+
+  //Wait a litlle
+  delay(250);
                             
   //Deactive test relay mode
   digitalWrite(FIRST_RELAY_DIGITAL_PIN + relayToCheck, HIGH);        
 
   //Wait a little
-  //delay(500);
+  delay(250);
        
   //Deactivate test mode
   digitalWrite(RELAY1_TEST_PIN,LOW); 
   digitalWrite(RELAY2_TEST_PIN,LOW);    
       
-  char valBuffer[10];
+  //char valBuffer[10];
             
-  memset(valBuffer,'\0',10);
+  //memset(valBuffer,'\0',10);
     
-  dtostrf(resistance,4,4,valBuffer);
+  //dtostrf(voltage,4,4,valBuffer);
   
-  String result(valBuffer);
+  //String result(valBuffer);
 
-  printDebug("Result resistance : "+result);
+  //printDebug("Result voltage : "+result);
   
-  return result;  
+  return conductivity;  
 }
 
-float ComputeResistance() {
-  
-  int raw= 0;
-  int Vin= 5; //Voltage en entrée 5V
-  float Vout= 0;
-  float R1= 47; //47 Ohm pour la résistance que l'on connait (100Ohm pour celle que l'on mesure)
-  float R2= 0;
-  float Buffer= 0;
-  
-  raw=analogRead(OHMETER_PIN);
+String ComputeConductivite() {
 
-  printDebug("Raw : " + String(raw));
-    
-  if (raw) 
-  {  
-     Buffer= raw * Vin;
-     Vout= (Buffer)/1024.0;
-     Buffer= (Vin/Vout) -1;
-     R2= R1 * Buffer; 
-  }  
+   //5v = 1023
+  //https://www.arduino.cc/reference/en/language/functions/analog-io/analogread/
   
-  return R2;
+  //int raw=analogRead(VOLTAGE_PIN);
+  
+
+  int conductivite = digitalRead(3);
+  
+  printDebug("Conductivite : " + String(conductivite));
+
+  if (conductivite == HIGH) {
+    return "NON";
+  }
+  else {
+    return "OUI";
+  }
+
+  //float voltage = raw * 5 / 1024.0; //.0 is important otherwise integer value is return...
+  
+  //printDebug("Raw : " + String(raw));
+  //printDebug("Voltage : " + String(voltage));
+
+  //return voltage;
+  
 }
 
 String createFrame(String frameId, String senderAddress, String receiverAddress, String message, String message_complement) {
@@ -298,14 +308,18 @@ void handleFrameMessage(String frame, int rssi, int snr)  {
     initRelays();
   }
 
+  if (message == "INFO") {    
+    sendLoRaPacket(createFrame(getFrameIdValue(frame), MODULE_ADDRESS, getSenderAddressValue(frame), ACK_OK, ACK_OK_FRAME_RECEIVED + "+" + String(rssi) + "+" + String(snr) + "+" + String(VERSION)+ " - Debug : " + String(DEBUG))); 
+  }
+
   if (message == "PING") {
     //Nothing to do here :)
     return;    
   }
 
-  if (message == "OHM") {
-    String result = GetResistance(frame);    
-    //Send ACK with OHM mesurement
+  if (message == "COND") {
+    String result = GetConductivite(frame);    
+    //Send ACK with COND mesurement
     sendLoRaPacket(createFrame(getFrameIdValue(frame), MODULE_ADDRESS, getSenderAddressValue(frame), ACK_OK, ACK_OK_FRAME_RECEIVED + "+" + String(rssi) + "+" + String(snr) + "+" + result));    
   }
  
@@ -529,6 +543,9 @@ bool frameSanityCheck(String frame) {
 void initRelays() {
 
     printDebug("Init relays...");
+
+    //Pour les tests de conductivité
+    pinMode(3,INPUT);
   
     for(int i=1;i<=NUMBER_OF_RELAY;i++) {
        pinMode(FIRST_RELAY_DIGITAL_PIN + i, OUTPUT);
@@ -536,7 +553,7 @@ void initRelays() {
        fireworks[i-1].inFireStateMS = 0;
     } 
     
-    //Relay pour le circuit de test (ohmètre)
+    //Relay pour le circuit de test (conductivité)
     pinMode(RELAY1_TEST_PIN, OUTPUT);  
     pinMode(RELAY2_TEST_PIN, OUTPUT);  
     
@@ -544,7 +561,7 @@ void initRelays() {
         digitalWrite(FIRST_RELAY_DIGITAL_PIN + i,HIGH); //Eteint les relays
     } 
     
-    //Relay pour le circuit de test (ohmètre)         
+    //Relay pour le circuit de test (conductivité)         
     digitalWrite(RELAY1_TEST_PIN,LOW); //Eteint les relays
     digitalWrite(RELAY2_TEST_PIN,LOW); //Eteint les relays
 }

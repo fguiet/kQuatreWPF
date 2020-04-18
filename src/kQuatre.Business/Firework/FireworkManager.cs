@@ -570,8 +570,8 @@ namespace fr.guiet.kquatre.business.firework
         }
 
         private async void Transceiver_FrameAckKoEvent(object sender, FrameAckKOEventArgs e)
-        {
-            if (e.AckKOFrame.SentFrame is FireFrame)
+        {            
+            if (e.AckKOFrame.HasSentFrame && e.AckKOFrame.SentFrame is FireFrame)
             {
                 if (e.AckKOFrame.SentFrame.CanBeResent)
                 {

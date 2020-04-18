@@ -2,16 +2,16 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:command="clr-namespace:fr.guiet.kquatre.ui.command"
                     xmlns:views="clr-namespace:fr.guiet.kquatre.ui.views"
-                    xmlns:viewsmodel="clr-namespace:fr.guiet.kquatre.ui.viewsmodel">
+                    xmlns:viewmodel="clr-namespace:fr.guiet.kquatre.ui.viewmodel">
 
     <DataTemplate x:Key="DesignTemplate">
-        <views:DesignUserControlView x:Name="_ucDesignUserControlView" SoftwareConfiguration="{Binding Path=DataContext.SoftwareConfiguration, RelativeSource={RelativeSource AncestorType=Window}}" FireworkManager="{Binding Path=DataContext.FireworkManager, RelativeSource={RelativeSource AncestorType=Window}}"></views:DesignUserControlView>
+        <views:DesignUserControlView x:Name="_ucDesignUserControlView" ViewModel="{Binding Path=DataContext.DesignUserControlViewModel, RelativeSource={RelativeSource AncestorType=Window}}"></views:DesignUserControlView>
     </DataTemplate>
     <DataTemplate x:Key="TestTemplate">
         <views:TestUserControlView x:Name="_ucTestUserControlView"  ViewModel="{Binding Path=DataContext.TestUserControlViewModel, RelativeSource={RelativeSource AncestorType=Window}}"></views:TestUserControlView>
     </DataTemplate>
     <DataTemplate x:Key="FireworkTemplate">
-        <views:FireworkUserControlView x:Name="_ucFireworkUserControlView" FireworkManager="{Binding Path=DataContext.FireworkManager, RelativeSource={RelativeSource AncestorType=Window}}"></views:FireworkUserControlView>
+        <views:FireworkUserControlView x:Name="_ucFireworkUserControlView" ViewModel="{Binding Path=DataContext.FireworkUserControlViewModel, RelativeSource={RelativeSource AncestorType=Window}}"></views:FireworkUserControlView>
     </DataTemplate>
 
     <command:NavigationContentTemplateSelector x:Key="NavigationContentTemplateSelector" 

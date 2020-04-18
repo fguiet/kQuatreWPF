@@ -32,18 +32,10 @@ namespace fr.guiet.kquatre.ui.views
 
         #endregion
 
+        #region Public Members
+
         public static readonly DependencyProperty TestUserControlViewModelProperty
             = DependencyProperty.Register("ViewModel", typeof(TestUserControlViewModel), typeof(TestUserControlView));
-
-
-/*        public static readonly DependencyProperty FireworkManagerProperty
-            = DependencyProperty.Register("FireworkManager", typeof(FireworkManager), typeof(TestUserControlView));*/
-
-        /*public FireworkManager FireworkManager
-        {
-            get { return (FireworkManager)GetValue(FireworkManagerProperty); }
-            set { SetValue(FireworkManagerProperty, (FireworkManager)value); }
-        }*/
 
         public TestUserControlViewModel ViewModel
         {
@@ -54,12 +46,18 @@ namespace fr.guiet.kquatre.ui.views
             }
         }
 
+        #endregion
+
+        #region Constructor
+
         public TestUserControlView()
         {
             InitializeComponent();            
 
             this.Loaded += TestUserControlView_Loaded;            
         }
+
+        #endregion
 
         #region Events
 
@@ -70,12 +68,9 @@ namespace fr.guiet.kquatre.ui.views
         /// <param name="e"></param>
         private void TestUserControlView_Loaded(object sender, RoutedEventArgs e)
         {
-            //Careful - Initialiaze ViewModel only once!
-            /*if (_viewModel == null)
-            {
-                _viewModel = new TestUserControlViewModel(FireworkManager, this.Dispatcher);
-                DataContext = _viewModel;
-            }*/
+            //http://paulstovell.com/blog/mvvm-instantiation-approaches
+            //With datatemplate usercontrol is loaded everytime...so viewmodel must be instanciate ones 
+            //but outside of usercontrol
 
             //Initialize private memeber
             _viewModel = ViewModel;
@@ -87,11 +82,6 @@ namespace fr.guiet.kquatre.ui.views
         {
             _viewModel.OnReceptorSelectionChanged();
         }
-
-        /*private void BtnTestResistance_Click(object sender, RoutedEventArgs e)
-        {
-            
-        }*/
 
         #endregion
     }

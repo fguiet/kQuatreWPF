@@ -1,5 +1,5 @@
 ﻿using fr.guiet.kquatre.business.configuration;
-using fr.guiet.kquatre.ui.viewsmodel;
+using fr.guiet.kquatre.ui.viewmodel;
 using System;
 using System.Windows;
 using System.Windows.Controls;

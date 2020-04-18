@@ -149,7 +149,9 @@ namespace fr.guiet.lora.core
                     frameOK.SentFrame = sentFrame;
 
                     OnFrameAckOkEvent(new FrameAckOKEventArgs(frameOK));
-                    tcs.SetResult(frameOK);
+
+                    if (tcs != null) //Should not happen...
+                        tcs.SetResult(frameOK);
                 }
 
                 //**********
@@ -160,7 +162,10 @@ namespace fr.guiet.lora.core
                     frameKO.SentFrame = sentFrame;
 
                     OnFrameAckKoEvent(new FrameAckKOEventArgs(frameKO));
-                    tcs.SetResult(frameKO);
+
+                    //tcs can be null if frameid = 0
+                    if (tcs != null)
+                        tcs.SetResult(frameKO);
                 }
             }
             catch (InvalidPacketReceivedException ipre)
@@ -238,6 +243,20 @@ namespace fr.guiet.lora.core
             }
         }
 
+        public async Task SendInfoFrame(string receiverAddress, int timeOut, int ackTimeOut)
+        {
+            InfoFrame pingFrame = new InfoFrame(GetNextFrameId(), _address, receiverAddress, ackTimeOut, timeOut);
+
+            try
+            {
+                await SubmitLoRaFrameAsync(pingFrame, timeOut).ConfigureAwait(false);
+            }
+            catch (AckNotReceivedTimeoutException)
+            {
+                //TimeOut are handle via Event
+            }
+        }
+
         public async Task SendPingFrame(string receiverAddress, int timeOut, int ackTimeOut)
         {
             PingFrame pingFrame = new PingFrame(GetNextFrameId(), _address, receiverAddress, ackTimeOut, timeOut);
@@ -252,13 +271,13 @@ namespace fr.guiet.lora.core
             }
         }
 
-        public async Task SendOhmFrame(string receiverAddress, string channel, int timeOut, int ackTimeOut)
+        public async Task SendConductivityFrame(string receiverAddress, string channel, int timeOut, int ackTimeOut)
         {
-            OhmFrame ohmFrame = new OhmFrame(GetNextFrameId(), _address, receiverAddress, channel, ackTimeOut, timeOut);
+            CondFrame condFrame = new CondFrame(GetNextFrameId(), _address, receiverAddress, channel, ackTimeOut, timeOut);
 
             try
             {
-                await SubmitLoRaFrameAsync(ohmFrame, timeOut).ConfigureAwait(false);
+                await SubmitLoRaFrameAsync(condFrame, timeOut).ConfigureAwait(false);
             }
             catch (AckNotReceivedTimeoutException)
             {

@@ -33,7 +33,7 @@ namespace fr.guiet.kquatre.business.receptor
         /// <summary>
         /// Jeton d'annulation
         /// </summary>
-        private CancellationTokenSource _ohmTestCancellationToken = null;
+        private CancellationTokenSource _condTestCancellationToken = null;
 
         /// <summary>
         /// Receptor name
@@ -49,6 +49,13 @@ namespace fr.guiet.kquatre.business.receptor
         /// List of receptor addresses associated with this receptor
         /// </summary>
         private readonly List<ReceptorAddress> _receptorAddresses = new List<ReceptorAddress>();
+
+        private const string UNKNOWN_FIRMWARE_VERSION = "Unknown";        
+
+        /// <summary>
+        /// Receptor firmware version
+        /// </summary>
+        private String _firmwareVersion = UNKNOWN_FIRMWARE_VERSION;
 
         /// <summary>
         /// In test mode count the number of sent message
@@ -73,11 +80,7 @@ namespace fr.guiet.kquatre.business.receptor
         /// <summary>
         /// In test mode Snr received
         /// </summary>
-        private String _messageSnr = "NA";
-
-        //private bool _isTestLaunchAllowed = true;
-
-        //private bool _isTestStopAllowed = false;
+        private String _messageSnr = "NA";       
 
         private ReceptorAddress _receptorAddressTested = null;
 
@@ -86,10 +89,10 @@ namespace fr.guiet.kquatre.business.receptor
         private int _messageReceivedCounterTemp = 0;
 
         private bool _isPingTestRunning = false;
-        private bool _isPingOhmRunning = false;
+        private bool _isPingCondRunning = false;
 
-        private readonly int DEFAULT_OHM_FRAME_TOTAL_TIMEOUT = 1000;
-        private readonly int DEFAULT_OHM_FRAME_ACK_TIMEOUT = 800;
+        private readonly int DEFAULT_COND_FRAME_TOTAL_TIMEOUT = 1500;
+        private readonly int DEFAULT_COND_FRAME_ACK_TIMEOUT = 1500;
 
         public event EventHandler PingTestStopped;
 
@@ -149,6 +152,22 @@ namespace fr.guiet.kquatre.business.receptor
                 if (_messageSnr != value)
                 {
                     _messageSnr = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string FirmwareVersion
+        {
+            get
+            {
+                return _firmwareVersion;
+            }
+            set
+            {
+                if (_firmwareVersion != value)
+                {
+                    _firmwareVersion = value;
                     OnPropertyChanged();
                 }
             }
@@ -277,7 +296,7 @@ namespace fr.guiet.kquatre.business.receptor
 
         #region Public methods 
 
-        public bool IsOhmTestAllowed()
+        public bool IsCondTestAllowed()
         {
             //Test not possible if no transceiver available
             if (_deviceManager == null || !_deviceManager.IsTransceiverConnected)
@@ -286,7 +305,7 @@ namespace fr.guiet.kquatre.business.receptor
             if (_isPingTestRunning)
                 return false;
 
-            if (_isPingOhmRunning)
+            if (_isPingCondRunning)
                 return false;
 
             return true;
@@ -301,7 +320,7 @@ namespace fr.guiet.kquatre.business.receptor
             if (_isPingTestRunning)
                 return false;
 
-            if (_isPingOhmRunning)
+            if (_isPingCondRunning)
                 return false;
 
             return true;
@@ -349,20 +368,20 @@ namespace fr.guiet.kquatre.business.receptor
         /// Get resiste of receptor address
         /// </summary>
         /// <param name="ra"></param>
-        public void TestResistance(ReceptorAddress ra)
+        public void TestConductivite(ReceptorAddress ra)
         {
             _receptorAddressTested = ra;
 
-            _isPingOhmRunning = true;
+            _isPingCondRunning = true;
 
-            DoReceptionOhmWorkAsync(ra);
+            DoReceptionCondWorkAsync(ra);
         }
 
-        public bool IsOhmTestRunning
+        public bool IsCondTestRunning
         {
             get
             {
-                return (_isPingOhmRunning);
+                return (_isPingCondRunning);
             }
         }
 
@@ -371,10 +390,10 @@ namespace fr.guiet.kquatre.business.receptor
         /// Backgroundworker replacement
         /// </summary>
         /// <returns></returns>
-        public void DoReceptionOhmWorkAsync(ReceptorAddress ra)
+        public void DoReceptionCondWorkAsync(ReceptorAddress ra)
         {
             //New token
-            _ohmTestCancellationToken = new CancellationTokenSource();
+            _condTestCancellationToken = new CancellationTokenSource();
 
             if (_deviceManager.IsTransceiverConnected)
             {
@@ -384,19 +403,19 @@ namespace fr.guiet.kquatre.business.receptor
             }
             else
             {
-                _ohmTestCancellationToken.Cancel();
+                _condTestCancellationToken.Cancel();
             }
 
             Task.Run(() =>
             {
                 if (_deviceManager.IsTransceiverConnected)
                 {
-                    Task ohmTask = _deviceManager.Transceiver.SendOhmFrame(_address, ra.Channel.ToString(), DEFAULT_OHM_FRAME_TOTAL_TIMEOUT, DEFAULT_OHM_FRAME_ACK_TIMEOUT);
-                    ohmTask.Wait();
+                    Task conductivityTask = _deviceManager.Transceiver.SendConductivityFrame(_address, ra.Channel.ToString(), DEFAULT_COND_FRAME_TOTAL_TIMEOUT, DEFAULT_COND_FRAME_ACK_TIMEOUT);
+                    conductivityTask.Wait();
                 }
             }).ContinueWith(t =>
             {
-                _isPingOhmRunning = false;
+                _isPingCondRunning = false;
 
                 if (_deviceManager.IsTransceiverConnected)
                 {
@@ -446,9 +465,15 @@ namespace fr.guiet.kquatre.business.receptor
 
             Task.Run(async () =>
             {
-                while (!_pingTestCancellationToken.IsCancellationRequested)
+                //First get receptor firmware version
+                if (_firmwareVersion == UNKNOWN_FIRMWARE_VERSION)
                 {
+                    if (_deviceManager.IsTransceiverConnected)
+                        await _deviceManager.Transceiver.SendInfoFrame(_address, _deviceManager.SoftwareConfiguration.TotalTimeOut, _deviceManager.SoftwareConfiguration.AckTimeOut);
+                }
 
+                while (!_pingTestCancellationToken.IsCancellationRequested)
+                {                    
                     _messageSentCounterTemp += 1;
                     MessageSentCounter = (_messageSentCounterTemp).ToString();
 
@@ -489,11 +514,11 @@ namespace fr.guiet.kquatre.business.receptor
                 }
             }
 
-            if (e.FrameSent is OhmFrame ohmFrame)
+            if (e.FrameSent is CondFrame condFrame)
             {
-                if (ohmFrame.ReceiverAddress == _address)
+                if (condFrame.ReceiverAddress == _address)
                 {
-                    _receptorAddressTested.Resistance = "Timeout! Transceiver plugged?";
+                    _receptorAddressTested.Conductivite = "Timeout! Transceiver plugged?";
                 }
             }
         }
@@ -511,31 +536,42 @@ namespace fr.guiet.kquatre.business.receptor
                 }
             }
 
-            if (e.AckOKFrame.SentFrame is OhmFrame ohmFrame)
+            if (e.AckOKFrame.SentFrame is CondFrame condFrame)
             {
-                if (ohmFrame.ReceiverAddress == _address)
+                if (condFrame.ReceiverAddress == _address)
                 {
-                    _receptorAddressTested.Resistance = e.AckOKFrame.Ohm;
+                    _receptorAddressTested.Conductivite = e.AckOKFrame.Conductivite;
+                }
+            }
+
+            if (e.AckOKFrame.SentFrame is InfoFrame infoFrame)
+            {
+                if (infoFrame.ReceiverAddress == _address)
+                {
+                    FirmwareVersion = e.AckOKFrame.FirmwareVersion;
                 }
             }
         }
 
         private void Transceiver_FrameAckKoEvent(object sender, FrameAckKOEventArgs e)
         {
-            if (e.AckKOFrame.SentFrame is PingFrame pingFrame)
+            if (e.AckKOFrame.HasSentFrame)
             {
-                if (pingFrame.ReceiverAddress == _address)
+                if (e.AckKOFrame.SentFrame is PingFrame pingFrame)
                 {
-                    _messageLostCounterTemp += 1;
-                    MessageLostCounter = _messageLostCounterTemp.ToString();
+                    if (pingFrame.ReceiverAddress == _address)
+                    {
+                        _messageLostCounterTemp += 1;
+                        MessageLostCounter = _messageLostCounterTemp.ToString();
+                    }
                 }
-            }
 
-            if (e.AckKOFrame.SentFrame is OhmFrame ohmFrame)
-            {
-                if (ohmFrame.ReceiverAddress == _address)
+                if (e.AckKOFrame.SentFrame is CondFrame condFrame)
                 {
-                    _receptorAddressTested.Resistance = "No ack..receiver plugged?";
+                    if (condFrame.ReceiverAddress == _address)
+                    {
+                        _receptorAddressTested.Conductivite = "No ack..receiver plugged?";
+                    }
                 }
             }
         }

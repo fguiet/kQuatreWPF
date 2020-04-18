@@ -21,7 +21,7 @@ namespace fr.guiet.lora.frames
         public const string FRAME_START_DELIMITER = "@";
         public const string FRAME_END_DELIMITER = "|";
         public const char FRAME_SEPARATOR = ';';
-        public const int FRAME_MAX_LENGHT = 50;
+        //public const int FRAME_MAX_LENGHT = 50;
 
         public double StartTime
         {

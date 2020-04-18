@@ -1,3 +1,26 @@
+/**** 
+ * k4_sender_v2
+ * 
+ * F. Guiet 
+ * Creation           : ??/??/2017
+ * Last modification  : 26/04/2020
+ * 
+ * Version            : 1
+ * 
+ * History            : 
+ *                      1.1 : 26/04/2020 : Update LoRa library to 0.7.2
+ *                      
+ * Librairies used    :
+ * 
+ *  - https://github.com/sandeepmistry/arduino-LoRa
+ *  version 0.7.2
+ *  
+ *  Arduino IDE used :
+ *  
+ *  version 1.8.12
+ * 
+ */
+ 
 #include <SPI.h>
 #include <LoRa.h>
 
@@ -13,9 +36,6 @@ const char START_FRAME_DELIMITER = '@';
 const char END_FRAME_DELIMITER = '|';
 const int MIN_FRAME_LENGHT = 17; 
 //** Sample ***
-
-//*** Test OHM
-//*** @;5;0;1;OHM+2000;;09;|
 
 //*** Test PING
 //*** @;14;0;0;PING+250;;57;|

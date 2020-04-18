@@ -4,11 +4,11 @@ using System.Text;
 
 namespace fr.guiet.lora.frames
 {
-    public class OhmFrame : FrameBase
+    public class CondFrame : FrameBase
     {
-        private const string FRAME_ORDER = "OHM";
+        private const string FRAME_ORDER = "COND";
 
-        public OhmFrame(byte frameId, string senderAddress, string receiverAddress, string channel, int ackTimeOut, int totalTimeOut)
+        public CondFrame(byte frameId, string senderAddress, string receiverAddress, string channel, int ackTimeOut, int totalTimeOut)
             : base(frameId, FRAME_ORDER, senderAddress, receiverAddress, ackTimeOut, totalTimeOut)
         {
             _payload = string.Format("{0}", channel);

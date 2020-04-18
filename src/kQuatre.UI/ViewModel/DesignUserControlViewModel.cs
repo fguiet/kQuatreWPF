@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
 
-namespace fr.guiet.kquatre.ui.viewModel
+namespace fr.guiet.kquatre.ui.viewmodel
 {
 
     public class DesignUserControlViewModel : INotifyPropertyChanged

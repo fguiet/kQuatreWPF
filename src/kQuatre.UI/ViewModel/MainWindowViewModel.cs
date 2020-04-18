@@ -2,9 +2,7 @@
 using fr.guiet.kquatre.business.exceptions;
 using fr.guiet.kquatre.business.firework;
 using fr.guiet.kquatre.business.transceiver;
-using fr.guiet.kquatre.ui.events;
 using fr.guiet.kquatre.ui.helpers;
-using fr.guiet.kquatre.ui.viewmodel;
 using fr.guiet.kquatre.ui.views;
 using Microsoft.Win32;
 using System;
@@ -13,10 +11,8 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
-using Telerik.Windows.Controls;
-using Telerik.Windows.Controls.Timeline;
 
-namespace fr.guiet.kquatre.ui.viewsmodel
+namespace fr.guiet.kquatre.ui.viewmodel
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {        
@@ -27,6 +23,10 @@ namespace fr.guiet.kquatre.ui.viewsmodel
         private SoftwareConfiguration _configuration = null;
 
         private TestUserControlViewModel _testUserControlViewModel = null;
+
+        private FireworkUserControlViewModel _fireworkUserControlViewModel = null;
+
+        private DesignUserControlViewModel _designUserControlViewModel = null;
 
         private string _deviceConnectionInfo = DeviceManager.DEFAULT_NOT_TRANSCEIVER_CONNECTED_MESSAGE;
 
@@ -72,6 +72,22 @@ namespace fr.guiet.kquatre.ui.viewsmodel
             get
             {
                 return _testUserControlViewModel;
+            }
+        }
+
+        public DesignUserControlViewModel DesignUserControlViewModel
+        {
+            get
+            {
+                return _designUserControlViewModel;
+            }
+        }
+
+        public FireworkUserControlViewModel FireworkUserControlViewModel
+        {
+            get
+            {
+                return _fireworkUserControlViewModel;
             }
         }
 
@@ -143,7 +159,9 @@ namespace fr.guiet.kquatre.ui.viewsmodel
             _fireworkManager.FireworkStarted += FireworkManager_FireworkStarted;
             _fireworkManager.FireworkFinished += FireworkManager_FireworkFinished;
 
+            _designUserControlViewModel = new DesignUserControlViewModel(_fireworkManager, _configuration);
             _testUserControlViewModel = new TestUserControlViewModel(_fireworkManager, Dispatcher.CurrentDispatcher);
+            _fireworkUserControlViewModel = new FireworkUserControlViewModel(_fireworkManager, Dispatcher.CurrentDispatcher);            
 
             //Trasnceiver already plugged?
             _fireworkManager.DiscoverDevice();

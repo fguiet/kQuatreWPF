@@ -38,9 +38,9 @@ namespace fr.guiet.kquatre.business.receptor
         private Line _line = null;
 
         /// <summary>
-        /// Current resistance of this receptor address
+        /// Current conductivity of this receptor address
         /// </summary>
-        private string _resistance = "";
+        private string _conductivite = "";
 
         #endregion
 
@@ -67,17 +67,17 @@ namespace fr.guiet.kquatre.business.receptor
 
         #region Public Members
 
-        public string Resistance
+        public string Conductivite
         {
             get
             {
-                return _resistance;
+                return _conductivite;
             }
 
             set
             {
-                if (_resistance != value) { 
-                    _resistance = value;
+                if (_conductivite != value) {
+                    _conductivite = value;
                     OnPropertyChanged();
                 }
             }

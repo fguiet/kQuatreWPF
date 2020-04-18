@@ -22,7 +22,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
         private FireworkManager _fireworkManager = null;
         private RelayCommand _startTestingReceptorCommand;
         private RelayCommand _stopTestingReceptorCommand;
-        private RelayCommand _testResistanceCommand;
+        private RelayCommand _testConductiviteCommand;
         private Receptor _selectedTestReceptor = null;
         private Receptor _previousTestReceptor = null;
         private readonly Dispatcher _userControlDispatcher = null;
@@ -80,16 +80,16 @@ namespace fr.guiet.kquatre.ui.viewmodel
             }
         }
 
-        public RelayCommand TestResistanceCommand
+        public RelayCommand TestConductiviteCommand
         {
             get
             {
-                if (_testResistanceCommand == null)
+                if (_testConductiviteCommand == null)
                 {
-                    _testResistanceCommand = new RelayCommand(new Action<object>((ra) => TestResistance(ra)), () => IsTestResistanceAllowed());                    
+                    _testConductiviteCommand = new RelayCommand(new Action<object>((ra) => TestConductivite(ra)), () => IsTestConductivityAllowed());                    
                 }
 
-                return _testResistanceCommand;
+                return _testConductiviteCommand;
             }
         }
 
@@ -186,9 +186,9 @@ namespace fr.guiet.kquatre.ui.viewmodel
             RefreshGUI();
         }
 
-        private void TestResistance(object ra)
+        private void TestConductivite(object ra)
         {
-            if (_selectedTestReceptor.IsOhmTestRunning)
+            if (_selectedTestReceptor.IsCondTestRunning)
             {
                 DialogBoxHelper.ShowWarningMessage("Un test est déjà en cours d'éxécution !");
                 return;
@@ -196,7 +196,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
 
             if (ra is ReceptorAddress receptorAddress)
             {
-                _selectedTestReceptor.TestResistance(receptorAddress);
+                _selectedTestReceptor.TestConductivite(receptorAddress);
             }
         }
         
@@ -213,16 +213,16 @@ namespace fr.guiet.kquatre.ui.viewmodel
                 if (_stopTestingReceptorCommand != null)
                     _stopTestingReceptorCommand.RaiseCanExecuteChanged();
 
-                if (_testResistanceCommand != null)
-                    _testResistanceCommand.RaiseCanExecuteChanged();
+                if (_testConductiviteCommand != null)
+                    _testConductiviteCommand.RaiseCanExecuteChanged();
             });
         }
 
-        private bool IsTestResistanceAllowed()
+        private bool IsTestConductivityAllowed()
         {
             if (_selectedTestReceptor != null)
             {
-                return _selectedTestReceptor.IsOhmTestAllowed();
+                return _selectedTestReceptor.IsCondTestAllowed();
             }
 
             return false;

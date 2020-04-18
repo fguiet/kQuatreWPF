@@ -9,14 +9,24 @@ namespace fr.guiet.lora.frames
         private FrameBase _sentFrame = null;
         public const string FRAME_ORDER = "ACK_OK";
         private string _rssi = "NA";
-        private string _ohm = "NA";
+        private string _conductivite = "NA";
+        private string _firmwareVersion = "NA";
         private string _snr = "NA";
+        private string _complement = string.Empty;
 
-        public String Ohm
+        public String FirmwareVersion
         {
             get
             {
-                return _ohm;
+                return _firmwareVersion;
+            }
+        }
+
+        public String Conductivite
+        {
+            get
+            {
+                return _conductivite;
             }
         }
 
@@ -63,9 +73,9 @@ namespace fr.guiet.lora.frames
             _snr = snr;
         }
 
-        public void SetOhm(String ohm)
+        public void SetComplement(String complement)
         {
-            _ohm = ohm;
+            _complement = complement;
         }
 
         public void SetRssi(String rssi)
@@ -83,6 +93,17 @@ namespace fr.guiet.lora.frames
             set
             {
                 _sentFrame = value;
+
+                //Set Complement regarding frame type
+                if (_sentFrame is CondFrame)
+                {
+                    _conductivite = _complement;
+                }
+
+                if (_sentFrame is InfoFrame)
+                {
+                    _firmwareVersion = _complement;
+                }
             }
             
             get

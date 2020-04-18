@@ -55,12 +55,12 @@ namespace fr.guiet.lora.frames
                         {
                             string snr = ackComplement.Split('+')[2];
                             resultFrameTemp.SetSnr(snr);
-                        }
+                        }                        
 
                         if (ackComplementArray.Length >= 4)
                         {
-                            string ohm = ackComplement.Split('+')[3];
-                            resultFrameTemp.SetOhm(ohm);
+                            string complement = ackComplement.Split('+')[3];
+                            resultFrameTemp.SetComplement(complement);
                         }
 
                         resultFrame = resultFrameTemp;

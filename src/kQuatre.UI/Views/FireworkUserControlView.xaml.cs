@@ -26,26 +26,27 @@ namespace fr.guiet.kquatre.ui.views
     {
         #region Private property
 
-        private FireworkUserControlViewModel _viewModel = null;        
+        private FireworkUserControlViewModel _viewModel = null;
 
         #endregion
 
         #region Public property
 
-        public static readonly DependencyProperty FireworkManagerProperty
-            = DependencyProperty.Register("FireworkManager", typeof(FireworkManager), typeof(FireworkUserControlView));
+        #region Public Members
 
-        public FireworkManager  FireworkManager
+        public static readonly DependencyProperty FireworkUserControlViewModelProperty
+            = DependencyProperty.Register("ViewModel", typeof(FireworkUserControlViewModel), typeof(FireworkUserControlView));
+
+        public FireworkUserControlViewModel ViewModel
         {
-            get
-            {
-                return (FireworkManager)GetValue(FireworkManagerProperty);
-            }
+            get { return (FireworkUserControlViewModel)GetValue(FireworkUserControlViewModelProperty); }
             set
             {
-                SetValue(FireworkManagerProperty, (FireworkManager)value);                
+                SetValue(FireworkUserControlViewModelProperty, (FireworkUserControlViewModel)value);
             }
         }
+
+        #endregion
 
         #endregion
 
@@ -64,12 +65,15 @@ namespace fr.guiet.kquatre.ui.views
        
         private void FireworkUserControlView_Loaded(object sender, RoutedEventArgs e)
         {
-            //Careful - Initialiaze ViewModel only once!
-            if (_viewModel == null)
-            {
-                _viewModel = new FireworkUserControlViewModel(FireworkManager, _fireworkTimeline, this.Dispatcher);
-                DataContext = _viewModel;                
-            }
+            //http://paulstovell.com/blog/mvvm-instantiation-approaches
+            //With datatemplate usercontrol is loaded everytime...so viewmodel must be instanciate ones 
+            //but outside of usercontrol
+
+            //Initialize private memeber
+            _viewModel = ViewModel;
+            _viewModel.SetRadtimeline(_fireworkTimeline);
+
+            DataContext = _viewModel;
 
             //Reset control each time it is loaded
             ResetControlPanel();

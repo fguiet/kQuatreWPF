@@ -1,5 +1,5 @@
 ﻿using fr.guiet.kquatre.business.firework;
-using fr.guiet.kquatre.ui.viewsmodel;
+using fr.guiet.kquatre.ui.viewmodel;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

@@ -50,29 +50,32 @@
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Label Grid.Row="0" Grid.Column="0" Content="Nb de messages envoyés : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
-                <Label Grid.Row="0" Grid.Column="1" Content="{Binding Path=SelectedTestReceptor.MessageSentCounter, FallbackValue=NA}"></Label>
-                <Label Grid.Row="1" Grid.Column="0" Content="Message(s) reçu(s) : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
-                <Label Grid.Row="1" Grid.Column="1"  Content="{Binding Path=SelectedTestReceptor.MessageReceivedCounter, FallbackValue=NA}" Foreground="Green" />
-                <Label Grid.Row="2" Grid.Column="0" Content="Message(s) perdu(s) : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
-                <Label Grid.Row="2" Grid.Column="1" Content="{Binding Path=SelectedTestReceptor.MessageLostCounter, FallbackValue=NA}" Foreground="Red"></Label>
-                <Label Grid.Row="3" Grid.Column="0" Content="Qualité réception : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
-                <Label Grid.Row="3" Grid.Column="1" Content="{Binding Path=SelectedTestReceptor.MessageRssi, FallbackValue=NA}"></Label>
-                <Label Grid.Row="3" Grid.Column="2" Content="RSSI (Received Signal Strenght Indicator), plus ce chiffre se rapproche de 0 mieux c'est. Qualité OK si : -80 &lt; RSSI &lt; 0"></Label>
-                <Label Grid.Row="4" Grid.Column="0" Content="Rapport signal sur bruit : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
-                <Label Grid.Row="4" Grid.Column="1" Content="{Binding Path=SelectedTestReceptor.MessageSnr, FallbackValue=NA}"></Label>
-                <Label Grid.Row="4" Grid.Column="2" Content="SNR (Signal to Noise Ratio)"></Label>
+                <Label Grid.Row="0" Grid.Column="0" Content="Version du firmware : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
+                <Label Grid.Row="0" Grid.Column="1" Content="{Binding Path=SelectedTestReceptor.FirmwareVersion, FallbackValue=NA}"></Label>
+                <Label Grid.Row="1" Grid.Column="0" Content="Nb de messages envoyés : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
+                <Label Grid.Row="1" Grid.Column="1" Content="{Binding Path=SelectedTestReceptor.MessageSentCounter, FallbackValue=NA}"></Label>
+                <Label Grid.Row="2" Grid.Column="0" Content="Message(s) reçu(s) : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
+                <Label Grid.Row="2" Grid.Column="1"  Content="{Binding Path=SelectedTestReceptor.MessageReceivedCounter, FallbackValue=NA}" Foreground="Green" />
+                <Label Grid.Row="3" Grid.Column="0" Content="Message(s) perdu(s) : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
+                <Label Grid.Row="3" Grid.Column="1" Content="{Binding Path=SelectedTestReceptor.MessageLostCounter, FallbackValue=NA}" Foreground="Red"></Label>
+                <Label Grid.Row="4" Grid.Column="0" Content="Qualité réception : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
+                <Label Grid.Row="4" Grid.Column="1" Content="{Binding Path=SelectedTestReceptor.MessageRssi, FallbackValue=NA}"></Label>
+                <Label Grid.Row="4" Grid.Column="2" Content="RSSI (Received Signal Strenght Indicator), plus ce chiffre se rapproche de 0 mieux c'est. Qualité OK si : -80 &lt; RSSI &lt; 0"></Label>
+                <Label Grid.Row="5" Grid.Column="0" Content="Rapport signal sur bruit : " HorizontalAlignment="Left"  VerticalAlignment="Center"/>
+                <Label Grid.Row="5" Grid.Column="1" Content="{Binding Path=SelectedTestReceptor.MessageSnr, FallbackValue=NA}"></Label>
+                <Label Grid.Row="5" Grid.Column="2" Content="SNR (Signal to Noise Ratio)"></Label>
             </Grid>
         </GroupBox>
         <GroupBox Grid.Row="3" Margin="10,10,10,10">
             <GroupBox.Header>
-                <TextBlock FontWeight="Bold">Test de la résistance des canaux du récepteur connecté à une ligne du feu</TextBlock>
+                <TextBlock FontWeight="Bold">Test de la conductivité des canaux du récepteur connecté à une ligne du feu</TextBlock>
             </GroupBox.Header>
             <Grid>
                 <Grid.RowDefinitions>
@@ -87,8 +90,8 @@
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Row="0" Grid.Column="0" Margin="5,5,5,5"  x:Name="_btnDoResistanceTest" IsEnabled="False"  Width="160" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Tester toutes les résistances"></Button>
-                    <Button Grid.Row="0" Grid.Column="1" Margin="5,5,5,5"  x:Name="_btnStopResistanceTest" IsEnabled="False" Width="160" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Arrêter le test des résistances" ></Button>
+                    <Button Grid.Row="0" Grid.Column="0" Margin="5,5,5,5"  x:Name="_btnDoConductiviteTest" IsEnabled="False"  Width="160" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Tester toutes les conductivités"></Button>
+                    <Button Grid.Row="0" Grid.Column="1" Margin="5,5,5,5"  x:Name="_btnStopConductiviteTest" IsEnabled="False" Width="160" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Arrêter le test des conductivités" ></Button>
                 </Grid>
                 <Grid Grid.Row="1">
 
@@ -112,72 +115,19 @@
 														DataMemberBinding="{Binding LineAssociatedNumberUI}" Width="Auto" />
                             <telerik:GridViewDataColumn Header="Liaison"
 														 DataMemberBinding="{Binding ReceptorAddressUI}" Width="250" />
-                            <telerik:GridViewDataColumn Header="Résistance"
-														 DataMemberBinding="{Binding Resistance}" Width="150" />
+                            <telerik:GridViewDataColumn Header="Conductivité"
+														 DataMemberBinding="{Binding Conductivite}" Width="150" />
                             <telerik:GridViewColumn Header="Action">
                                 <telerik:GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <telerik:RadButton Content="Tester"
-                                                   Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type telerik:RadGridView}},Path=DataContext.TestResistanceCommand}"
+                                                   Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type telerik:RadGridView}},Path=DataContext.TestConductiviteCommand}"
                                                    CommandParameter="{Binding}" />
                                     </DataTemplate>
                                 </telerik:GridViewColumn.CellTemplate>
                             </telerik:GridViewColumn>
                         </telerik:RadGridView.Columns>
                     </telerik:RadGridView >
-
-                    <!--DockPanel Margin="10,10,10,10">-->
-                    <!--<igDP:XamDataGrid  Name="_receptorChannelsDatagrid" Theme="IGTheme"
-                           DataSource="{Binding SelectedTestReceptor.PluggedChannels}"  SelectedDataItemsScope="RecordsOnly" GroupByAreaLocation="None">
-                        <igDP:XamDataGrid.Resources>
-                            <Style x:Key="lineRowColorStyle" TargetType="igDP:DataRecordCellArea">
-                                <Setter Property="Background" Value="Gray"/>
-                            </Style>
-                            <Style x:Key="fireworkRowColorStyle" TargetType="igDP:DataRecordCellArea">
-                                <Setter Property="Background" Value="LightGray"/>
-                            </Style>
-
-                            <Style x:Key="lineRecordStyle" TargetType="{x:Type igDP:DataRecordPresenter}">
-                                <Setter Property="Margin" Value="0,40,0,0"/>
-                                <Setter Property="FontSize" Value="14"/>
-                                <Setter Property="FontWeight" Value="Bold"/>
-                            </Style>
-
-                            <Style x:Key="fireworkRecordStyle" TargetType="{x:Type igDP:DataRecordPresenter}">
-                                <Setter Property="Margin" Value="30,0,0,0"/>
-                            </Style>
-
-                            <Style x:Key="buttonInCellStyle" TargetType="{x:Type igDP:CellValuePresenter}">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="{x:Type igDP:CellValuePresenter}">
-                                            <Button Name="_btnTestResistance" Content="Tester" Click="BtnTestResistance_Click" 
-                                                            IsEnabled="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}},Path=DataContext.SelectedTestReceptor.IsTestLaunchAllowed,  FallbackValue=false}"                                                            
-                                                            FontStyle="Normal" />
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </igDP:XamDataGrid.Resources>
-                        <igDP:XamDataGrid.FieldLayoutSettings>
-                            <igDP:FieldLayoutSettings AutoGenerateFields="False"/>
-                        </igDP:XamDataGrid.FieldLayoutSettings>
-
-                        <igDP:XamDataGrid.FieldLayouts>
-                            <igDP:FieldLayout Key="Channels">
-                                <igDP:FieldLayout.Fields>
-                                    <igDP:Field IsReadOnly="True" Width="Auto" Label="Numéro de ligne" Name="LineAssociatedNumberUI" />
-                                    <igDP:Field IsReadOnly="True" Label="Liaison" Name="ReceptorAddressUI" Width="250"/>
-                                    <igDP:Field IsReadOnly="True" Label="Résistance" Name="Resistance" Width="250"/>
-                                    <igDP:UnboundField Label="Action">
-                                        <igDP:Field.Settings>
-                                            <igDP:FieldSettings CellValuePresenterStyle="{StaticResource buttonInCellStyle}" />
-                                        </igDP:Field.Settings>
-                                    </igDP:UnboundField>
-                                </igDP:FieldLayout.Fields>
-                            </igDP:FieldLayout>
-                        </igDP:XamDataGrid.FieldLayouts>
-                    </igDP:XamDataGrid>-->                    
                 </Grid>
             </Grid>
         </GroupBox>

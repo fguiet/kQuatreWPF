@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace fr.guiet.kquatre.ui.viewsmodel
+namespace fr.guiet.kquatre.ui.viewmodel
 {
     public class ConfigurationWindowViewModel : INotifyPropertyChanged
     {

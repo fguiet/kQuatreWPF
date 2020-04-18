@@ -28,11 +28,9 @@ namespace fr.guiet.kquatre.ui.viewmodel
         /// <summary>
         /// Timeline control
         /// </summary>
-        private readonly RadTimeline _fireworkTimeline = null;
+        private RadTimeline _fireworkTimeline = null;
 
         private bool _isFireworkArmed = false;
-
-        //private Dispatcher _dispatcher = null;
 
         private FireworkManager _fireworkManager = null;
 
@@ -131,33 +129,9 @@ namespace fr.guiet.kquatre.ui.viewmodel
 
         #region Constructor
 
-        public FireworkUserControlViewModel(FireworkManager fireworkManager, RadTimeline fireworkTimeline, Dispatcher userControlDispatcher)
-        {
-            _fireworkTimeline = fireworkTimeline;
-
-            MinuteInterval mi = new MinuteInterval
-            {
-                FormatterProvider = new MinuteIntervalFormatter()
-            };
-
-            SecondInterval si = new SecondInterval
-            {
-                FormatterProvider = new SecondIntervalFormatter()
-            };
-
-            _fireworkTimeline.Intervals.Add(mi);
-            _fireworkTimeline.Intervals.Add(si);
-
+        public FireworkUserControlViewModel(FireworkManager fireworkManager, Dispatcher userControlDispatcher)
+        {            
             _fireworkManager = fireworkManager;
-
-            //
-            _fireworkManager.FireworkLoaded += FireworkManager_FireworkLoaded;
-            _fireworkManager.LineStarted += FireworkManager_LineStarted;
-            _fireworkManager.LineFailed += FireworkManager_LineFailed;
-            _fireworkManager.FireworkFinished += FireworkManager_FireworkFinished;
-            _fireworkManager.FireworkStarted += FireworkManager_FireworkStarted;
-            _fireworkManager.TransceiverDisconnected += FireworkManager_TransceiverDisconnected;
-            _fireworkManager.TransceiverConnected += FireworkManager_TransceiverConnected;
 
             _fireworkManager.FireworkLoaded += FireworkManager_FireworkLoaded;
             _fireworkManager.LineStarted += FireworkManager_LineStarted;
@@ -228,11 +202,6 @@ namespace fr.guiet.kquatre.ui.viewmodel
             DialogBoxHelper.ShowInformationMessage(message);
         }
 
-        /*private void FireworkManager_StateChanged(object sender, EventArgs e)
-        {
-            RefreshControlPanelUI(RefreshControlPanelEventType.FireworkStateChangedEvent);
-        }*/
-
         private void FireworkManager_LineFailed(object sender, EventArgs e)
         {
             Line line = sender as Line;
@@ -255,15 +224,6 @@ namespace fr.guiet.kquatre.ui.viewmodel
         }
 
         /// <summary>
-        /// Refresh fire tab ui when selected
-        /// </summary>
-        /*public void RefreshFireTabUI()
-        {
-            //Object FireworkManager may have changed so GUI must be updated
-            OnPropertyChanged("FireworkManager");
-        }*/
-
-        /// <summary>
         /// Use to reset control panel when navigating from on panel to another
         /// or when firework is loaded....
         /// </summary>
@@ -282,32 +242,20 @@ namespace fr.guiet.kquatre.ui.viewmodel
             //Careful must be called from UI Thread
             _userControlDispatcher.Invoke(() =>
             {
-                _armFireworkCommand.RaiseCanExecuteChanged();
-                _startFireworkCommand.RaiseCanExecuteChanged();
-                _stopFireworkCommand.RaiseCanExecuteChanged();
+                if (_armFireworkCommand != null)
+                    _armFireworkCommand.RaiseCanExecuteChanged();
+
+                if (_startFireworkCommand != null)
+                    _startFireworkCommand.RaiseCanExecuteChanged();
+
+                if (_stopFireworkCommand !=null)
+                    _stopFireworkCommand.RaiseCanExecuteChanged();
             });
         }
 
         #endregion
 
         #region Public Members
-
-        /*public void ResetFireworkUI()
-        {
-            ResetScrollBar();
-            FireworkManager.Restart();
-        }*/
-
-        /// <summary>
-        /// Lets stop firework!!
-        /// </summary>
-        public void StopFirework()
-        {
-            MessageBoxResult result = MessageBox.Show("Attention, vous êtes sur le point d'arrêter le feu d'artifice, voulez-vous continuer ?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-            if (result == MessageBoxResult.No) return;
-
-            _fireworkManager.Stop();
-        }       
 
         public void LaunchFailedLine(string lineNumber)
         {
@@ -321,9 +269,42 @@ namespace fr.guiet.kquatre.ui.viewmodel
             }
         }
 
+        /// <summary>
+        /// TODO : maybe something better can be done...
+        /// </summary>
+        /// <param name="rtl"></param>
+        public void SetRadtimeline(RadTimeline rtl)
+        {
+            _fireworkTimeline = rtl;
+
+            MinuteInterval mi = new MinuteInterval
+            {
+                FormatterProvider = new MinuteIntervalFormatter()
+            };
+
+            SecondInterval si = new SecondInterval
+            {
+                FormatterProvider = new SecondIntervalFormatter()
+            };
+
+            _fireworkTimeline.Intervals.Add(mi);
+            _fireworkTimeline.Intervals.Add(si);
+        }
+
         #endregion
 
         #region Private Members 
+
+        /// <summary>
+        /// Lets stop firework!!
+        /// </summary>
+        private void StopFirework()
+        {
+            MessageBoxResult result = MessageBox.Show("Attention, vous êtes sur le point d'arrêter le feu d'artifice, voulez-vous continuer ?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result == MessageBoxResult.No) return;
+
+            _fireworkManager.Stop();
+        }
 
         private void ArmFirework()
         {
