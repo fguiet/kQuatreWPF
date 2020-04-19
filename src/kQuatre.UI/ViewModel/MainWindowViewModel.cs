@@ -32,24 +32,62 @@ namespace fr.guiet.kquatre.ui.viewmodel
 
         private const string SOFTWARE_TITLE = "kQuatre";
 
-        private bool _isNavigationEnabled = true;
+        private bool _isDesignNavigationEnabled = true;
+
+        private bool _isTestNavigationEnabled = true;
+
+        private bool _isFireworkNavigationEnabled = true;
 
         #endregion
 
         #region Public Members
 
-        public bool IsNavigationEnabled
+        public bool IsDesignNavigationEnabled
         {
             get
             {
-                return _isNavigationEnabled;                
+                return _isDesignNavigationEnabled;                
             }
 
             set
             {
-                if (_isNavigationEnabled != value)
+                if (_isDesignNavigationEnabled != value)
                 {
-                    _isNavigationEnabled = value;
+                    _isDesignNavigationEnabled = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public bool IsTestNavigationEnabled
+        {
+            get
+            {
+                return _isTestNavigationEnabled;
+            }
+
+            set
+            {
+                if (_isTestNavigationEnabled != value)
+                {
+                    _isTestNavigationEnabled = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public bool IsFireworkNavigationEnabled
+        {
+            get
+            {
+                return _isFireworkNavigationEnabled;
+            }
+
+            set
+            {
+                if (_isFireworkNavigationEnabled != value)
+                {
+                    _isFireworkNavigationEnabled = value;
                     OnPropertyChanged();
                 }
             }
@@ -158,6 +196,8 @@ namespace fr.guiet.kquatre.ui.viewmodel
             _fireworkManager.TransceiverInfoChanged += FireworkManager_TransceiverInfoChanged;
             _fireworkManager.FireworkStarted += FireworkManager_FireworkStarted;
             _fireworkManager.FireworkFinished += FireworkManager_FireworkFinished;
+            _fireworkManager.ReceptorTestStarted += FireworkManager_ReceptorTestStarted;
+            _fireworkManager.ReceptorTestFinished += FireworkManager_ReceptorTestFinished;
 
             _designUserControlViewModel = new DesignUserControlViewModel(_fireworkManager, _configuration);
             _testUserControlViewModel = new TestUserControlViewModel(_fireworkManager, Dispatcher.CurrentDispatcher);
@@ -167,18 +207,32 @@ namespace fr.guiet.kquatre.ui.viewmodel
             _fireworkManager.DiscoverDevice();
         }
 
+        private void FireworkManager_ReceptorTestFinished(object sender, EventArgs e)
+        {
+            IsDesignNavigationEnabled = true;
+            IsFireworkNavigationEnabled = true;
+        }
+
+        private void FireworkManager_ReceptorTestStarted(object sender, EventArgs e)
+        {
+            IsDesignNavigationEnabled = false;
+            IsFireworkNavigationEnabled = false;
+        }
+
         #endregion
 
         #region Event
         private void FireworkManager_FireworkFinished(object sender, EventArgs e)
         {
-            IsNavigationEnabled = true;
+            IsDesignNavigationEnabled = true;
+            IsTestNavigationEnabled = true;
         }
 
         private void FireworkManager_FireworkStarted(object sender, EventArgs e)
         {
             //As long as a firework is running...no more navigation is allowed..
-            IsNavigationEnabled = false;
+            IsDesignNavigationEnabled = false;
+            IsTestNavigationEnabled = false;
         }
 
         private void FireworkManager_FireworkSaved(object sender, EventArgs e)

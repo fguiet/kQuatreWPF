@@ -59,19 +59,19 @@
         <!-- RadNavigationView -->
         <telerik:RadNavigationView telerik:StyleManager.Theme="Fluent" x:Name="_nvRadnavigationView" Grid.Row="1" SelectedIndex="0">
             <telerik:RadNavigationView.Items>
-                <telerik:RadNavigationViewItem IsEnabled="{Binding IsNavigationEnabled}" Name="_nviDesign" Content="Conception du feu">
+                <telerik:RadNavigationViewItem IsEnabled="{Binding IsDesignNavigationEnabled}" Name="_nviDesign" Content="Conception du feu">
                     <telerik:RadNavigationViewItem.Icon>
                         <Image Source="/kQuatre;component/Resources/IdeaIcon_32x32.png" Height="16" Width="16" />
                         <!--<telerik:RadGlyph Glyph="&#xe653;" FontSize="16"/>-->
                     </telerik:RadNavigationViewItem.Icon>
                 </telerik:RadNavigationViewItem>
-                <telerik:RadNavigationViewItem IsEnabled="{Binding IsNavigationEnabled}" Name="_nviTest" Content="Tests radio">
+                <telerik:RadNavigationViewItem IsEnabled="{Binding IsTestNavigationEnabled}" Name="_nviTest" Content="Tests radio">
                     <telerik:RadNavigationViewItem.Icon>
                         <Image Source="/kQuatre;component/Resources/TestIcon_32x32.png" Height="16" Width="16" />
                         <!--<telerik:RadGlyph Glyph="&#xe653;" FontSize="16"/>-->
                     </telerik:RadNavigationViewItem.Icon>
                 </telerik:RadNavigationViewItem>
-                <telerik:RadNavigationViewItem Name="_nviFirework" Content="Gestion feu d'artifice">
+                <telerik:RadNavigationViewItem IsEnabled="{Binding IsFireworkNavigationEnabled}" Name="_nviFirework" Content="Gestion feu d'artifice">
                     <telerik:RadNavigationViewItem.Icon>
                         <Image Source="/kQuatre;component/Resources/ExecutionIcon_32x32.png" Height="16" Width="16" />
                         <!--<telerik:RadGlyph Glyph="&#xe654;" FontSize="16"/>-->

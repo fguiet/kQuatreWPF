@@ -94,8 +94,6 @@ namespace fr.guiet.kquatre.business.receptor
         private readonly int DEFAULT_COND_FRAME_TOTAL_TIMEOUT = 1500;
         private readonly int DEFAULT_COND_FRAME_ACK_TIMEOUT = 1500;
 
-        public event EventHandler PingTestStopped;
-
         /// <summary>
         /// Get Current Receptor Channel associated with a line
         /// </summary>
@@ -111,6 +109,13 @@ namespace fr.guiet.kquatre.business.receptor
             }
         }
 
+        #endregion
+
+        #region Events
+
+        public event EventHandler PingTestStarted;
+        public event EventHandler PingTestStopped;
+        
         #endregion
 
         #region Public Members
@@ -283,6 +288,11 @@ namespace fr.guiet.kquatre.business.receptor
         private void OnPingTestStoppedEvent()
         {
             PingTestStopped?.Invoke(this, new EventArgs());
+        }
+
+        private void OnPingTestStartedEvent()
+        {
+            PingTestStarted?.Invoke(this, new EventArgs());
         }
 
         private void DeviceManager_DeviceDisconnected(object sender, EventArgs e)
@@ -462,6 +472,9 @@ namespace fr.guiet.kquatre.business.receptor
             {
                 _pingTestCancellationToken.Cancel();
             }
+
+            //Throw start event
+            OnPingTestStartedEvent();
 
             Task.Run(async () =>
             {

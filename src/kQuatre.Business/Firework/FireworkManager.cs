@@ -119,6 +119,18 @@ namespace fr.guiet.kquatre.business.firework
         public event EventHandler<TransceiverInfoEventArgs> TransceiverInfoChanged;
         public event EventHandler TransceiverDisconnected;
         public event EventHandler TransceiverConnected;
+        public event EventHandler ReceptorTestStarted;
+        public event EventHandler ReceptorTestFinished;
+
+        private void OnReceptorTestStartedEvent()
+        {
+            ReceptorTestStarted?.Invoke(this, new EventArgs());
+        }
+
+        private void OnReceptorTestFinishedEvent()
+        {
+            ReceptorTestFinished?.Invoke(this, new EventArgs());
+        }
 
         /// <summary>
         /// Occured when device manager send any events...
@@ -427,7 +439,6 @@ namespace fr.guiet.kquatre.business.firework
             {
                 return _lines;
             }
-
         }
 
         /// <summary>
@@ -504,14 +515,6 @@ namespace fr.guiet.kquatre.business.firework
 
             _nextIgnition = new TimeSpan(0, 0, 0);
 
-            //_lastLinesLaunchFailed = new Dictionary<string, List<Line>>();
-
-            //_isRedoFailedEnable = false;
-
-            //_activateRedoFailedLine = false;
-
-            //_allFireworks = new ObservableCollection<Firework>();
-
             _sanityCheckErrorsList = null;
 
             _isDirty = false;
@@ -527,11 +530,23 @@ namespace fr.guiet.kquatre.business.firework
             {
                 //Set Device manager
                 r.SetDeviceManager(_deviceManager);
+                r.PingTestStarted += PingTestStarted;
+                r.PingTestStopped += PingTestStopped;
 
                 _receptors.Add(r);
             }
 
             OnFireworkLoadedEvent();
+        }
+
+        private void PingTestStopped(object sender, EventArgs e)
+        {
+            OnReceptorTestFinishedEvent();
+        }
+
+        private void PingTestStarted(object sender, EventArgs e)
+        {
+            OnReceptorTestStartedEvent();
         }
 
         private async void Transceiver_FrameTimeOutEvent(object sender, FrameTimeOutEventArgs e)
@@ -810,8 +825,8 @@ namespace fr.guiet.kquatre.business.firework
                         string address = l.Element("ReceptorAddress").Attribute("address").Value.ToString();
                         string channelNumber = l.Element("ReceptorAddress").Attribute("channel").Value.ToString();
 
-                        fr.guiet.kquatre.business.receptor.Receptor receptor = GetReceptor(address);
-                        fr.guiet.kquatre.business.receptor.ReceptorAddress ra = receptor.GetAddress(Convert.ToInt32(channelNumber));
+                        Receptor receptor = GetReceptor(address);
+                        ReceptorAddress ra = receptor.GetAddress(Convert.ToInt32(channelNumber));
 
                         line.AssignReceptorAddress(ra);
                     }

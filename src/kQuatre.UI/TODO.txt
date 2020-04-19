@@ -11,12 +11,12 @@
 //TODO : 2020/04/17 - L'ajout d'un artifice à une ligne, n'affecte pas la valeur IsDirty
 //TODO : Cacher les boutons dont les fonctionnalités ne sont pas terminées
 //TODO : Changer le mode de fonctionnement du chargement des datatemplates
-//TODO : mettre un test au changement d'onglet pour dire à l'utilisateur qu'il doit d'abord arreter son test de recepteur avant de pouvoir changer
 
 ### 
 ### DONE
 ###
 
+//DONE : 2020/04/20 : mettre un test au changement d'onglet pour dire à l'utilisateur qu'il doit d'abord arreter son test de recepteur avant de pouvoir changer
 //DONE : 2020/04/18 : Conductivite test à realiser
 //DONE : 2020/04 : deal with the fact that sentframe can be null!!!!
 //DONE : 2020/04/11 - Test de IsDirty = a peu près fait
