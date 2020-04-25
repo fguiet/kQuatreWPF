@@ -59,7 +59,7 @@ namespace fr.guiet.lora.frames
                 }
                 else
                 {
-                    log = string.Format("=> Frame sent info : frame of type : {0} with ID : {1}, timeout set to : {2}, ack timeout set to : {3}, receiver address : {4}, RSSI : {5}", _sentFrame.FrameOrder, _sentFrame.FrameId, _sentFrame.TotalTimeOut, _sentFrame.AckTimeOut, _sentFrame.ReceiverAddress, _rssi)
+                    log = string.Format("=> Frame sent info : frame of type : {0} with ID : {1}, timeout set to : {2}, receiver address : {3}, RSSI : {4}", _sentFrame.FrameOrder, _sentFrame.FrameId, _sentFrame.TotalTimeOut, _sentFrame.ReceiverAddress, _rssi)
                          + Environment.NewLine
                          + string.Format("=> flight time : {0}  ", _sentFrame.FlightTime);
                 }

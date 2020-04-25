@@ -25,7 +25,7 @@ namespace fr.guiet.lora.frames
                 }
                 else
                 {
-                    log = string.Format("=> Frame sent info : frame of type : {0} with ID : {1}, timeout set to : {2}, ack timeout set to : {3}, expected receiver address : {4}", _sentFrame.FrameOrder, _sentFrame.FrameId, _sentFrame.TotalTimeOut, _sentFrame.AckTimeOut, _sentFrame.ReceiverAddress)
+                    log = string.Format("=> Frame sent info : frame of type : {0} with ID : {1}, timeout set to : {2}, expected receiver address : {3}", _sentFrame.FrameOrder, _sentFrame.FrameId, _sentFrame.TotalTimeOut, _sentFrame.ReceiverAddress)
                            + Environment.NewLine
                            + string.Format("=> ACK KO info : Reason : {0}", GetACKKOReason())
                            + Environment.NewLine
@@ -69,27 +69,26 @@ namespace fr.guiet.lora.frames
                 case AckKOReason.UNKNOWN:
                     return "Unknown ACK KO";
 
-                case AckKOReason.ACK_KO_BAD_FRAME_RECEIVED:
-                    return "A frame sent by the program was not syntaxically correct...";
+                case AckKOReason.ACK_KO_SYNTAX_ERROR_FRAME_RECEIVED_FROM_KQUATRE_SOFTWARE:
+                    return "A frame sent by the program (kQuatre Software) was not syntaxically correct...";
 
-                case AckKOReason.ACK_KO_UNKNOWN_MESSAGE_FRAME_RECEIVED:
+                case AckKOReason.ACK_KO_UNKNOWN_ORDER_RECEIVED_BY_SENDING_MODULE:
                     return "A correct frame was sent to the sender module (ie receiver address is the address of sender module) but sender module cannot do anything with the message...should never happen...";
 
-                case AckKOReason.ACK_KO_TIMEOUT_WAITING_FOR_ACK:
-                    return "A frame was sent to a module but no response (ACK) arrived quickly...so timeout occured";
+                //case AckKOReason.ACK_KO_TIMEOUT_WAITING_FOR_ACK:
+                //    return "A frame was sent to a module but no response (ACK) arrived quickly...so timeout occured";
 
+                case AckKOReason.ACK_KO_SYNTAX_ERROR_FRAME_RECEIVED_FROM_COORDINATOR:
+                    return "A frame was sent to a module, but ack frame received by coordinator is not syntaxically correct...";
 
-                case AckKOReason.ACK_KO_BAD_FRAME_RECEIVED_FROM_SENDER:
-                    return "A frame was sent to a module, but frame received is not syntaxically correct...";
-
-                case AckKOReason.ACK_KO_BAD_FRAME_RECEIVED_FROM_PROGRAM:
+                case AckKOReason.ACK_KO_SYNTAX_ERROR_FRAME_RECEIVED_FROM_FOREIGN_MODULE:
                     return "A frame was sent to the sender module but frame received is not syntaxically correct... ";
 
-                case AckKOReason.ACK_KO_UNKNOWN_FRAME_ACK_STATE:
-                    return "A frame syntaxicallly correct was received, but it was not an ACK OK or ACK KO frame...should never happen !";
+               // case AckKOReason.ACK_KO_UNKNOWN_FRAME_ACK_STATE:
+               //     return "A frame syntaxicallly correct was received, but it was not an ACK OK or ACK KO frame...should never happen !";
 
                 case AckKOReason.ACK_KO_BAD_CHECKSUM:
-                    return "A frame syntaxicallly correct was received, but checksum is incorrect";
+                    return "Checksum failed on frame received by coordinator...should not occured often cause coordinator do a sanity check on frames it received";
             }
 
             //Should never reach this code!!

@@ -24,7 +24,7 @@ namespace fr.guiet.kquatre.business.configuration
 
         private string _excelFireworkName;
 
-        private int _ackTimeOut;
+        //private int _ackTimeOut;
 
         private int _totalTimeOut;
 
@@ -94,13 +94,13 @@ namespace fr.guiet.kquatre.business.configuration
         /// <summary>
         /// Time to wait by the transceiver for an ACK from receiver after a frame has been sent
         /// </summary>
-        public int AckTimeOut
+        /*public int AckTimeOut
         {
             get
             {
                 return _ackTimeOut;
             }
-        }
+        }*/
 
         /// <summary>
         /// Maximum time to wait for a frame to be sent and receiver
@@ -148,7 +148,7 @@ namespace fr.guiet.kquatre.business.configuration
         public const string EXCEL_FIRST_ROW_DATA_PROP_ID = "1";
         public const string EXCEL_FIREWORK_NAME_PROP_ID = "2";
         public const string EXCEL_SHEET_NB_PROP_ID = "5";
-        public const string TRANSCEIVER_ACK_TIMEOUT_PROP_ID = "3";
+        //public const string TRANSCEIVER_ACK_TIMEOUT_PROP_ID = "3";
         public const string TRANSCEIVER_RETRY_FRAME_EMISSION_PROP_ID = "4";
         public const string TRANSCEIVER_ADDRESS_PROP_ID = "6";
         public const string TRANSCEIVER_BAUDRATE_PROP_ID = "7";
@@ -232,11 +232,12 @@ namespace fr.guiet.kquatre.business.configuration
             excelFile.Element("FireworkSheetNumber").Value = cpn.PropertyValue;
 
             //Transceiver
-            cpn = GetPropertyNodeById(SoftwareConfiguration.TRANSCEIVER_ACK_TIMEOUT_PROP_ID);
-            XElement transceiver = confFile.Descendants("Transceiver").First();
-            transceiver.Element("AckTimeOut").Value = cpn.PropertyValue;
+            //cpn = GetPropertyNodeById(SoftwareConfiguration.TRANSCEIVER_ACK_TIMEOUT_PROP_ID);
+            //XElement transceiver = confFile.Descendants("Transceiver").First();
+            //transceiver.Element("AckTimeOut").Value = cpn.PropertyValue;
 
             cpn = GetPropertyNodeById(SoftwareConfiguration.TRANSCEIVER_TOTAL_TIMEOUT_PROP_ID);
+            XElement transceiver = confFile.Descendants("Transceiver").First();
             transceiver.Element("TotalTimeout").Value = cpn.PropertyValue;
 
             cpn = GetPropertyNodeById(SoftwareConfiguration.TRANSCEIVER_RETRY_FRAME_EMISSION_PROP_ID);
@@ -284,7 +285,7 @@ namespace fr.guiet.kquatre.business.configuration
 
             //Transceiver
             XElement transceiver = confFile.Descendants("Transceiver").First();
-            _ackTimeOut= Convert.ToInt32(transceiver.Element("AckTimeOut").Value.ToString());
+            //_ackTimeOut= Convert.ToInt32(transceiver.Element("AckTimeOut").Value.ToString());
             _totalTimeOut = Convert.ToInt32(transceiver.Element("TotalTimeout").Value.ToString());
             _retryFrameEmission = Convert.ToInt32(transceiver.Element("RetryFrameEmission").Value.ToString());            
             _transceiverAddress = transceiver.Element("Address").Value.ToString();
@@ -331,8 +332,8 @@ namespace fr.guiet.kquatre.business.configuration
             fn = new ConfigFolderNode("Transceiver");
             cpn = new ConfigPropertyNode(TRANSCEIVER_TOTAL_TIMEOUT_PROP_ID, "Temps d'attente maximum (ms) pour l'envoi et la réception d'une frame", _totalTimeOut.ToString());
             fn.AddNode(cpn);
-            cpn = new ConfigPropertyNode(TRANSCEIVER_ACK_TIMEOUT_PROP_ID, "Temps d'attente maximum (ms) d'un ACK en provenance d'un récepteur", _ackTimeOut.ToString());
-            fn.AddNode(cpn);            
+            //cpn = new ConfigPropertyNode(TRANSCEIVER_ACK_TIMEOUT_PROP_ID, "Temps d'attente maximum (ms) d'un ACK en provenance d'un récepteur", _ackTimeOut.ToString());
+            //fn.AddNode(cpn);            
             cpn = new ConfigPropertyNode(TRANSCEIVER_RETRY_FRAME_EMISSION_PROP_ID, "Nb de renvoie du message en cas d'échec", _retryFrameEmission.ToString());
             fn.AddNode(cpn);
             cpn = new ConfigPropertyNode(TRANSCEIVER_ADDRESS_PROP_ID, "Adresse de l'émetteur/récepteur", _transceiverAddress.ToString());

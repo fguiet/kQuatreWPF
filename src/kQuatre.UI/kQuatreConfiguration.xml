@@ -9,7 +9,7 @@
     <Baudrate>115200</Baudrate>
     <!--<RetryPingTransceiver>3</RetryPingTransceiver>-->
     <!-- Temps d'attente de réception en ms d'un ACK en provenance d'un récepteur une fois une trame envoyée -->
-    <AckTimeOut>200</AckTimeOut>
+    <!--<AckTimeOut>200</AckTimeOut>-->
     <!-- Temps d'attente total en ms envoi d'une trame + réception d'une trame -->
     <TotalTimeout>500</TotalTimeout>  
     <!-- Si une frame tombe en timout ou ko alors nb de fois ou on retentera d'envoyer la frame -->

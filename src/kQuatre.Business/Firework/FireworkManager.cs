@@ -1446,7 +1446,7 @@ namespace fr.guiet.kquatre.business.firework
 
                 //Transceiver can be disconnected anytime...so better checked
                 if (_deviceManager.IsTransceiverConnected)
-                    await _deviceManager.Transceiver.SendFireFrame(receptorAddress, receptorChannels, lineNumbers, _configuration.TotalTimeOut, _configuration.AckTimeOut, _configuration.RetryFrameEmission);
+                    await _deviceManager.Transceiver.SendFireFrame(receptorAddress, receptorChannels, lineNumbers, _configuration.TotalTimeOut, _configuration.RetryFrameEmission);
             }
         }
 

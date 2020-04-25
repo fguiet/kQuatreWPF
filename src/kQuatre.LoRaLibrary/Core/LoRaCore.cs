@@ -44,7 +44,7 @@ namespace fr.guiet.lora.core
             {
                 _logger.Warn("--- Timeout occured."
                             + Environment.NewLine
-                            + string.Format("Frame sent info : frame of type {0} with ID : {1}, timeout set to {2}, ack timeout set to {3}, expected receiver address : {4}", args.FrameSent.FrameOrder, args.FrameSent.FrameId, args.FrameSent.TotalTimeOut, args.FrameSent.AckTimeOut, args.FrameSent.ReceiverAddress)
+                            + string.Format("Frame sent info : frame of type {0} with ID : {1}, timeout set to {2}, expected receiver address : {3}", args.FrameSent.FrameOrder, args.FrameSent.FrameId, args.FrameSent.TotalTimeOut, args.FrameSent.ReceiverAddress)
                             + Environment.NewLine
                             + string.Format("=> flight time : {0}  ", args.FrameSent.FlightTime)); ;
                 FrameTimeOutEvent(this, args);
@@ -134,12 +134,12 @@ namespace fr.guiet.lora.core
                 if (!_sentLoRaFrames.TryRemove(frame.FrameId, out var sentFrame) && frame.FrameId != 0)
                 {
                     throw new InvalidPacketReceivedException("SentLoRaFrames : Received frame with id : " + frame.FrameId + ", but frame has probably timed out !");
-                } 
-                else
-                {
-                    if (sentFrame != null)
-                        sentFrame.ArrivedTime = DateTime.Now.TimeOfDay.TotalMilliseconds;
                 }
+
+                //Sent arrived time when possible
+                //Careful sentFrame can be null here..when frameid = 0 for instance
+                if (sentFrame != null)
+                    sentFrame.ArrivedTime = DateTime.Now.TimeOfDay.TotalMilliseconds;
 
                 //**********
                 //* ACK OK
@@ -229,9 +229,9 @@ namespace fr.guiet.lora.core
             }
         }
 
-        public async Task SendFireFrame(string receiverAddress, List<string> receiverChannels, List<string> lineNumbers, int timeOut, int ackTimeOut, int frameSentMaxRetry)
+        public async Task SendFireFrame(string receiverAddress, List<string> receiverChannels, List<string> lineNumbers, int timeOut, int frameSentMaxRetry)
         {
-            FireFrame fireFrame = new FireFrame(GetNextFrameId(), _address, receiverAddress, receiverChannels, lineNumbers, ackTimeOut, timeOut, frameSentMaxRetry);
+            FireFrame fireFrame = new FireFrame(GetNextFrameId(), _address, receiverAddress, receiverChannels, lineNumbers, timeOut, frameSentMaxRetry);
 
             try
             {
@@ -243,13 +243,13 @@ namespace fr.guiet.lora.core
             }
         }
 
-        public async Task SendInfoFrame(string receiverAddress, int timeOut, int ackTimeOut)
+        public async Task SendInfoFrame(string receiverAddress, int timeOut)
         {
-            InfoFrame pingFrame = new InfoFrame(GetNextFrameId(), _address, receiverAddress, ackTimeOut, timeOut);
+            InfoFrame infoFrame = new InfoFrame(GetNextFrameId(), _address, receiverAddress, timeOut);
 
             try
             {
-                await SubmitLoRaFrameAsync(pingFrame, timeOut).ConfigureAwait(false);
+                await SubmitLoRaFrameAsync(infoFrame, timeOut).ConfigureAwait(false);
             }
             catch (AckNotReceivedTimeoutException)
             {
@@ -257,9 +257,9 @@ namespace fr.guiet.lora.core
             }
         }
 
-        public async Task SendPingFrame(string receiverAddress, int timeOut, int ackTimeOut)
+        public async Task SendPingFrame(string receiverAddress, int timeOut)
         {
-            PingFrame pingFrame = new PingFrame(GetNextFrameId(), _address, receiverAddress, ackTimeOut, timeOut);
+            PingFrame pingFrame = new PingFrame(GetNextFrameId(), _address, receiverAddress, timeOut);
 
             try
             {
@@ -271,9 +271,9 @@ namespace fr.guiet.lora.core
             }
         }
 
-        public async Task SendConductivityFrame(string receiverAddress, string channel, int timeOut, int ackTimeOut)
+        public async Task SendConductivityFrame(string receiverAddress, string channel, int timeOut)
         {
-            CondFrame condFrame = new CondFrame(GetNextFrameId(), _address, receiverAddress, channel, ackTimeOut, timeOut);
+            CondFrame condFrame = new CondFrame(GetNextFrameId(), _address, receiverAddress, channel, timeOut);
 
             try
             {
@@ -313,10 +313,16 @@ namespace fr.guiet.lora.core
                 //Send frame via Serial 
                 await _serialPortManager.WriteThreadSafeAsync(frame.GetFrameToByteArray());
 
+                _logger.Info("**************************************************************************");
+                _logger.Info("*** Sending frame : " + frame.GetFrameToString() + Environment.NewLine);
+                _logger.Info("*** Frame order : " + frame.FrameOrder);
+                _logger.Info("*** Receiver address : " + frame.ReceiverAddress);
+                _logger.Info("*** Sent counter : " + frame.SentCounter + Environment.NewLine);                
+
                 //Begin to wait for ack!
                 await Task.Delay(timeout);
 
-                //Here if remove succeed it means ack ok or ko has been received 
+                //Here if remove does not succeed it means ack ok or ko has been received 
                 //thus _pendingLoRaFrames does not contain tcs anymore
                 //otherwise it is a timeout
                 if (_pendingLoRaFrames.TryRemove(frame.FrameId, out tcs))

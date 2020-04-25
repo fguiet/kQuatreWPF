@@ -11,6 +11,7 @@
 //TODO : 2020/04/17 - L'ajout d'un artifice à une ligne, n'affecte pas la valeur IsDirty
 //TODO : Cacher les boutons dont les fonctionnalités ne sont pas terminées
 //TODO : Changer le mode de fonctionnement du chargement des datatemplates
+//TODO : refaire des tests envoi + reception frame (avec resent) jusqu'a ce que ca fonctionne correctement
 
 ### 
 ### DONE

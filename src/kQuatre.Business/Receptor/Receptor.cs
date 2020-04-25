@@ -92,7 +92,7 @@ namespace fr.guiet.kquatre.business.receptor
         private bool _isPingCondRunning = false;
 
         private readonly int DEFAULT_COND_FRAME_TOTAL_TIMEOUT = 1500;
-        private readonly int DEFAULT_COND_FRAME_ACK_TIMEOUT = 1500;
+        //private readonly int DEFAULT_COND_FRAME_ACK_TIMEOUT = 1500;
 
         /// <summary>
         /// Get Current Receptor Channel associated with a line
@@ -420,7 +420,7 @@ namespace fr.guiet.kquatre.business.receptor
             {
                 if (_deviceManager.IsTransceiverConnected)
                 {
-                    Task conductivityTask = _deviceManager.Transceiver.SendConductivityFrame(_address, ra.Channel.ToString(), DEFAULT_COND_FRAME_TOTAL_TIMEOUT, DEFAULT_COND_FRAME_ACK_TIMEOUT);
+                    Task conductivityTask = _deviceManager.Transceiver.SendConductivityFrame(_address, ra.Channel.ToString(), DEFAULT_COND_FRAME_TOTAL_TIMEOUT);
                     conductivityTask.Wait();
                 }
             }).ContinueWith(t =>
@@ -482,7 +482,7 @@ namespace fr.guiet.kquatre.business.receptor
                 if (_firmwareVersion == UNKNOWN_FIRMWARE_VERSION)
                 {
                     if (_deviceManager.IsTransceiverConnected)
-                        await _deviceManager.Transceiver.SendInfoFrame(_address, _deviceManager.SoftwareConfiguration.TotalTimeOut, _deviceManager.SoftwareConfiguration.AckTimeOut);
+                        await _deviceManager.Transceiver.SendInfoFrame(_address, _deviceManager.SoftwareConfiguration.TotalTimeOut);
                 }
 
                 while (!_pingTestCancellationToken.IsCancellationRequested)
@@ -491,7 +491,7 @@ namespace fr.guiet.kquatre.business.receptor
                     MessageSentCounter = (_messageSentCounterTemp).ToString();
 
                     if (_deviceManager.IsTransceiverConnected)
-                        await _deviceManager.Transceiver.SendPingFrame(_address, _deviceManager.SoftwareConfiguration.TotalTimeOut, _deviceManager.SoftwareConfiguration.AckTimeOut);
+                        await _deviceManager.Transceiver.SendPingFrame(_address, _deviceManager.SoftwareConfiguration.TotalTimeOut);
 
                     //700ms between 2 ping!
                     await Task.Delay(500, _pingTestCancellationToken.Token);

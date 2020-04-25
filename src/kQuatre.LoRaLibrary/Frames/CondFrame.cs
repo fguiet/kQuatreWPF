@@ -8,8 +8,8 @@ namespace fr.guiet.lora.frames
     {
         private const string FRAME_ORDER = "COND";
 
-        public CondFrame(byte frameId, string senderAddress, string receiverAddress, string channel, int ackTimeOut, int totalTimeOut)
-            : base(frameId, FRAME_ORDER, senderAddress, receiverAddress, ackTimeOut, totalTimeOut)
+        public CondFrame(byte frameId, string senderAddress, string receiverAddress, string channel, int totalTimeOut)
+            : base(frameId, FRAME_ORDER, senderAddress, receiverAddress, totalTimeOut)
         {
             _payload = string.Format("{0}", channel);
         }

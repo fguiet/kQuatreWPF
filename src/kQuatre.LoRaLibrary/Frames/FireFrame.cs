@@ -10,8 +10,8 @@ namespace fr.guiet.lora.frames
         private List<string> _lineNumbers = null;
 
         public FireFrame(byte frameId, string senderAddress, string receiverAddress, List<string> receiverChannels,
-            List<string> lineNumbers, int ackTimeOut, int totalTimeOut, int frameSentMaxRetry)
-            : base(frameId, FRAME_ORDER, senderAddress, receiverAddress, ackTimeOut, totalTimeOut, frameSentMaxRetry)
+            List<string> lineNumbers, int totalTimeOut, int frameSentMaxRetry)
+            : base(frameId, FRAME_ORDER, senderAddress, receiverAddress, totalTimeOut, frameSentMaxRetry)
         {
             string channels = string.Join("+", receiverChannels);
 

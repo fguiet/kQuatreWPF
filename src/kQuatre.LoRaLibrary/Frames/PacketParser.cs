@@ -74,23 +74,24 @@ namespace fr.guiet.lora.frames
                             switch (ackComplement)
                             {
                                 case "KO_S1":
-                                    ackKOReason = AckKOReason.ACK_KO_BAD_FRAME_RECEIVED;
+                                    ackKOReason = AckKOReason.ACK_KO_SYNTAX_ERROR_FRAME_RECEIVED_FROM_KQUATRE_SOFTWARE;
                                     break;
 
                                 case "KO_S2":
-                                    ackKOReason = AckKOReason.ACK_KO_UNKNOWN_MESSAGE_FRAME_RECEIVED;
+                                    ackKOReason = AckKOReason.ACK_KO_UNKNOWN_ORDER_RECEIVED_BY_SENDING_MODULE;
                                     break;
 
-                                case "KO_S3":
+                                /*case "KO_S3":
                                     ackKOReason = AckKOReason.ACK_KO_TIMEOUT_WAITING_FOR_ACK;
                                     break;
+                                    */
 
                                 case "KO_S4":
-                                    ackKOReason = AckKOReason.ACK_KO_BAD_FRAME_RECEIVED_FROM_PROGRAM;
+                                    ackKOReason = AckKOReason.ACK_KO_SYNTAX_ERROR_FRAME_RECEIVED_FROM_FOREIGN_MODULE;
                                     break;
 
                                 case "KO_R1":
-                                    ackKOReason = AckKOReason.ACK_KO_BAD_FRAME_RECEIVED_FROM_SENDER;
+                                    ackKOReason = AckKOReason.ACK_KO_SYNTAX_ERROR_FRAME_RECEIVED_FROM_COORDINATOR;
                                     break;
 
                             }
