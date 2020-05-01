@@ -17,6 +17,7 @@
     <Address>0</Address>    
 </Transceiver>
 	<Receptors>
+    <Receptor name="Coordinateur" address="0" nbOfChannels="0" />
 		<Receptor name="Boitier 1" address="1" nbOfChannels="16" />
 		<Receptor name="Boitier 2" address="2" nbOfChannels="16" />
 		<Receptor name="Boitier 3" address="3" nbOfChannels="16" />

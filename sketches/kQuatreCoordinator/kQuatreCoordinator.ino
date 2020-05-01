@@ -3,9 +3,10 @@
  * 
  * F. Guiet 
  * Creation           : 25/04/2020
- * Last modification  : 
+ * Last modification  : 01/05/2020
  * 
  * Version            : 1
+ *                      1.1 - Add version
  * 
  * History            : 
  *                      
@@ -49,6 +50,8 @@
 // 1 - debug mode
 #define DEBUG 0
 
+#define VERSION "2020/05/01 - v1.1 - LoRa 0.7.2"
+
 //LoRa radio band settings to use
 const long FREQ = 868E6;
 const int SF = 7;
@@ -59,6 +62,7 @@ const long BW = 125E3;
 const String ACK_OK = "ACK_OK";
 const String ACK_KO = "ACK_KO";
 const String PING_ORDER = "PING";
+const String INFO_ORDER = "INFO";
 const char START_FRAME_DELIMITER = '@';
 const char END_FRAME_DELIMITER = '|';
 const String COORDINATOR_MODULE_ADDRESS = "0"; //This module address...should be 0 for coordinator
@@ -68,7 +72,7 @@ const String ACK_KO_SYNTAX_ERROR_FRAME_RECEIVED_FROM_KQUATRE_SOFTWARE = "KO_S1";
 const String ACK_KO_UNKNOWN_ORDER_RECEIVED_BY_SENDING_MODULE = "KO_S2";
 //const String ACK_KO_TIMEOUT_WAITING_FOR_ACK = "KO_S3";
 const String ACK_KO_SYNTAX_ERROR_FRAME_RECEIVED_FROM_FOREIGN_MODULE = "KO_S4";
-const String ACK_OK_PONG = "OK_S1";
+const String ACK_OK_FRAME_RECEIVED = "OK_S1";
 
 struct FrameDef {
     String FrameId;    
@@ -233,20 +237,28 @@ void SendMessage(String frame) {
   
   //Message sent to me ?
   if (frameDef.ReceiverAddress == COORDINATOR_MODULE_ADDRESS) {
+    
+    if (frameDef.Message == INFO_ORDER) {
+      PrintDebug("Message for me and it is INFO");
+      //NA for rssi and snr
+      String frameToSend = CreateFrameHelper(frameDef.FrameId, frameDef.SenderAddress, frameDef.ReceiverAddress, ACK_OK, ACK_OK_FRAME_RECEIVED + "+NA+NA+" + String(VERSION)+ " - Debug : " + String(DEBUG));
+      SendACK(frameToSend);
+      return;
+    }
+    
     if (frameDef.Message == PING_ORDER) {
       
-      PrintDebug("Message for me and it is PING...sending PONG :)");
-      String frameToSend = CreateFrameHelper(frameDef.FrameId, frameDef.SenderAddress, frameDef.ReceiverAddress, ACK_OK, ACK_OK_PONG);      
-      SendACK(frameToSend);         
-      
+      PrintDebug("Message for me and it is PING...");
+      //NA for rssi and snr
+      String frameToSend = CreateFrameHelper(frameDef.FrameId, frameDef.SenderAddress, frameDef.ReceiverAddress, ACK_OK, ACK_OK_FRAME_RECEIVED + "+NA+NA");    
+      SendACK(frameToSend);               
+      return;
     }
-    else {      
-      
-      PrintDebug("Message for me and but unknown message...");
-      String frameToSend = CreateFrameHelper(frameDef.FrameId, frameDef.SenderAddress, frameDef.ReceiverAddress, ACK_KO, ACK_KO_UNKNOWN_ORDER_RECEIVED_BY_SENDING_MODULE);
-      SendACK(frameToSend);
-            
-    }
+              
+    PrintDebug("Message for me and but unknown message...");
+    String frameToSend = CreateFrameHelper(frameDef.FrameId, frameDef.SenderAddress, frameDef.ReceiverAddress, ACK_KO, ACK_KO_UNKNOWN_ORDER_RECEIVED_BY_SENDING_MODULE);
+    SendACK(frameToSend);
+                
   }
   else {
     
