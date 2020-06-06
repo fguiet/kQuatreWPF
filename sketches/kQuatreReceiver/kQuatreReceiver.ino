@@ -75,7 +75,7 @@ frameObj frame = { "", 0, 0, false };
 /***
  * !!! Modify this !!!
  */
-const String MODULE_ADDRESS = "2";
+const String MODULE_ADDRESS = "4";
 
 void printDebug(String debugMessage) {
  if (DEBUG) {
@@ -182,7 +182,7 @@ void handleReceivedFrame(String frameStr, int rssi, int snr) {
     printDebug("bad syntax of trame received :  " + frameStr); 
         
     //Bad frame received
-    sendLoRaPacket(createFrame(UNKNOWN_FRAME_ID, MODULE_ADDRESS, SENDER_MODULE_ADDRESS, ACK_KO, ACK_KO_BAD_FRAME_RECEIVED_FROM_SENDER));
+    sendLoRaPacket(createFrame(UNKNOWN_FRAME_ID, MODULE_ADDRESS, SENDER_MODULE_ADDRESS, ACK_KO, ACK_KO_SYNTAX_ERROR_FRAME_RECEIVED_FROM_COORDINATOR));
   }
   else {
 
