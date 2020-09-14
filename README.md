@@ -53,3 +53,10 @@ As you can see, it quite simple...relays, LoRa draguino shield, 12v batteries ..
 
 ![Sweet](pictures/kQuatreSofwareAtWork.jpg)
 
+* 2019 Firework using kQuatre software
+
+<https://www.youtube.com/watch?v=92trE5fvu64>
+
+* 2018 Firework using kQuatre software
+
+<https://www.youtube.com/watch?v=ARfh4gEKyss&t=3s>
