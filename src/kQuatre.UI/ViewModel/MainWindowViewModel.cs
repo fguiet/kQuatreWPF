@@ -7,6 +7,7 @@ using fr.guiet.kquatre.ui.views;
 using Microsoft.Win32;
 using System;
 using System.ComponentModel;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
@@ -15,7 +16,7 @@ using System.Windows.Threading;
 namespace fr.guiet.kquatre.ui.viewmodel
 {
     public class MainWindowViewModel : INotifyPropertyChanged
-    {        
+    {
         #region Private Members          
 
         private FireworkManager _fireworkManager = null;
@@ -38,6 +39,8 @@ namespace fr.guiet.kquatre.ui.viewmodel
 
         private bool _isFireworkNavigationEnabled = true;
 
+        private Version _softwareVersion = null;
+
         #endregion
 
         #region Public Members
@@ -46,7 +49,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
         {
             get
             {
-                return _isDesignNavigationEnabled;                
+                return _isDesignNavigationEnabled;
             }
 
             set
@@ -99,9 +102,9 @@ namespace fr.guiet.kquatre.ui.viewmodel
             get
             {
                 if (FireworkManager.IsDirty)
-                    return string.Format("{0} - {1} {2}", SOFTWARE_TITLE, FireworkManager.FireworkFullFileName, "*");
+                    return string.Format("{0} - v{1} - {2} {3}", SOFTWARE_TITLE, _softwareVersion, FireworkManager.FireworkFullFileName, "*");
                 else
-                    return string.Format("{0} - {1}", SOFTWARE_TITLE, FireworkManager.FireworkFullFileName);
+                    return string.Format("{0} - v{1} - {2}", SOFTWARE_TITLE, _softwareVersion, FireworkManager.FireworkFullFileName);
             }
         }
 
@@ -142,7 +145,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
             {
                 if (_configuration != value)
                 {
-                    _configuration = value;                    
+                    _configuration = value;
                 }
             }
         }
@@ -157,7 +160,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
             {
                 if (_fireworkManager != value)
                 {
-                    _fireworkManager = value;                    
+                    _fireworkManager = value;
                     OnPropertyChanged();
                 }
             }
@@ -184,7 +187,10 @@ namespace fr.guiet.kquatre.ui.viewmodel
         #region Constructor 
 
         public MainWindowViewModel()
-        {                       
+        {
+            //Gets software version
+            _softwareVersion = Assembly.GetExecutingAssembly().GetName().Version;
+
             //Initialize Software configuration
             _configuration = new SoftwareConfiguration();
 
@@ -201,7 +207,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
 
             _designUserControlViewModel = new DesignUserControlViewModel(_fireworkManager, _configuration);
             _testUserControlViewModel = new TestUserControlViewModel(_fireworkManager, Dispatcher.CurrentDispatcher);
-            _fireworkUserControlViewModel = new FireworkUserControlViewModel(_fireworkManager, Dispatcher.CurrentDispatcher);            
+            _fireworkUserControlViewModel = new FireworkUserControlViewModel(_fireworkManager, Dispatcher.CurrentDispatcher);
 
             //Trasnceiver already plugged?
             _fireworkManager.DiscoverDevice();
@@ -266,7 +272,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
         #endregion
 
         #region Private Members 
-        
+
         private void RefreshGUI()
         {
             OnPropertyChanged("FireworkManager");
@@ -325,7 +331,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
                 DialogBoxHelper.ShowErrorMessage(ex.Message);
             }
         }
-        
+
         public bool QuitApplication()
         {
             if (_fireworkManager.IsDirty)
@@ -360,7 +366,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
             {
                 MessageBoxResult result = MessageBox.Show("Le feu actuellement en cours d'édition comporte des modifications non enregistrées, voulez-vous continuer et perdre les modifications ?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.No) return;
-            }            
+            }
 
             _fireworkManager.LoadEmptyFirework();
         }
@@ -399,7 +405,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
                     if (fromExcelFile)
                         _fireworkManager.LoadFireworkFromExcel(ofd.FileName);
                     else
-                        _fireworkManager.LoadFirework(ofd.FileName);                   
+                        _fireworkManager.LoadFirework(ofd.FileName);
                 }
             }
             catch (Exception e)
@@ -464,7 +470,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
         {
             RadTimelineTest window = new RadTimelineTest(_fireworkManager);
             window.ShowDialog();
-        }        
+        }
 
         #endregion
 

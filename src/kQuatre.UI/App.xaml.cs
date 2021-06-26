@@ -27,9 +27,9 @@ namespace fr.guiet.kquatre.ui
 
         protected override void OnStartup(StartupEventArgs e)
         {            
-            //_splashScreen.Show();
+            _splashScreen.Show();
 
-            //Thread.Sleep(3000);
+            Thread.Sleep(3000);
 
             this.MainWindow.Show();
 
