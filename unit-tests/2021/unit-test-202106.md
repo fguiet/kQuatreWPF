@@ -1,6 +1,6 @@
 # Unit test
 
-## Test 2021/06/26
+## Test 2021/07/10
 
 * Laptop : Dell Precision 3520
 * Firework file : FEU_ARTIFICE_OUTARVILLE_2021.k4
@@ -16,7 +16,9 @@
 * Antivirus : FortiClient v6.4.1.1519
 * Antivirus : Trend Micro Apex Onr Antivirus
 * Screen resolution : 1920 x 1080
+* Receptor case 1 : OK
+* Receptor case 2 : OK
+* Receptor case 3 : OK
+* Receptor case 4 : OK
 
-* Test result : 
 
-Everything went smoothly
