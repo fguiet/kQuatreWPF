@@ -15,6 +15,11 @@ namespace fr.guiet.kquatre.business.firework
         #region Private Members
 
         /// <summary>
+        /// Radrow index (firework order number without rescue line)
+        /// </summary>
+        private int? _radRowIndex = null;
+
+        /// <summary>
         /// Firework order number
         /// </summary>
         private int _number;
@@ -255,11 +260,30 @@ namespace fr.guiet.kquatre.business.firework
 
         }
 
-        public int RadRowIndex
+        public int FireworkNumber
         {
             get
             {
                 return _number;
+            }
+        }
+
+        public int RadRowIndex
+        {
+            get
+            {
+                if (_radRowIndex.HasValue) {
+                    return _radRowIndex.Value;
+                }
+                else
+                {
+                    //Return max value when null
+                    return Int32.MaxValue;
+                }
+            }
+            set
+            {
+                _radRowIndex = value;
             }
         }
 
@@ -318,10 +342,16 @@ namespace fr.guiet.kquatre.business.firework
             return f;
         }
 
-        public void Reorder(int order)
+        public void Reorder(int order, int? radRowIndex)
         {
             _number = order;
+            _radRowIndex = radRowIndex;
         }
+
+        /*public void Reorder(int order)
+        {
+            _number = order;            
+        }*/
 
         public void Reset()
         {

@@ -1,11 +1,5 @@
 ﻿using fr.guiet.kquatre.business.configuration;
 using fr.guiet.kquatre.business.firework;
-using fr.guiet.kquatre.ui.helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace fr.guiet.kquatre.ui.viewmodel
 {

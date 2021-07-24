@@ -79,6 +79,8 @@ namespace fr.guiet.kquatre.ui.views
             if (_fireworkGridView.SelectedItem is Line line)
             {
                 _viewModel.OpenLineWindow(line);
+                //Rebind needed to refresh datagrid to refresh line number on the ui
+                _fireworkGridView.Rebind();
             }
             else
             {

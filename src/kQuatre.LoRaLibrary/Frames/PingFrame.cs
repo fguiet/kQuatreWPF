@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace fr.guiet.lora.frames
+﻿namespace fr.guiet.lora.frames
 {
     public class PingFrame : FrameBase
     {

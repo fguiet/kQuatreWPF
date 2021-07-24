@@ -2,3 +2,5 @@ src/*/bin
 src/*/obj
 .suo
 src/packages
+src/*/*.user
+src/.vs

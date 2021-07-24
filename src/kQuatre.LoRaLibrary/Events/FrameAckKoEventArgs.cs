@@ -1,7 +1,5 @@
 ﻿using fr.guiet.lora.frames;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace fr.guiet.lora.events
 {

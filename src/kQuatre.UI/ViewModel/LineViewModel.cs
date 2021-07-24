@@ -3,10 +3,7 @@ using fr.guiet.kquatre.business.receptor;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace fr.guiet.kquatre.ui.viewmodel
 {
@@ -54,6 +51,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
                 if (_selectedLineLocation != value)
                 {
                     _selectedLineLocation = value;
+                    OnPropertyChanged();
                 }
             }
         }
@@ -208,7 +206,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
             {
                 //Normal lines
                 nbLines = _fireworkManager.ActiveLines.Count;
-                firstPos = _fireworkManager.RescueLines.Count; 
+                firstPos = _fireworkManager.RescueLines.Count;
                 lastPos = _fireworkManager.ActiveLines.Count + _fireworkManager.RescueLines.Count;
             }
             else
@@ -228,27 +226,33 @@ namespace fr.guiet.kquatre.ui.viewmodel
                 cbi = new ComboBoxItem(firstPos.ToString(), "Insérer en première position");
                 item.Add(cbi);
 
-                //Insert on first position selected by default
-                SelectedLineLocation = firstPos.ToString();
-                //SelectedLineLocation = (nbLines + 1).ToString();
 
                 if (nbLines == 0)
                 {
                     LineLocation = item;
+
+                    //Insert on first position selected by default
+                    //Refresh selected item
+                    SelectedLineLocation = firstPos.ToString();
                     return;
                 }
             }
             else
             {
                 verb = "Déplacer";
-                cbi = new ComboBoxItem(DO_NOT_MOVE_ID, "Ne pas déplacer");
-                item.Add(cbi);
+                string defaultOption = DO_NOT_MOVE_ID; //By default
 
-                SelectedLineLocation = DO_NOT_MOVE_ID;
+                //On Rescue line you have to set the line position
+                if (!_lineClone.IsRescueLine)
+                {
+                    cbi = new ComboBoxItem(DO_NOT_MOVE_ID, "Ne pas déplacer");
+                    item.Add(cbi);
+                }
 
                 if (nbLines == 1)
                 {
                     LineLocation = item;
+                    SelectedLineLocation = defaultOption;
                     return;
                 }
 
@@ -256,30 +260,37 @@ namespace fr.guiet.kquatre.ui.viewmodel
                 {
                     cbi = new ComboBoxItem(firstPos.ToString(), "Déplacer en première position");
                     item.Add(cbi);
-                }
-            }
 
-            if (nbLines >= 2)
-            {
-                for (int i = firstPos + 1; i < lastPos; i++)
-                {
-                    if (i.ToString() != _line.Number && (i + 1).ToString() != _line.Number)
+                    //Default option for rescue line
+                    if (_lineClone.IsRescueLine)
                     {
-                        message = string.Format("{0} entre la ligne {1} et {2}", verb, i, i + 1);
-                        cbi = new ComboBoxItem(i.ToString(), message);
-                        item.Add(cbi);
+                        defaultOption = firstPos.ToString();
                     }
                 }
-            }
 
-            if (_line.Number != lastPos.ToString())
-            {
-                message = string.Format("{0} en dernière position", verb);
-                cbi = new ComboBoxItem(lastPos.ToString(), message);
-                item.Add(cbi);
-            }
+                if (nbLines >= 2)
+                {
+                    for (int i = firstPos + 1; i < lastPos; i++)
+                    {
+                        if (i.ToString() != _line.Number && (i + 1).ToString() != _line.Number)
+                        {
+                            message = string.Format("{0} entre la ligne {1} et {2}", verb, i, i + 1);
+                            cbi = new ComboBoxItem(i.ToString(), message);
+                            item.Add(cbi);
+                        }
+                    }
+                }
 
-            LineLocation = item;
+                if (_line.Number != lastPos.ToString())
+                {
+                    message = string.Format("{0} en dernière position", verb);
+                    cbi = new ComboBoxItem(lastPos.ToString(), message);
+                    item.Add(cbi);
+                }
+
+                LineLocation = item;
+                SelectedLineLocation = defaultOption;
+            }
         }
     }
 }

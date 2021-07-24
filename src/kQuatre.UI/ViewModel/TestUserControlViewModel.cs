@@ -3,14 +3,8 @@ using fr.guiet.kquatre.business.receptor;
 using fr.guiet.kquatre.ui.command;
 using fr.guiet.kquatre.ui.helpers;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Threading;
 
 namespace fr.guiet.kquatre.ui.viewmodel

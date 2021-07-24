@@ -5,8 +5,6 @@ using fr.guiet.kquatre.ui.viewmodel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using Telerik.Windows.Controls;
-using Telerik.Windows.Controls.GridView;
 using Line = fr.guiet.kquatre.business.firework.Line;
 
 namespace fr.guiet.kquatre.ui.views

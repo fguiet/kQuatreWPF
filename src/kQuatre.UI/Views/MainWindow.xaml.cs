@@ -35,7 +35,7 @@ namespace fr.guiet.kquatre.ui.views
             this.DataContext = _viewModel;
 
             //KeyPressed handler
-            this.KeyDown += MainWindow_KeyDown;                   
+            this.KeyDown += MainWindow_KeyDown;
         }
 
         private void MainWindow_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
@@ -114,7 +114,5 @@ namespace fr.guiet.kquatre.ui.views
         }
 
         #endregion
-
-
     }
 }

@@ -1,5 +1,5 @@
-﻿using fr.guiet.lora.core;
-using fr.guiet.kquatre.business.configuration;
+﻿using fr.guiet.kquatre.business.configuration;
+using fr.guiet.lora.core;
 using System;
 using System.IO.Ports;
 using System.Management;

@@ -1,16 +1,13 @@
-﻿using fr.guiet.lora.events;
-using fr.guiet.lora.frames;
-using fr.guiet.kquatre.business.exceptions;
-using fr.guiet.kquatre.business.firework;
+﻿using fr.guiet.kquatre.business.exceptions;
 using fr.guiet.kquatre.business.transceiver;
-//using fr.guiet.kquatre.business.transceiver.Frames;
+using fr.guiet.lora.events;
+using fr.guiet.lora.frames;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 

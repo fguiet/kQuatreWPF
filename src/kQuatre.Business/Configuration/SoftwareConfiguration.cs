@@ -1,10 +1,8 @@
 ﻿using fr.guiet.kquatre.business.firework;
 using fr.guiet.kquatre.business.receptor;
-using fr.guiet.kquatre.business.transceiver;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;

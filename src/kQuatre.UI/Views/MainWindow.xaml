@@ -25,7 +25,7 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Menu Grid.Row="0" x:Name="MainMenu" HorizontalAlignment="Stretch" >
-            <MenuItem Header="Fichier">
+            <MenuItem Header="Fichier" IsEnabled="{Binding IsFileMenuEnabled}">
                 <MenuItem Header="Nouveau..." Click="MiNewFirework_Click"/>
                 <MenuItem x:Name="_miOpenExcel" Header="Ouvrir un fichier Excel..." Click="MiOpenExcel_Click"  />
                 <MenuItem Name="_miOpenK4" Header="Ouvrir un fichier k4..." Click="MiOpenK4_Click" />

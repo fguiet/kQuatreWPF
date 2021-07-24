@@ -109,6 +109,7 @@ namespace fr.guiet.kquatre.business.firework
 
         #region Events
 
+        public event EventHandler TimerElapsed;
         public event EventHandler LineStarted;
         public event EventHandler LineFailed;
         public event EventHandler FireworkFinished;
@@ -187,6 +188,11 @@ namespace fr.guiet.kquatre.business.firework
             LineFailed?.Invoke(sender, new EventArgs());
         }
 
+        private void OnTimerElapsedEvent(object sender)
+        {
+            TimerElapsed?.Invoke(sender, new EventArgs());
+        }
+
         public List<string> SanityCheckErrorsList
         {
             get
@@ -201,8 +207,6 @@ namespace fr.guiet.kquatre.business.firework
         }
 
         #endregion
-
-
         public bool IsSanityCheckOk
         {
             get
@@ -267,7 +271,7 @@ namespace fr.guiet.kquatre.business.firework
         {
             get
             {
-                IOrderedEnumerable<Firework> allFireworks = (ActiveLines.ToList().SelectMany(l => l.Fireworks).ToList()).OrderBy(y => y.RadRowIndex);
+                IOrderedEnumerable<Firework> allFireworks = (ActiveLines.ToList().SelectMany(l => l.Fireworks).ToList()).OrderBy(y => y.FireworkNumber);
 
                 return new ObservableCollection<Firework>(allFireworks);
             }
@@ -277,7 +281,7 @@ namespace fr.guiet.kquatre.business.firework
         {
             get
             {
-                IOrderedEnumerable<Firework> allFireworks = (RescueLines.ToList().SelectMany(l => l.Fireworks).ToList()).OrderBy(y => y.RadRowIndex);
+                IOrderedEnumerable<Firework> allFireworks = (RescueLines.ToList().SelectMany(l => l.Fireworks).ToList()).OrderBy(y => y.FireworkNumber);
 
                 return new ObservableCollection<Firework>(allFireworks);
             }
@@ -347,6 +351,17 @@ namespace fr.guiet.kquatre.business.firework
             get
             {
                 return $"{TotalDuration:mm\\:ss}";
+            }
+        }
+
+        /// <summary>
+        /// Firework Elapsed time (TimeSpan)
+        /// </summary>
+        public TimeSpan ElapsedTime
+        {
+            get
+            { 
+                return _elapsedTime.Elapsed;                
             }
         }
 
@@ -702,6 +717,15 @@ namespace fr.guiet.kquatre.business.firework
         /// </summary>
         public void Start()
         {
+            
+            //Experimental
+            //Let's Play some music
+            /*WaveOutEvent outputDevice = new WaveOutEvent();
+            AudioFileReader audioFile = new AudioFileReader(@"I:\Users\Fred\Projects\kQuatreWPF\Firework\2021\FEU OUTARVILLE 2021.mp3");            
+            
+            outputDevice.Init(audioFile);
+            outputDevice.Play();*/
+            
             DoWorkAsync();
         }
 
@@ -1234,6 +1258,7 @@ namespace fr.guiet.kquatre.business.firework
         {
             int lineNumber = 1;
             int fireworkNumber = 0;
+            int fireworkRadRowNumber = 0;
 
             foreach (Line line in _lines)
             {
@@ -1243,7 +1268,16 @@ namespace fr.guiet.kquatre.business.firework
 
                 foreach (Firework f in line.Fireworks)
                 {
-                    f.Reorder(fireworkNumber);
+                    if (line.IsRescueLine)
+                    {
+                        f.Reorder(fireworkNumber, null);
+                    }
+                    else
+                    {
+                        f.Reorder(fireworkNumber, fireworkRadRowNumber);
+                        fireworkRadRowNumber++;
+                    }
+
                     fireworkNumber++;
                 }
             }
@@ -1452,6 +1486,9 @@ namespace fr.guiet.kquatre.business.firework
 
         private void TimerHelper_Elapsed(object sender, ElapsedEventArgs e)
         {
+            //Throw event !
+            OnTimerElapsedEvent(sender);
+
             ElapsedTimeString = $"{_elapsedTime.Elapsed:mm\\:ss}";
 
             if (_nextIgnition.CompareTo(_elapsedTime.Elapsed) == -1)

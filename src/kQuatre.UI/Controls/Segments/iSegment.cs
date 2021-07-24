@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Media;
 
 namespace fr.guiet.kquatre.ui.controls.segments

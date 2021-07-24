@@ -39,11 +39,29 @@ namespace fr.guiet.kquatre.ui.viewmodel
 
         private bool _isFireworkNavigationEnabled = true;
 
+        private bool _isFileMenuEnabled = true;
+
         private Version _softwareVersion = null;
 
         #endregion
 
         #region Public Members
+        public bool IsFileMenuEnabled
+        {
+            get
+            {
+                return _isFileMenuEnabled;
+            }
+
+            set
+            {
+                if (_isFileMenuEnabled != value)
+                {
+                    _isFileMenuEnabled = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         public bool IsDesignNavigationEnabled
         {
@@ -232,6 +250,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
         {
             IsDesignNavigationEnabled = true;
             IsTestNavigationEnabled = true;
+            IsFileMenuEnabled = true;
         }
 
         private void FireworkManager_FireworkStarted(object sender, EventArgs e)
@@ -239,6 +258,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
             //As long as a firework is running...no more navigation is allowed..
             IsDesignNavigationEnabled = false;
             IsTestNavigationEnabled = false;
+            IsFileMenuEnabled = false;
         }
 
         private void FireworkManager_FireworkSaved(object sender, EventArgs e)

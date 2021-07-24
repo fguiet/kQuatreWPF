@@ -3,8 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:fr.guiet.kquatre.ui.views"        
-        xmlns:igDP="http://infragistics.com/DataPresenter" x:Class="fr.guiet.kquatre.ui.views.FireworkManagementWindow"
+        xmlns:local="clr-namespace:fr.guiet.kquatre.ui.views"                
+        x:Class="fr.guiet.kquatre.ui.views.FireworkManagementWindow"
         xmlns:conv="clr-namespace:fr.guiet.kquatre.ui.converters" xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
     mc:Ignorable="d"
         Title="Gestion des artifices" Height="500" Width="600" WindowStartupLocation="CenterScreen" Icon="/kQuatre;component/Resources/FireworksIcon.png">
@@ -65,31 +65,5 @@
 														 DataMemberBinding="{Binding Duration}" />
             </telerik:RadGridView.Columns>
         </telerik:RadGridView >
-        <!--<igDP:XamDataGrid DataSource="{Binding SoftwareConfiguration.Fireworks}" 
-                          ScrollingMode="Immediate"
-                          Grid.Row="0" HorizontalAlignment="Stretch" 
-                          SelectedDataItemsScope="RecordsOnly" GroupByAreaLocation="None"
-                          VerticalAlignment="Stretch"
-                          Name="_dgFireworks" LayoutUpdated="_dgFireworks_LayoutUpdated">
-            
-            <igDP:XamDataGrid.FieldLayoutSettings>
-                <igDP:FieldLayoutSettings AutoGenerateFields="False"/>
-            </igDP:XamDataGrid.FieldLayoutSettings>
-
-            <igDP:XamDataGrid.FieldLayouts>
-                <igDP:FieldLayout Key="Firework">
-                    <igDP:FieldLayout.Fields>
-                        <igDP:CheckBoxField IsThreeState="False" Width="Auto" Name="Select" Label="" BindingType="Unbound" />
-                        <igDP:Field IsReadOnly="True" Label="Référence" Name="Reference" Width="Auto" />
-                        <igDP:Field IsReadOnly="True" Label="Désignation" Name="Designation" Width="Auto" />
-                        <igDP:Field IsReadOnly="True" Label="Durée" Name="Duration" />
-                    </igDP:FieldLayout.Fields>
-                    <igDP:FieldLayout.SortedFields>
-                        <igDP:FieldSortDescription FieldName="Reference" />
-                    </igDP:FieldLayout.SortedFields>
-                </igDP:FieldLayout>
-            </igDP:XamDataGrid.FieldLayouts>
-
-        </igDP:XamDataGrid>-->
     </Grid>
 </Window>

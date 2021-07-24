@@ -7,7 +7,6 @@ using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Input;
 
 namespace fr.guiet.kquatre.ui.viewmodel
 {

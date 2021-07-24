@@ -9,7 +9,7 @@ namespace fr.guiet.kquatre.ui.timeline
         public void GenerateRowIndexes(List<TimelineRowItem> dataItems)
         {
             foreach (TimelineRowItem item in dataItems)
-            {
+            {                
                 item.RowIndex = (item.DataItem as Firework).RadRowIndex;
             }
         }
