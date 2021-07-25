@@ -1,7 +1,7 @@
 ﻿using fr.guiet.kquatre.business.configuration;
 using fr.guiet.lora.core;
+using RJCP.IO.Ports;
 using System;
-using System.IO.Ports;
 using System.Management;
 using System.Timers;
 
@@ -146,7 +146,7 @@ namespace fr.guiet.kquatre.business.transceiver
             {
                 Exception ex = null;
 
-                foreach (string port in SerialPort.GetPortNames())
+                foreach (string port in SerialPortStream.GetPortNames())
                 {
                     try
                     {
@@ -172,7 +172,7 @@ namespace fr.guiet.kquatre.business.transceiver
             {
                 _loraTransceiver = null;
                 OnDeviceErrorWhenConnecting(new ConnectionErrorEventArgs(exp));                
-            }
+            }            
         }
 
         #endregion

@@ -233,6 +233,7 @@ namespace fr.guiet.kquatre.business.firework
             }
         }
 
+        //TODO: Still Needed?
         public SolidColorBrush ColorPresentation
         {
             get { return _colorPresentation; }

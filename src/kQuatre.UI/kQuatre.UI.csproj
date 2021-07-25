@@ -1,310 +1,82 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3645DFC8-832E-49C0-99A3-B6DA697C0B1E}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>fr.guiet.kquatre.ui</RootNamespace>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
     <AssemblyName>kQuatre</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <WarningLevel>4</WarningLevel>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <TargetFrameworkProfile />
+    <RootNamespace>fr.guiet.kquatre.ui</RootNamespace>
+    <Company>Guiet</Company>
+    <Authors>Frédéric Guiet</Authors>
+    <AssemblyVersion>2021.2.0.0</AssemblyVersion>
+    <FileVersion>2021.2.0.0</FileVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.7.0\lib\net45\NLog.dll</HintPath>
-    </Reference>
-    <Reference Include="PresentationFramework.Aero" />
-    <Reference Include="System" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Transactions" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xaml">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="Telerik.Windows.Controls, Version=2020.1.218.45, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Telerik UI for WPF R1 2020 SP1\Telerik.Windows.Controls.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.Windows.Controls.Data, Version=2020.1.218.45, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Telerik UI for WPF R1 2020 SP1\Telerik.Windows.Controls.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.Windows.Controls.DataVisualization, Version=2020.1.218.45, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Telerik UI for WPF R1 2020 SP1\Telerik.Windows.Controls.DataVisualization.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.Windows.Controls.GridView, Version=2020.1.218.45, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Telerik UI for WPF R1 2020 SP1\Telerik.Windows.Controls.GridView.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.Windows.Controls.Input, Version=2020.1.218.45, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Telerik UI for WPF R1 2020 SP1\Telerik.Windows.Controls.Input.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.Windows.Controls.Navigation, Version=2020.1.218.45, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Telerik UI for WPF R1 2020 SP1\Telerik.Windows.Controls.Navigation.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.Windows.Data, Version=2020.1.218.45, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Telerik UI for WPF R1 2020 SP1\Telerik.Windows.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="UIAutomationProvider" />
-    <Reference Include="UIAutomationTypes" />
-    <Reference Include="WindowsBase" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
+    <None Remove="Resources\ExecutionIcon_32x32.png" />
+    <None Remove="Resources\FireworksIcon.png" />
+    <None Remove="Resources\IdeaIcon_32x32.png" />
+    <None Remove="Resources\SplashScreen.jpg" />
+    <None Remove="Resources\TestIcon_32x32.png" />
   </ItemGroup>
+
   <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
-    <Compile Include="Command\NavigationContentTemplateSelector.cs" />
-    <Compile Include="Command\RelayCommand.cs" />
-    <Compile Include="Controls\ArrangedPanel.cs" />
-    <Compile Include="Controls\Gridview\ButtonColumn.cs" />
-    <Compile Include="Controls\CharItem.cs" />
-    <Compile Include="Controls\SegmentsStack\SegmentsStackBase.cs" />
-    <Compile Include="Controls\SegmentsStack\SevenSegmentsStack.xaml.cs">
-      <DependentUpon>SevenSegmentsStack.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\SegmentsStack\SixteenSegmentsStack..xaml.cs">
-      <DependentUpon>SixteenSegmentsStack..xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\Segments\GeometryWithSegm.cs" />
-    <Compile Include="Controls\Segments\iSegment.cs" />
-    <Compile Include="Controls\Segments\SegmentBase.cs" />
-    <Compile Include="Controls\Segments\SegmentsEnum.cs" />
-    <Compile Include="Controls\Segments\SevenSegments.cs" />
-    <Compile Include="Controls\Segments\SixteenSegments.cs" />
-    <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
-    <Compile Include="Converters\CountToVisibilityConverter.cs" />
-    <Compile Include="Events\FireworkLoadedEventArgs.cs" />
-    <Compile Include="Helpers\DialogBoxHelper.cs" />
-    <Compile Include="Timeline\CustomTimelineControl.cs" />
-    <Compile Include="Timeline\MinuteIntervalFormatter.cs" />
-    <Compile Include="Timeline\NewLineRowIndexGenerator.cs" />
-    <Compile Include="Timeline\SecondInternalFormatter.cs" />
-    <Compile Include="ViewModel\ComboBoxItem.cs" />
-    <Compile Include="ViewModel\ConfigurationWindowViewModel.cs" />
-    <Compile Include="ViewModel\DesignUserControlViewModel.cs" />
-    <Compile Include="ViewModel\FireworkManagementViewModel.cs" />
-    <Compile Include="ViewModel\FireworkUserControlViewModel.cs" />
-    <Compile Include="ViewModel\LineViewModel.cs" />
-    <Compile Include="ViewModel\RadTimelineTestView.cs" />
-    <Compile Include="ViewModel\SanityCheckViewModel.cs" />
-    <Compile Include="ViewModel\TestUserControlViewModel.cs" />
-    <Compile Include="ViewModel\WindowMode.cs" />
-    <Compile Include="Views\AboutBox1.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\AboutBox1.Designer.cs">
-      <DependentUpon>AboutBox1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\AboutBoxWindow.xaml.cs">
-      <DependentUpon>AboutBoxWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ConfigurationWindow.xaml.cs">
-      <DependentUpon>ConfigurationWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\DesignUserControlView.xaml.cs">
-      <DependentUpon>DesignUserControlView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\FireworkManagementWindow.xaml.cs">
-      <DependentUpon>FireworkManagementWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\FireworkUserControlView.xaml.cs">
-      <DependentUpon>FireworkUserControlView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\LineWindow.xaml.cs">
-      <DependentUpon>LineWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\RadTimelineTest.xaml.cs">
-      <DependentUpon>RadTimelineTest.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\SanityCheckWindow.xaml.cs">
-      <DependentUpon>SanityCheckWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\SplashScreenWindow.xaml.cs">
-      <DependentUpon>SplashScreenWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\TestUserControlView.xaml.cs">
-      <DependentUpon>TestUserControlView.xaml</DependentUpon>
-    </Compile>
-    <Page Include="Controls\SegmentsStack\SevenSegmentsStack.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Controls\SegmentsStack\SixteenSegmentsStack..xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Resources\NavigationView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Resources\TimelineDictionary.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Resources\ToggleButton.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\AboutBoxWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ConfigurationWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\DesignUserControlView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\FireworkManagementWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\FireworkUserControlView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\LineWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ViewModel\MainWindowViewModel.cs" />
-    <Compile Include="Views\MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Page Include="Views\RadTimelineTest.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\SanityCheckWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\SplashScreenWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\TestUserControlView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
+    <PackageReference Include="NLog.Schema" Version="4.7.10" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
+    <ProjectReference Include="..\kQuatre.Business\kQuatre.Business.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Telerik.Windows.Controls">
+      <HintPath>..\kQuatre.Vendors\Telerik\Telerik UI for WPF R2 2021\Telerik.Windows.Controls.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Telerik.Windows.Controls.Data">
+      <HintPath>..\kQuatre.Vendors\Telerik\Telerik UI for WPF R2 2021\Telerik.Windows.Controls.Data.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Telerik.Windows.Controls.DataVisualization">
+      <HintPath>..\kQuatre.Vendors\Telerik\Telerik UI for WPF R2 2021\Telerik.Windows.Controls.DataVisualization.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Telerik.Windows.Controls.GridView">
+      <HintPath>..\kQuatre.Vendors\Telerik\Telerik UI for WPF R2 2021\Telerik.Windows.Controls.GridView.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Telerik.Windows.Controls.Input">
+      <HintPath>..\kQuatre.Vendors\Telerik\Telerik UI for WPF R2 2021\Telerik.Windows.Controls.Input.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Telerik.Windows.Controls.Navigation">
+      <HintPath>..\kQuatre.Vendors\Telerik\Telerik UI for WPF R2 2021\Telerik.Windows.Controls.Navigation.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Telerik.Windows.Data">
+      <HintPath>..\kQuatre.Vendors\Telerik\Telerik UI for WPF R2 2021\Telerik.Windows.Data.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="Resources\ExecutionIcon_32x32.png" />
-    <Resource Include="Resources\TestIcon_32x32.png" />
-    <Resource Include="Resources\IdeaIcon_32x32.png" />
     <Resource Include="Resources\FireworksIcon.png" />
-    <EmbeddedResource Include="Views\AboutBox1.resx">
-      <DependentUpon>AboutBox1.cs</DependentUpon>
-    </EmbeddedResource>
-    <Resource Include="TODO.txt" />
-    <EmbeddedResource Include="Properties\Licenses.licx" />
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <Content Include="kQuatreFireworks.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="NLog.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Include="NLog.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
+    <Resource Include="Resources\IdeaIcon_32x32.png" />
     <Resource Include="Resources\SplashScreen.jpg" />
+    <Resource Include="Resources\TestIcon_32x32.png" />
   </ItemGroup>
+
   <ItemGroup>
-    <Content Include="kQuatreConfiguration.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <None Update="kQuatreConfiguration.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="kQuatreFireworks.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\kQuatre.Business\kQuatre.Business.csproj">
-      <Project>{884cafb0-fbf9-4ee0-9ef5-1093bcb8c003}</Project>
-      <Name>kQuatre.Business</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
+
 </Project>
