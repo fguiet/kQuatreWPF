@@ -62,7 +62,7 @@ namespace fr.guiet.kquatre.business.firework
         /// <summary>
         /// Color representation of firework on Gantt Diagramm
         /// </summary>
-        private SolidColorBrush _colorPresentation = new SolidColorBrush(Colors.Gray);
+        //private SolidColorBrush _colorPresentation = new SolidColorBrush(Colors.Gray);
 
         /// <summary>
         /// Color representation of firework on Timeline Diagramm
@@ -177,27 +177,27 @@ namespace fr.guiet.kquatre.business.firework
                 switch (_state)
                 {
                     case FireworkState.Finished:
-                        this.ColorPresentation = new SolidColorBrush(Colors.Green);
+                       // this.ColorPresentation = new SolidColorBrush(Colors.Green);
                         this.RadColor = Colors.Green;
                         break;
 
                     case FireworkState.ImminentLaunch:
-                        this.ColorPresentation = new SolidColorBrush(Colors.Orange);
+                      //  this.ColorPresentation = new SolidColorBrush(Colors.Orange);
                         this.RadColor = Colors.Orange;
                         break;
 
                     case FireworkState.InProgress:
-                        this.ColorPresentation = new SolidColorBrush(Colors.Red);
+                     //   this.ColorPresentation = new SolidColorBrush(Colors.Red);
                         this.RadColor = Colors.Red;
                         break;
 
                     case FireworkState.LaunchFailed:
-                        this.ColorPresentation = new SolidColorBrush(Colors.Black);
+                     //   this.ColorPresentation = new SolidColorBrush(Colors.Black);
                         this.RadColor = Colors.Black;
                         break;
 
                     case FireworkState.Standby:
-                        this.ColorPresentation = new SolidColorBrush(Colors.Gray);
+                      //  this.ColorPresentation = new SolidColorBrush(Colors.Gray);
                         this.RadColor = Colors.Gray;
                         break;
                 }
@@ -234,7 +234,7 @@ namespace fr.guiet.kquatre.business.firework
         }
 
         //TODO: Still Needed?
-        public SolidColorBrush ColorPresentation
+        /*public SolidColorBrush ColorPresentation
         {
             get { return _colorPresentation; }
             set
@@ -245,7 +245,7 @@ namespace fr.guiet.kquatre.business.firework
                     OnPropertyChanged();
                 }
             }
-        }
+        }*/
 
         public decimal PercentComplete
         {

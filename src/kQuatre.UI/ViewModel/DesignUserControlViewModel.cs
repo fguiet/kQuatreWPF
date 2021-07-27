@@ -7,6 +7,7 @@ using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Forms;
 
 namespace fr.guiet.kquatre.ui.viewmodel
 {
@@ -18,10 +19,39 @@ namespace fr.guiet.kquatre.ui.viewmodel
         private FireworkManager _fireworkManager = null;
         private SoftwareConfiguration _configuration = null;
         private RelayCommand _addFireworkCommand;
+        private RelayCommand _selectSoundTrack = null;
+        private RelayCommand _resetSoundTrack = null;
+
 
         #endregion
 
         #region Public Members
+
+        public RelayCommand ResetSoundTrackCommand
+        {
+            get
+            {
+                if (_resetSoundTrack == null)
+                {
+                    _resetSoundTrack = new RelayCommand(new Action(() => ResetSoundTrack()));
+                }
+
+                return _resetSoundTrack;
+            }
+        }
+
+        public RelayCommand SelectSoundTrackCommand
+        {
+            get
+            {
+                if (_selectSoundTrack == null)
+                {
+                    _selectSoundTrack = new RelayCommand(new Action(() => SelectSoundTrack()));
+                }
+
+                return _selectSoundTrack;
+            }
+        }
 
         public RelayCommand AddFireworkCommand
         {
@@ -145,6 +175,28 @@ namespace fr.guiet.kquatre.ui.viewmodel
         #endregion
 
         #region Private Members 
+
+        private void ResetSoundTrack()
+        {
+            _fireworkManager.SoundTrackUI = String.Empty;
+        }
+        private void SelectSoundTrack()
+        {
+            OpenFileDialog ofd = new OpenFileDialog
+            {
+                Multiselect = false
+            };
+            
+            ofd.Filter = "Fichier MP3 (*.mp3)|*.mp3";
+
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {                
+                _fireworkManager.SoundTrackUI = ofd.FileName;      
+                
+                //TODO : One day check whether whether MP3 file is good or not and display popup windows for user
+            }
+        }
 
         private void AddFirework(object l)
         {

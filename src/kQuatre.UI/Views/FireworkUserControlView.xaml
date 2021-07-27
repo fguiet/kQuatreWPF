@@ -60,7 +60,7 @@
         	        HorizontalAlignment="Center" 
                     Height="50" 
                     VerticalAlignment="Center" 
-                    Width="200"/>        
+                    Width="200"/>
             </GroupBox>
             <GroupBox Grid.Row="0" Grid.Column="1" Margin="2,2,20,2" Header="Temps écoulé">
                 <!--<ig:XamSegmentedDisplay VerticalAlignment="Center" Margin="10,10,10,10" Text="{Binding FireworkManager.ElapsedTimeString}" Name="_segChrono" SegmentMode="SevenSegment"
@@ -124,7 +124,7 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
-                           <!-- <ColumnDefinition Width="Auto"/>-->
+                            <!-- <ColumnDefinition Width="Auto"/>-->
                         </Grid.ColumnDefinitions>
                         <telerik:RadToggleButton x:Name="_chkArming" Grid.Column="0"  IsChecked="{Binding Path=IsFireworkArmed}" Command="{Binding Path=ArmFireworkCommand}"  VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="45"  Margin="10" Style="{StaticResource RadToggleButtonStyle_OB2}" Content="Armer"   />
                         <Button Style="{StaticResource TriggerStyle}"  Grid.Column="1" Margin="5,5,5,5" Content="Tirer"  Height="50" Width="75" Name="_btnStart" Command="{Binding Path=StartFireworkCommand}"  
@@ -145,7 +145,19 @@
                         <Button  Grid.Column="4" Margin="5,5,5,5" HorizontalAlignment="Right" Content="Recentrer" Height="50" Width="75" Name="_btnCenter"  Visibility="Visible" Command="{Binding Path=CenterTimeLineCommand}" />
                         <!--<TextBlock Grid.Column="4" Text="{Binding VisiblePeriodStart}"></TextBlock>-->
                     </Grid>
-                    <CheckBox Grid.Row="1" IsChecked="{Binding Path=AutomaticTimelineScroll}" Content="Défilement automatique de la ligne de temps du feu" />
+                    <Grid Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <CheckBox Grid.Column="0" IsChecked="{Binding Path=AutomaticTimelineScroll}" Margin="0,0,10,0" Content="Défilement automatique de la ligne de temps du feu" />
+                            <CheckBox Grid.Column="1" IsChecked="{Binding Path=PlaySoundTrack}" IsEnabled="{Binding Path=IsPlaySoundTrackEnabled}" Content="Jouer la bande sonore" />
+                        </Grid>
+                    </Grid>
                 </Grid>
             </GroupBox>
         </Grid>
@@ -216,7 +228,7 @@
 														 DataMemberBinding="{Binding ElapsedTimeText}" Width="Auto" />
                 </telerik:RadGridView.Columns>
             </telerik:RadGridView >
-            
+
         </Grid>
     </Grid>
 </UserControl>

@@ -37,6 +37,8 @@ namespace fr.guiet.kquatre.ui.viewmodel
 
         private bool _automaticTimelineScroll = true;
 
+        private bool _playSoundTrack = false;
+
         private int _oldIndex = -1;
 
         private double? _lastCentereredVerticalSliderFireworkPositionStart = null;
@@ -120,7 +122,29 @@ namespace fr.guiet.kquatre.ui.viewmodel
             {
                 _automaticTimelineScroll = value;
             }
+        }
 
+        public bool PlaySoundTrack
+        {
+            get
+            {
+                return _playSoundTrack;
+            }
+
+            set
+            {
+                _playSoundTrack = value;
+                OnPropertyChanged();
+            }
+
+        }
+
+        public bool IsPlaySoundTrackEnabled
+        {
+            get
+            {
+                return _fireworkManager.HasSoundTrackToPlay && _fireworkManager.State == FireworkManagerState.FireworkStopped;
+            }            
         }
 
         public bool IsFireworkArmed
@@ -551,12 +575,15 @@ namespace fr.guiet.kquatre.ui.viewmodel
         {
             //Reset firework UI
             ResetUserControlUI();
+
+            //Reset Play sound track
+            PlaySoundTrack = false;            
         }
 
         private void FireworkManager_FireworkStarted(object sender, EventArgs e)
         {
             //Refresh control panel possibility
-            RefreshControlPanelUI();
+            RefreshControlPanelUI();            
         }
 
         //private void FireworkManager_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -625,7 +652,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
         {
             IsFireworkArmed = false;
             RefreshControlPanelUI();
-            RefreshFireworkUI();
+            RefreshFireworkUI();            
         }
 
         /// <summary>
@@ -647,6 +674,8 @@ namespace fr.guiet.kquatre.ui.viewmodel
 
                 if (_centerTimeLineCommand != null)
                     _centerTimeLineCommand.RaiseCanExecuteChanged();
+
+                OnPropertyChanged("IsPlaySoundTrackEnabled");
             });
         }
 
@@ -782,7 +811,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
             ResetScrollBar();
 
             //No need to do sanity check...it has been done before            
-            _fireworkManager.Start();
+            _fireworkManager.Start(_playSoundTrack);
 
             //Refresh Control panel, user cannot unarm for exemple
             RefreshControlPanelUI();

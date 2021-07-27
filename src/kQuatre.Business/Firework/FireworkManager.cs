@@ -17,7 +17,6 @@ using System.Timers;
 using System.Xml.Linq;
 using OfficeOpenXml;
 
-
 namespace fr.guiet.kquatre.business.firework
 {
 
@@ -51,7 +50,7 @@ namespace fr.guiet.kquatre.business.firework
         /// <summary>
         /// Firework name
         /// </summary>
-        private string _name = string.Empty;
+        private string _name = string.Empty;        
 
         /// <summary>
         /// Token used to cancel firework
@@ -63,6 +62,11 @@ namespace fr.guiet.kquatre.business.firework
         /// Initialized once
         /// </summary>
         private readonly DeviceManager _deviceManager = null;
+
+        /// <summary>
+        /// Handles FireworkSoundTrack
+        /// </summary>
+        private SoundTrackManager _soundTrackManager = new SoundTrackManager();
 
         /// <summary>
         /// Elapsed time since firework has begun
@@ -104,7 +108,7 @@ namespace fr.guiet.kquatre.business.firework
         private string _fireworkFullFileName = DEFAULT_FIREWORK_NAME;
 
         private const string DEFAULT_K4_EXTENSION = ".k4";
-        private const string DEFAULT_FIREWORK_NAME = "NouveauFeu";
+        private const string DEFAULT_FIREWORK_NAME = "NouveauFeu";        
 
         #endregion
 
@@ -208,6 +212,7 @@ namespace fr.guiet.kquatre.business.firework
         }
 
         #endregion
+
         public bool IsSanityCheckOk
         {
             get
@@ -247,6 +252,14 @@ namespace fr.guiet.kquatre.business.firework
                     _fireworkFullFileName = value;
                     OnPropertyChanged();
                 }
+            }
+        }
+
+        public bool HasSoundTrackToPlay
+        {
+            get
+            {
+                return _soundTrackManager.HasSoundTrackToPlay() && _soundTrackManager.IsSoundTrackSanityCheckOk();
             }
         }
 
@@ -361,8 +374,8 @@ namespace fr.guiet.kquatre.business.firework
         public TimeSpan ElapsedTime
         {
             get
-            { 
-                return _elapsedTime.Elapsed;                
+            {
+                return _elapsedTime.Elapsed;
             }
         }
 
@@ -420,6 +433,25 @@ namespace fr.guiet.kquatre.business.firework
                     MakeItDirty(true);
                     OnPropertyChanged();
                 }
+            }
+        }
+
+        public string SoundTrackUI
+        {
+            get
+            {
+                return _soundTrackManager.SoundTrackFilePath;
+            }    
+            
+            set
+            {
+                if (_soundTrackManager.SoundTrackFilePath != value)
+                {
+                    _soundTrackManager.SoundTrackFilePath = value;
+                    _soundTrackManager.Load(value);
+                    MakeItDirty(true);
+                    OnPropertyChanged();
+                }                
             }
         }
 
@@ -487,6 +519,7 @@ namespace fr.guiet.kquatre.business.firework
                 return new ObservableCollection<Line>(activeLines);
             }
         }
+
 
         #region Constructor
 
@@ -601,7 +634,7 @@ namespace fr.guiet.kquatre.business.firework
         }
 
         private async void Transceiver_FrameAckKoEvent(object sender, FrameAckKOEventArgs e)
-        {            
+        {
             if (e.AckKOFrame.HasSentFrame && e.AckKOFrame.SentFrame is FireFrame)
             {
                 if (e.AckKOFrame.SentFrame.CanBeResent)
@@ -702,6 +735,12 @@ namespace fr.guiet.kquatre.business.firework
         /// </summary>
         public void Stop()
         {
+            if (_soundTrackManager.HasSoundTrackToPlay() && _soundTrackManager.IsSoundTrackSanityCheckOk())
+            {
+                //Stop soundtrack if any
+                _soundTrackManager.Stop();
+            }            
+
             //User ask to stop firework in this case...So stop it properly
             //Stop firework and line properly
             foreach (Line l in AllLines)
@@ -716,17 +755,13 @@ namespace fr.guiet.kquatre.business.firework
         /// <summary>
         /// Start firework !!!
         /// </summary>
-        public void Start()
+        public void Start(bool playSoundTrack)
         {
-            
-            //Experimental
-            //Let's Play some music
-            /*WaveOutEvent outputDevice = new WaveOutEvent();
-            AudioFileReader audioFile = new AudioFileReader(@"I:\Users\Fred\Projects\kQuatreWPF\Firework\2021\FEU OUTARVILLE 2021.mp3");            
-            
-            outputDevice.Init(audioFile);
-            outputDevice.Play();*/
-            
+            if (playSoundTrack && _soundTrackManager.HasSoundTrackToPlay() && _soundTrackManager.IsSoundTrackSanityCheckOk())
+            {
+                _soundTrackManager.Play();
+            }            
+
             DoWorkAsync();
         }
 
@@ -816,6 +851,15 @@ namespace fr.guiet.kquatre.business.firework
                 {
                     fr.guiet.kquatre.business.receptor.Receptor recep = new fr.guiet.kquatre.business.receptor.Receptor(r.Attribute("name").Value, r.Attribute("address").Value.ToString(), Convert.ToInt32(r.Attribute("nbOfChannels").Value.ToString()), _deviceManager);
                     _receptors.Add(recep);
+                }
+
+                //Reset SoundTrack
+                SoundTrackUI = string.Empty;
+
+                //v2021.2.1.0.0 - Add SoundTrack
+                if (fireworkDefinition.Element("FireworkDefinition").Element("SoundTrack") != null)
+                {
+                    SoundTrackUI = fireworkDefinition.Element("FireworkDefinition").Element("SoundTrack").Attribute("soundTrackFilePath").Value.ToString();                    
                 }
 
                 //Parcours des lignes et création des artifices
@@ -928,7 +972,7 @@ namespace fr.guiet.kquatre.business.firework
 
                 ExcelWorksheet excelWorkSheet = ep.Workbook.Worksheets[_configuration.ExcelSheetNumber];
 
-                int rows = excelWorkSheet.Dimension.Rows;                
+                int rows = excelWorkSheet.Dimension.Rows;
 
                 _name = excelWorkSheet.Cells[_configuration.ExcelFireworkName].Value.ToString();
 
@@ -957,8 +1001,8 @@ namespace fr.guiet.kquatre.business.firework
                     }
 
                     //Get Data for firework
-                    string reference = excelWorkSheet.Cells[i, 8].Value.ToString(); 
-                    string designation = excelWorkSheet.Cells[i, 5].Value.ToString();  
+                    string reference = excelWorkSheet.Cells[i, 8].Value.ToString();
+                    string designation = excelWorkSheet.Cells[i, 5].Value.ToString();
                     TimeSpan duration = ((DateTime)excelWorkSheet.Cells[i, 6].Value).TimeOfDay;
                     Firework firework = new Firework(reference, designation, duration);
 
@@ -1099,6 +1143,9 @@ namespace fr.guiet.kquatre.business.firework
                             _receptors.Select(x => new XElement("Receptor", new XAttribute("name", x.Name), new XAttribute("address", x.Address), new XAttribute("nbOfChannels", x.NbOfChannel)))
                          );
 
+                //SoundTrack
+                XElement st = new XElement("SoundTrack", new XAttribute("soundTrackFilePath", _soundTrackManager.SoundTrackFilePath));
+
                 //Lines
                 XElement lines = new XElement("Lines");
 
@@ -1143,6 +1190,9 @@ namespace fr.guiet.kquatre.business.firework
 
                 //add receptors
                 fd.Add(r);
+
+                //add soundtrack
+                fd.Add(st);
 
                 //add lines
                 fd.Add(lines);
@@ -1240,6 +1290,16 @@ namespace fr.guiet.kquatre.business.firework
                 {
                     _sanityCheckErrorsList.Add(string.Format("La ligne n°{0} est définie sans adresse de récepteur associée", l.Number));
                     isSanityCheckOk = false;
+                }
+            }
+
+            //SoundTrack Sanity Check
+            if (_soundTrackManager.HasSoundTrackToPlay())
+            {
+                if (!_soundTrackManager.IsSoundTrackSanityCheckOk())
+                {
+                    _sanityCheckErrorsList.Add(string.Format("La bande sonore : {0} ne peut pas être lue correctement", _soundTrackManager.SoundTrackFilePath));
+                    _isSanityCheckOk = false;
                 }
             }
 

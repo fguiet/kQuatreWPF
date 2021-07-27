@@ -6,7 +6,7 @@
              xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
              xmlns:custom="clr-namespace:fr.guiet.kquatre.ui.controls.gridview"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" Background="White">
+             d:DesignHeight="450" d:DesignWidth="1000" Background="White">
     <Grid Margin="20 20 0 0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -17,12 +17,12 @@
 
         <TextBlock Grid.Row="0" Text="Conception du feu d'artifice" FontSize="16" Foreground="#0099BC" FontWeight="Medium"/>
 
-        <Grid Margin="0 15 0 15" Grid.Row="1">
+        <Grid Margin="0 5 0 5" Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="100px"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
@@ -30,7 +30,24 @@
             <TextBox Grid.Column="1" Height="20" Width="400" Text="{Binding Path=FireworkManager.Name, UpdateSourceTrigger=PropertyChanged}" />
         </Grid>
 
-        <Grid Grid.Row="2">
+        <Grid Margin="0 5 0 5" Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100px"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Column="0" Content="Bande sonore : " />
+            <TextBox Grid.Column="1" Height="20" Width="600" Margin="0,0,5,0" Text="{Binding Path=FireworkManager.SoundTrackUI}" IsEnabled="False" />
+            <Button Name="_btnSelectSoundTrack" Width="50"  Height="20" Grid.Column="2" Margin="0,0,5,0" Content="..." Command="{Binding Path=SelectSoundTrackCommand}" ></Button>
+            <Button Name="_btnResetSoundTrack" Width="50" Height="20" Grid.Column="3" Content="Reset" Command="{Binding Path=ResetSoundTrackCommand}" ></Button>
+        </Grid>
+
+        <Grid Grid.Row="3">
             <Grid.RowDefinitions>
                 <RowDefinition/>
             </Grid.RowDefinitions>
@@ -50,7 +67,7 @@
             <Button Name="_btnCheckFirework" Width="120" Margin="5,5,5,5" HorizontalAlignment="left" VerticalAlignment="Center" Grid.Column="3" Content="Vérifier la validité" Click="BtnCheckFirework_Click" ></Button>
         </Grid>
 
-        <Grid Grid.Row="3">
+        <Grid Grid.Row="4">
 
             <Grid.RowDefinitions>
                 <RowDefinition  />
