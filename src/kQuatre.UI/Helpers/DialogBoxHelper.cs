@@ -4,7 +4,7 @@ namespace fr.guiet.kquatre.ui.helpers
 {
     public static class DialogBoxHelper
     {
-
+        //TODO: Make dialog modal!!
         public static MessageBoxResult ShowQuestionMessage(string message)
         {
             return MessageBox.Show(message, "Question", MessageBoxButton.YesNo, MessageBoxImage.Question);

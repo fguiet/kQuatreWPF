@@ -50,6 +50,9 @@ namespace fr.guiet.kquatre.business
         public void Stop()
         {
             _outputDevice.Stop();
+
+            //Reset Audio file to beginning
+            _audioFile.CurrentTime = new TimeSpan(0, 0, 0);
         }
 
         /// <summary>

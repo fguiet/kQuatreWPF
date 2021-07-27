@@ -1512,11 +1512,13 @@ namespace fr.guiet.kquatre.business.firework
                     _deviceManager.Transceiver.FrameTimeOutEvent -= Transceiver_FrameTimeOutEvent;
                 }
 
-                _elapsedTime.Stop();
-                _elapsedTime = null;
-
+                //First stop timer then elapsed time because elapsedtime is used in timer helper event
+                //avoid null point exception
                 _timerHelper.Stop();
                 _timerHelper = null;
+
+                _elapsedTime.Stop();
+                _elapsedTime = null;
 
                 OnFireworkFinishedEvent();
 
@@ -1547,6 +1549,10 @@ namespace fr.guiet.kquatre.business.firework
 
         private void TimerHelper_Elapsed(object sender, ElapsedEventArgs e)
         {
+            //May occur...
+            //2021-07-27 - Not anymore I changed the order of stop 
+            if (_elapsedTime == null) return;
+
             //Throw event !
             OnTimerElapsedEvent(sender);
 

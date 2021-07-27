@@ -227,7 +227,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
         #region Events       
 
         private void FireworkManager_TimerElapsed(object sender, EventArgs e)
-        {
+        {          
             //Set background color of current timeline
             _userControlDispatcher.Invoke(() =>
             {
@@ -254,6 +254,12 @@ namespace fr.guiet.kquatre.ui.viewmodel
                         if (nbOfSeconds - _oldIndex > 1)
                         {
                             //TODO : 2021/07/14 - Investigate why...
+                            //2021/07/27 : It was because a part of this code was very time-consumming => 
+                            //PropertyInfo pi = borderType.GetProperty("Value");
+
+                            //object obj = pi.GetValue(elementStyle.Setters[0], null);
+
+                            //Maybe not necessary anymore...but we can keep it anyway just in case...
 
                             //To avoid UI glitches...
                             RefreshTimelineUI();
@@ -271,8 +277,25 @@ namespace fr.guiet.kquatre.ui.viewmodel
                             //May occur during screen resize (number of interval may be very low...)
                             if (timeLineStripLineControlList != null && nbOfSeconds < timeLineStripLineControlList.Count)
                             {
+                                Style timeLineStyle = new Style
+                                {
+                                    TargetType = typeof(Border)
+                                };
+
+                                if ((nbOfSeconds - 1) % 2 == 0)
+                                {
+                                    timeLineStyle.Setters.Add(new Setter(Border.BackgroundProperty, _primaryBackgroundBrush));
+                                    
+                                }
+                                else
+                                {
+                                    timeLineStyle.Setters.Add(new Setter(Border.BackgroundProperty, _alternativeBrush));
+                                }
+
+                                timeLineStripLineControlList[nbOfSeconds - 1].ElementStyle = timeLineStyle;
+
                                 //Retrieve current element style
-                                Style elementStyle = timeLineStripLineControlList[nbOfSeconds].ElementStyle;
+                                /*Style elementStyle = timeLineStripLineControlList[nbOfSeconds].ElementStyle;
 
                                 //Retrieve Setter of type System.Windows.Controls.Border
                                 Type borderType = elementStyle.Setters[0].GetType();
@@ -298,7 +321,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
                                     timeLineStyle.Setters.Add(new Setter(Border.BackgroundProperty, _alternativeBrush));
                                 }
 
-                                timeLineStripLineControlList[nbOfSeconds - 1].ElementStyle = timeLineStyle;
+                                timeLineStripLineControlList[nbOfSeconds - 1].ElementStyle = timeLineStyle;*/
                             }
                         }
 
@@ -577,11 +600,11 @@ namespace fr.guiet.kquatre.ui.viewmodel
             ResetUserControlUI();
 
             //Reset Play sound track
-            PlaySoundTrack = false;            
+            PlaySoundTrack = false;         
         }
 
         private void FireworkManager_FireworkStarted(object sender, EventArgs e)
-        {
+        {            
             //Refresh control panel possibility
             RefreshControlPanelUI();            
         }
@@ -626,6 +649,8 @@ namespace fr.guiet.kquatre.ui.viewmodel
 
         private void FireworkManager_LineStarted(object sender, EventArgs e)
         {
+            //TODO: avoid ComputeVisiblePeriod if line has been relaunched by used!!
+
             _line = sender as Line;
 
             if (!_line.IsRescueLine)
@@ -652,7 +677,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
         {
             IsFireworkArmed = false;
             RefreshControlPanelUI();
-            RefreshFireworkUI();            
+            RefreshFireworkUI(); 
         }
 
         /// <summary>
@@ -676,6 +701,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
                     _centerTimeLineCommand.RaiseCanExecuteChanged();
 
                 OnPropertyChanged("IsPlaySoundTrackEnabled");
+                RefreshTimelineUI();
             });
         }
 
@@ -869,6 +895,9 @@ namespace fr.guiet.kquatre.ui.viewmodel
         }
 
 
+        /// <summary>
+        /// TODO: Maybe one day it will be removed...blank background : https://docs.telerik.com/devtools/silverlight/controls/radtimeline/how-to/howto-change-striplines-background
+        /// </summary>
         private void RefreshTimelineUI()
         {
             _userControlDispatcher.Invoke(() =>
@@ -876,11 +905,33 @@ namespace fr.guiet.kquatre.ui.viewmodel
                 //Refresh UI to avoid that timeline if keep in blue during intervals refresh 
                 try
                 {
-                    FluentResourceExtension previousFluentResourceExt = null;
+                    //FluentResourceExtension previousFluentResourceExt = null;
+
+                    int index = 0;
 
                     List<TimelineStripLineControl> timelineStripLineControlList = _fireworkTimeline.ChildrenOfType<TimelineStripLineControl>().ToList();
                     foreach (TimelineStripLineControl tpc in timelineStripLineControlList)
                     {
+                        Style timeLineStyle = new Style
+                        {
+                            TargetType = typeof(Border)
+                        };
+
+                        if (index % 2 == 0)
+                        {
+                            timeLineStyle.Setters.Add(new Setter(Border.BackgroundProperty, _primaryBackgroundBrush));
+                        }
+                        else
+                        {
+                            timeLineStyle.Setters.Add(new Setter(Border.BackgroundProperty, _alternativeBrush));
+                        }
+
+                        tpc.ElementStyle = timeLineStyle;
+
+                        index++;
+
+
+                        /*
                         //Retrieve current element style
                         Style elementStyle = tpc.ElementStyle;
 
@@ -914,7 +965,8 @@ namespace fr.guiet.kquatre.ui.viewmodel
                             tpc.ElementStyle = timeLineStyle;
                         }
 
-                        previousFluentResourceExt = fre;                        
+                        previousFluentResourceExt = fre;    
+                        */
                     }
                 }
                 catch
