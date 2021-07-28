@@ -12,6 +12,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -61,7 +62,7 @@
             <Border Grid.Row="0" Grid.Column="1"  Background="LightGray" />
             <Border Grid.Row="0" Grid.Column="2"  Background="LightGray" />
             <Border Grid.Row="0" Grid.Column="3"  Background="LightGray" />
-            <Button x:Name="_btnAddLine" Width="120" Margin="5,5,5,5" HorizontalAlignment="left" VerticalAlignment="Center" Grid.Column="0" Content="Ajouter une ligne" Click="BtnAddLine_Click" ></Button>
+            <Button x:Name="_btnAddLine" Height="20" Width="120" Margin="5,5,5,5" HorizontalAlignment="left" VerticalAlignment="Center" Grid.Column="0" Content="Ajouter une ligne" Click="BtnAddLine_Click" ></Button>
             <Button x:Name="_btnAlterLine" Width="120" Margin="5,5,5,5" HorizontalAlignment="left" VerticalAlignment="Center"  Grid.Column="1" Content="Modifier une ligne" Click="BtnAlterLine_Click" ></Button>
             <Button Name="_btnDeleteLine" Width="120" Margin="5,5,5,5" HorizontalAlignment="left" VerticalAlignment="Center" Grid.Column="2" Content="Supprimer une ligne" Click="BtnDeleteLine_Click" ></Button>
             <Button Name="_btnCheckFirework" Width="120" Margin="5,5,5,5" HorizontalAlignment="left" VerticalAlignment="Center" Grid.Column="3" Content="Vérifier la validité" Click="BtnCheckFirework_Click" ></Button>

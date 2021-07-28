@@ -1,5 +1,15 @@
 # Changelog
 
+## [2021.2.1.1] - 2021/07/28
+
+Bugs Fixing
+
+* Restart MP3 Audio File
+* Improve UI refresh speed
+* NullPointerException
+* Fix regression (first line of a grid was not visible anymore)
+* Do not recompute UI when failed line was launched again
+
 ## [2021.2.1.0] - 2021/07/27
 
 * Add MP3 soundtrack playback functionality 

@@ -446,7 +446,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
             }
             else
             {
-                _fireworkManager.SaveFirework();
+                _fireworkManager.SaveFirework();                
                 DialogBoxHelper.ShowInformationMessage("Enregistrement effectué avec succès");
             }
         }

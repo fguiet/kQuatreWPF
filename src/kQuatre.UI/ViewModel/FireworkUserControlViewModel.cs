@@ -200,7 +200,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
 
             _fireworkManager.FireworkLoaded += FireworkManager_FireworkLoaded;
             _fireworkManager.LineStarted += FireworkManager_LineStarted;
-            _fireworkManager.LineFailed += FireworkManager_LineFailed;
+            //_fireworkManager.LineFailed += FireworkManager_LineFailed;
             _fireworkManager.FireworkFinished += FireworkManager_FireworkFinished;
             _fireworkManager.FireworkStarted += FireworkManager_FireworkStarted;
             _fireworkManager.TransceiverDisconnected += FireworkManager_TransceiverDisconnected;
@@ -337,8 +337,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
 
                             timeLineStripLineControlList[nbOfSeconds].ElementStyle = currentTimeLineStyle;
                         }
-
-                        //TODO : implement this!
+                        
                         //When next firework is later and out ot visible screen, let's move the screen on
                         if (nbOfSeconds >= timeLineStripLineControlList.Count - 2) //
                         {
@@ -634,26 +633,26 @@ namespace fr.guiet.kquatre.ui.viewmodel
             DialogBoxHelper.ShowInformationMessage(message);
         }
 
-        private void FireworkManager_LineFailed(object sender, EventArgs e)
+        /*private void FireworkManager_LineFailed(object sender, EventArgs e)
         {
             _line = sender as Line;
 
-            if (!_line.IsRescueLine)
+            //Update GUI only when normal line and launch only one time
+            if (!_line.IsRescueLine && _line.LaunchTimeCounter == 1)
             {
                 DateTime visiblePeriodStart = DateTime.Now.Date.Add(_line.Ignition).Subtract(new TimeSpan(0, 0, 20));
                 DateTime visiblePeriodEnd = DateTime.Now.Date.Add(_line.Ignition).Add(new TimeSpan(0, 0, 40));
 
                 ComputeVisiblePeriod(visiblePeriodStart, visiblePeriodEnd, _line.Fireworks[0].RadRowIndex, false);
             }
-        }
+        }*/
 
         private void FireworkManager_LineStarted(object sender, EventArgs e)
-        {
-            //TODO: avoid ComputeVisiblePeriod if line has been relaunched by used!!
-
+        {            
             _line = sender as Line;
 
-            if (!_line.IsRescueLine)
+            //Update GUI only when normal line and launch only one time
+            if (!_line.IsRescueLine && _line.LaunchTimeCounter == 1)
             {
                 DateTime visiblePeriodStart = DateTime.Now.Date.Add(_line.Ignition).Subtract(new TimeSpan(0, 0, 20));
                 DateTime visiblePeriodEnd = DateTime.Now.Date.Add(_line.Ignition).Add(new TimeSpan(0, 0, 40));
@@ -713,7 +712,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
         {
             try
             {
-                _fireworkManager.LaunchLine(lineNumber);
+                _fireworkManager.LaunchFailedLine(lineNumber);
             }
             catch (CannotLaunchLineException ex)
             {

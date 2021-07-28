@@ -1050,7 +1050,7 @@ namespace fr.guiet.kquatre.business.firework
                 OnFireworkDefinitionModifiedEvent();
         }
 
-        public void LaunchLine(string lineNumber)
+        public void LaunchFailedLine(string lineNumber)
         {
             //Check             
             if (_state == FireworkManagerState.FireworkRunning)
@@ -1061,7 +1061,7 @@ namespace fr.guiet.kquatre.business.firework
                           select rl).FirstOrDefault();
 
                 if (l != null)
-                {
+                {                    
                     List<Line> lines = new List<Line>
                     {
                         l

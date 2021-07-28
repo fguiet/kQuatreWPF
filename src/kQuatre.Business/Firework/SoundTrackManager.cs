@@ -3,7 +3,7 @@ using NAudio.Wave;
 using System;
 using System.IO;
 
-namespace fr.guiet.kquatre.business
+namespace fr.guiet.kquatre.business.firework
 {
     public class SoundTrackManager
     {

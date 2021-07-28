@@ -28,6 +28,7 @@ namespace fr.guiet.kquatre.business.firework
 
         private void OnLineStartedEvent()
         {
+            _launchedTimeCounter++;
             LineStarted?.Invoke(this, new EventArgs());
         }
 
@@ -41,6 +42,11 @@ namespace fr.guiet.kquatre.business.firework
         #region Private Members
 
         private bool _isRescueLine = false;
+
+        /// <summary>
+        /// Number of time this line has been launched (user can relaunched a ligne when it has failed)
+        /// </summary>
+        private int _launchedTimeCounter = 0;
 
         //private bool _isDirty = false;
 
@@ -72,6 +78,14 @@ namespace fr.guiet.kquatre.business.firework
         #endregion
 
         #region Public Members
+
+        public int LaunchTimeCounter
+        {
+            get
+            {
+                return _launchedTimeCounter;
+            }
+        }
 
         public String IsRescueLineText
         {
@@ -267,7 +281,7 @@ namespace fr.guiet.kquatre.business.firework
 
         #endregion
 
-        #region Public Methods
+        #region Public Methods        
         
         public void Reorder(int number)
         {
