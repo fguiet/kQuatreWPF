@@ -25,6 +25,19 @@
                 </Style.Triggers>
             </Style>
             <conv:CountToVisibilityConverter x:Key="CountToVisibilityConverter"></conv:CountToVisibilityConverter>
+
+            <Style TargetType="Border" x:Key="normalStyle">
+                <Setter Property="Background" Value="White" />
+            </Style>
+
+            <Style TargetType="Border" x:Key="alternateStyle">
+                <Setter Property="Background" Value="White" />
+            </Style>
+
+            <Style TargetType="telerik:TimelineStripLineControl">
+                <Setter Property="NormalStyle" Value="{StaticResource normalStyle}" />
+                <Setter Property="AlternateStyle" Value="{StaticResource alternateStyle}" />
+            </Style>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Margin="10 10 0 0">
@@ -123,11 +136,14 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                             <!-- <ColumnDefinition Width="Auto"/>-->
                         </Grid.ColumnDefinitions>
-                        <telerik:RadToggleButton x:Name="_chkArming" Grid.Column="0"  IsChecked="{Binding Path=IsFireworkArmed}" Command="{Binding Path=ArmFireworkCommand}"  VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="45"  Margin="10" Style="{StaticResource RadToggleButtonStyle_OB2}" Content="Armer"   />
-                        <Button Style="{StaticResource TriggerStyle}"  Grid.Column="1" Margin="5,5,5,5" Content="Tirer"  Height="50" Width="75" Name="_btnStart" Command="{Binding Path=StartFireworkCommand}"  
+                        <!--/kQuatre;component/Resources/valid.png -->
+                        <Image Grid.Column="0" Source="{Binding Path=SanityCheckStatusImagePath}" Height="50" Width="50"></Image>
+                        <telerik:RadToggleButton x:Name="_chkArming" Grid.Column="1"  IsChecked="{Binding Path=IsFireworkArmed}" Command="{Binding Path=ArmFireworkCommand}"  VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="45"  Margin="10" Style="{StaticResource RadToggleButtonStyle_OB2}" Content="Armer"   />
+                        <Button Style="{StaticResource TriggerStyle}"  Grid.Column="2" Margin="5,5,5,5" Content="Tirer"  Height="50" Width="75" Name="_btnStart" Command="{Binding Path=StartFireworkCommand}"  
                                              telerik:RadToolTipService.Placement="Center"
                                              telerik:RadToolTipService.VerticalOffset="-63"
                                              telerik:RadToolTipService.ToolTipContent="Attention, l'appuie sur ce bouton déclenche le feu d'artifice" >
@@ -139,10 +155,10 @@
                                 </DataTemplate>
                             </telerik:RadToolTipService.ToolTipContentTemplate>
                         </Button>
-                        <Button Grid.Column="2" Margin="5,5,5,5" Content="Arrêter"  Height="50" Width="75" Name="_btnStop" Command="{Binding Path=StopFireworkCommand}"/>
+                        <Button Grid.Column="3" Margin="5,5,5,5" Content="Arrêter"  Height="50" Width="75" Name="_btnStop" Command="{Binding Path=StopFireworkCommand}"/>
                         <!-- Used for testing purpose -->
-                        <Button  Grid.Column="3" Margin="5,5,5,5" Content="Test RadTimeline" Height="50" Width="75" Name="_btnTest" Click="_btnTest_Click" Visibility="Hidden" />
-                        <Button  Grid.Column="4" Margin="5,5,5,5" HorizontalAlignment="Right" Content="Recentrer" Height="50" Width="75" Name="_btnCenter"  Visibility="Visible" Command="{Binding Path=CenterTimeLineCommand}" />
+                        <Button  Grid.Column="4" Margin="5,5,5,5" Content="Test RadTimeline" Height="50" Width="75" Name="_btnTest" Click="_btnTest_Click" Visibility="Hidden" />
+                        <Button  Grid.Column="5" Margin="5,5,5,5" HorizontalAlignment="Right" Content="Recentrer" Height="50" Width="75" Name="_btnCenter"  Visibility="Visible" Command="{Binding Path=CenterTimeLineCommand}" />
                         <!--<TextBlock Grid.Column="4" Text="{Binding VisiblePeriodStart}"></TextBlock>-->
                     </Grid>
                     <Grid Grid.Row="1">

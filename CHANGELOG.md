@@ -8,7 +8,12 @@ Bugs Fixing
 * Improve UI refresh speed
 * NullPointerException
 * Fix regression (first line of a grid was not visible anymore)
-* Do not recompute UI when failed line was launched again
+* Reset line launched counter when line is reset
+
+New functionalities
+
+* Add valid / Not valid icon to determine whether firework is ready to be launched
+* Change firework timeline alternate color background to White (improve speed)
 
 ## [2021.2.1.0] - 2021/07/27
 

@@ -75,8 +75,6 @@ namespace fr.guiet.kquatre.ui.views
        
         private void FireworkTimeline_SelectionChanged(object sender, Telerik.Windows.Controls.SelectionChangeEventArgs e)
         {
-
-
             if (e.AddedItems.Count > 0)
             {
                 Firework f = (Firework)e.AddedItems[0];

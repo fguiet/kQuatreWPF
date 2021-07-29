@@ -34,6 +34,7 @@ namespace fr.guiet.kquatre.business.firework
 
         private void OnLineFailedEvent()
         {
+            _launchedTimeCounter++;
             LineFailed?.Invoke(this, new EventArgs());
         }
 
@@ -348,6 +349,7 @@ namespace fr.guiet.kquatre.business.firework
         public void Reset()
         {
             _state = LineState.Standby;
+            _launchedTimeCounter = 0;
 
             foreach (Firework firework in _fireworks)
             {

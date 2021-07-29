@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Threading;
 using Telerik.Windows.Controls;
 using Telerik.Windows.Controls.TimeBar;
@@ -29,8 +30,8 @@ namespace fr.guiet.kquatre.ui.viewmodel
         private RelayCommand _armFireworkCommand = null;
         private RelayCommand _centerTimeLineCommand = null;
 
-        private FluentResourceExtension _primaryBackgroundBrush = null;
-        private FluentResourceExtension _alternativeBrush = null;
+        //private FluentResourceExtension _primaryBackgroundBrush = null;
+        //private FluentResourceExtension _alternativeBrush = null;        
         private FluentResourceExtension _currentTimeLineColor = null;
 
         private double? _currentVerticalRange = null;
@@ -144,7 +145,22 @@ namespace fr.guiet.kquatre.ui.viewmodel
             get
             {
                 return _fireworkManager.HasSoundTrackToPlay && _fireworkManager.State == FireworkManagerState.FireworkStopped;
-            }            
+            }
+        }
+
+        public Uri SanityCheckStatusImagePath
+        {
+            get
+            {
+                if (_fireworkManager.IsSanityCheckOk)
+                {
+                    return new Uri("/kQuatre;component/Resources/valid.png", UriKind.RelativeOrAbsolute);
+                }
+                else
+                {
+                    return new Uri("/kQuatre;component/Resources/notvalid.png", UriKind.RelativeOrAbsolute);
+                }
+            }
         }
 
         public bool IsFireworkArmed
@@ -200,7 +216,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
 
             _fireworkManager.FireworkLoaded += FireworkManager_FireworkLoaded;
             _fireworkManager.LineStarted += FireworkManager_LineStarted;
-            //_fireworkManager.LineFailed += FireworkManager_LineFailed;
+            _fireworkManager.LineFailed += FireworkManager_LineFailed;
             _fireworkManager.FireworkFinished += FireworkManager_FireworkFinished;
             _fireworkManager.FireworkStarted += FireworkManager_FireworkStarted;
             _fireworkManager.TransceiverDisconnected += FireworkManager_TransceiverDisconnected;
@@ -209,13 +225,13 @@ namespace fr.guiet.kquatre.ui.viewmodel
 
             _userControlDispatcher = userControlDispatcher;
 
-            FluentResourceKey frk1 = (FluentResourceKey)FluentResourceKey.PrimaryBackgroundBrush;
+            /*FluentResourceKey frk1 = (FluentResourceKey)FluentResourceKey.PrimaryBackgroundBrush;
             _primaryBackgroundBrush = new FluentResourceExtension();
             _primaryBackgroundBrush.ResourceKey = frk1;
 
             FluentResourceKey frk2 = (FluentResourceKey)FluentResourceKey.AlternativeBrush;
             _alternativeBrush = new FluentResourceExtension();
-            _alternativeBrush.ResourceKey = frk2;
+            _alternativeBrush.ResourceKey = frk2;   */
 
             FluentResourceKey frk3 = (FluentResourceKey)FluentResourceKey.AccentBrush;
             _currentTimeLineColor = new FluentResourceExtension();
@@ -227,7 +243,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
         #region Events       
 
         private void FireworkManager_TimerElapsed(object sender, EventArgs e)
-        {          
+        {
             //Set background color of current timeline
             _userControlDispatcher.Invoke(() =>
             {
@@ -282,7 +298,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
                                     TargetType = typeof(Border)
                                 };
 
-                                if ((nbOfSeconds - 1) % 2 == 0)
+                                /*if ((nbOfSeconds - 1) % 2 == 0)
                                 {
                                     timeLineStyle.Setters.Add(new Setter(Border.BackgroundProperty, _primaryBackgroundBrush));
                                     
@@ -290,7 +306,9 @@ namespace fr.guiet.kquatre.ui.viewmodel
                                 else
                                 {
                                     timeLineStyle.Setters.Add(new Setter(Border.BackgroundProperty, _alternativeBrush));
-                                }
+                                }*/
+
+                                timeLineStyle.Setters.Add(new Setter(Border.BackgroundProperty, Brushes.White));
 
                                 timeLineStripLineControlList[nbOfSeconds - 1].ElementStyle = timeLineStyle;
 
@@ -337,18 +355,18 @@ namespace fr.guiet.kquatre.ui.viewmodel
 
                             timeLineStripLineControlList[nbOfSeconds].ElementStyle = currentTimeLineStyle;
                         }
-                        
+
                         //When next firework is later and out ot visible screen, let's move the screen on
                         if (nbOfSeconds >= timeLineStripLineControlList.Count - 2) //
                         {
                             if (_line != null)
                             {
-                                DateTime visiblePeriodStart1 = DateTime.Now.Date.Add(_fireworkManager.ElapsedTime).Subtract(new TimeSpan(0, 0, 20)); 
-                                DateTime visiblePeriodEnd1 = DateTime.Now.Date.Add(_fireworkManager.ElapsedTime).Add(new TimeSpan(0, 0, 40)); 
+                                DateTime visiblePeriodStart1 = DateTime.Now.Date.Add(_fireworkManager.ElapsedTime).Subtract(new TimeSpan(0, 0, 20));
+                                DateTime visiblePeriodEnd1 = DateTime.Now.Date.Add(_fireworkManager.ElapsedTime).Add(new TimeSpan(0, 0, 40));
 
                                 ComputeVisiblePeriod(visiblePeriodStart1, visiblePeriodEnd1, _line.Fireworks[0].RadRowIndex, false);
                             }
-                            
+
                         }
                     }
                 }
@@ -599,13 +617,13 @@ namespace fr.guiet.kquatre.ui.viewmodel
             ResetUserControlUI();
 
             //Reset Play sound track
-            PlaySoundTrack = false;         
+            PlaySoundTrack = false;
         }
 
         private void FireworkManager_FireworkStarted(object sender, EventArgs e)
-        {            
+        {
             //Refresh control panel possibility
-            RefreshControlPanelUI();            
+            RefreshControlPanelUI();
         }
 
         //private void FireworkManager_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -633,7 +651,12 @@ namespace fr.guiet.kquatre.ui.viewmodel
             DialogBoxHelper.ShowInformationMessage(message);
         }
 
-        /*private void FireworkManager_LineFailed(object sender, EventArgs e)
+        /// <summary>
+        /// Compute visible period if line has failed 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FireworkManager_LineFailed(object sender, EventArgs e)
         {
             _line = sender as Line;
 
@@ -645,10 +668,16 @@ namespace fr.guiet.kquatre.ui.viewmodel
 
                 ComputeVisiblePeriod(visiblePeriodStart, visiblePeriodEnd, _line.Fireworks[0].RadRowIndex, false);
             }
-        }*/
+        }
+
+        /// <summary>
+        /// Compute visible period if line has started
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
 
         private void FireworkManager_LineStarted(object sender, EventArgs e)
-        {            
+        {
             _line = sender as Line;
 
             //Update GUI only when normal line and launch only one time
@@ -676,7 +705,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
         {
             IsFireworkArmed = false;
             RefreshControlPanelUI();
-            RefreshFireworkUI(); 
+            RefreshFireworkUI();
         }
 
         /// <summary>
@@ -700,7 +729,9 @@ namespace fr.guiet.kquatre.ui.viewmodel
                     _centerTimeLineCommand.RaiseCanExecuteChanged();
 
                 OnPropertyChanged("IsPlaySoundTrackEnabled");
-                RefreshTimelineUI();
+                OnPropertyChanged("SanityCheckStatusImagePath");
+
+                //RefreshTimelineUI();
             });
         }
 
@@ -748,7 +779,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
         {
             //Reset current vertical range...
             _currentVerticalRange = null;
-            RefreshTimelineUI();            
+            //RefreshTimelineUI();            
         }
 
         /// <summary>
@@ -791,7 +822,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
 
                 ComputeVisiblePeriod(visiblePeriodStart, visiblePeriodEnd, _line.Fireworks[0].RadRowIndex, true);
             }
-            
+
         }
 
         private void ArmFirework()
@@ -893,79 +924,37 @@ namespace fr.guiet.kquatre.ui.viewmodel
             }
         }
 
-
-        /// <summary>
-        /// TODO: Maybe one day it will be removed...blank background : https://docs.telerik.com/devtools/silverlight/controls/radtimeline/how-to/howto-change-striplines-background
-        /// </summary>
         private void RefreshTimelineUI()
         {
+            //Do it only when a firework is running...otherwise useless
+            if (_fireworkManager.State != FireworkManagerState.FireworkRunning) return;
+
             _userControlDispatcher.Invoke(() =>
             {
                 //Refresh UI to avoid that timeline if keep in blue during intervals refresh 
                 try
                 {
-                    //FluentResourceExtension previousFluentResourceExt = null;
-
+                    int visiblePeriodStart = Convert.ToInt32(Math.Floor(_fireworkTimeline.VisiblePeriodStart.TimeOfDay.TotalSeconds));                    
+                    int fireworkElapsedTime = Convert.ToInt32(Math.Floor(_fireworkManager.ElapsedTime.TotalSeconds));
+                    int nbOfSeconds = fireworkElapsedTime - visiblePeriodStart;
                     int index = 0;
 
                     List<TimelineStripLineControl> timelineStripLineControlList = _fireworkTimeline.ChildrenOfType<TimelineStripLineControl>().ToList();
                     foreach (TimelineStripLineControl tpc in timelineStripLineControlList)
                     {
+                        //Refresh only part of ui that need to be refreshed!                            
+                        if (index >= nbOfSeconds) break;
+
+                        index++;
+
                         Style timeLineStyle = new Style
                         {
                             TargetType = typeof(Border)
                         };
 
-                        if (index % 2 == 0)
-                        {
-                            timeLineStyle.Setters.Add(new Setter(Border.BackgroundProperty, _primaryBackgroundBrush));
-                        }
-                        else
-                        {
-                            timeLineStyle.Setters.Add(new Setter(Border.BackgroundProperty, _alternativeBrush));
-                        }
+                        timeLineStyle.Setters.Add(new Setter(Border.BackgroundProperty, Brushes.White));
 
                         tpc.ElementStyle = timeLineStyle;
-
-                        index++;
-
-
-                        /*
-                        //Retrieve current element style
-                        Style elementStyle = tpc.ElementStyle;
-
-                        //Retrieve Setter of type System.Windows.Controls.Border
-                        Type borderType = elementStyle.Setters[0].GetType();
-
-                        //Get Value Property
-                        PropertyInfo pi = borderType.GetProperty("Value");
-
-                        object obj = pi.GetValue(elementStyle.Setters[0], null);
-
-                        FluentResourceExtension fre = (FluentResourceExtension)obj;
-
-                        //Find 
-                        if (fre.ResourceKey == FluentResourceKey.AccentBrush && previousFluentResourceExt != null)
-                        {
-                            Style timeLineStyle = new Style
-                            {
-                                TargetType = typeof(Border)
-                            };
-
-                            if (previousFluentResourceExt.ResourceKey == _alternativeBrush.ResourceKey)
-                            {
-                                timeLineStyle.Setters.Add(new Setter(Border.BackgroundProperty, _primaryBackgroundBrush));
-                            }
-                            else
-                            {
-                                timeLineStyle.Setters.Add(new Setter(Border.BackgroundProperty, _alternativeBrush));
-                            }
-
-                            tpc.ElementStyle = timeLineStyle;
-                        }
-
-                        previousFluentResourceExt = fre;    
-                        */
                     }
                 }
                 catch
@@ -973,77 +962,159 @@ namespace fr.guiet.kquatre.ui.viewmodel
                     //Avoid UI crash
                 }
             });
-            /*_userControlDispatcher.Invoke(() =>
-            {                
-                try
-                {
-                    //_timeLineUIRefreshing = true;
-                    int index = 1;
-
-                    List<TimelineStripLineControl> timelineStripLineControllList = _fireworkTimeline.ChildrenOfType<TimelineStripLineControl>().ToList();
-                    foreach (TimelineStripLineControl tpc in timelineStripLineControllList)
-                    {
-                        //Style elementStyle = tpc.ElementStyle;
-
-                        //Retrieve Setter of type System.Windows.Controls.Border
-                        //Type borderType = elementStyle.Setters[0].GetType();
-
-                        //Get Value Property
-                        //PropertyInfo pi = borderType.GetProperty("Value");
-
-                        //object obj = pi.GetValue(elementStyle.Setters[0], null);
-
-                        Style newStyle = new Style
-                        {
-                            TargetType = typeof(Border)
-                        };
-
-                        if (index % 2 == 0)
-                        {
-                            newStyle.Setters.Add(new Setter(Border.BackgroundProperty, _primaryBackgroundBrush));
-                        }
-                        else
-                        {
-                            newStyle.Setters.Add(new Setter(Border.BackgroundProperty, _alternativeBrush));
-                        }
-
-                        tpc.ElementStyle = newStyle;
-
-                        /*if (obj.GetType() == typeof(FluentResourceExtension))
-                        {
-                            FluentResourceExtension u = (FluentResourceExtension)obj;
-                        }
-
-
-                        if (obj.GetType() == typeof(SolidColorBrush))
-                        {
-                            SolidColorBrush u = (SolidColorBrush)obj;
-                        }*/
-
-            /*Grid grid = tpc.FindChildByType<Grid>();
-
-            if (index % 2 == 0)
-            {                            
-                grid.Background = _normalColor;
-            }
-            else
-            {                            
-                grid.Background = _alternateColor;
-            }*/
-
-            /*index++;
         }
-    }
-    catch
-    {
+
+
+        /// <summary>
+        /// TODO: Maybe one day it will be removed...blank background : https://docs.telerik.com/devtools/silverlight/controls/radtimeline/how-to/howto-change-striplines-background
+        /// </summary>
+        /* private void RefreshTimelineUI()
+         {
+             _userControlDispatcher.Invoke(() =>
+             {
+                 //Refresh UI to avoid that timeline if keep in blue during intervals refresh 
+                 try
+                 {
+                     //FluentResourceExtension previousFluentResourceExt = null;
+
+                     int index = 0;
+
+                     List<TimelineStripLineControl> timelineStripLineControlList = _fireworkTimeline.ChildrenOfType<TimelineStripLineControl>().ToList();
+                     foreach (TimelineStripLineControl tpc in timelineStripLineControlList)
+                     {
+                         Style timeLineStyle = new Style
+                         {
+                             TargetType = typeof(Border)
+                         };
+
+                         if (index % 2 == 0)
+                         {
+                             timeLineStyle.Setters.Add(new Setter(Border.BackgroundProperty, _primaryBackgroundBrush));
+                         }
+                         else
+                         {
+                             timeLineStyle.Setters.Add(new Setter(Border.BackgroundProperty, _alternativeBrush));
+                         }
+
+                         tpc.ElementStyle = timeLineStyle;
+
+                         index++;
+
+
+                         /*
+                         //Retrieve current element style
+                         Style elementStyle = tpc.ElementStyle;
+
+                         //Retrieve Setter of type System.Windows.Controls.Border
+                         Type borderType = elementStyle.Setters[0].GetType();
+
+                         //Get Value Property
+                         PropertyInfo pi = borderType.GetProperty("Value");
+
+                         object obj = pi.GetValue(elementStyle.Setters[0], null);
+
+                         FluentResourceExtension fre = (FluentResourceExtension)obj;
+
+                         //Find 
+                         if (fre.ResourceKey == FluentResourceKey.AccentBrush && previousFluentResourceExt != null)
+                         {
+                             Style timeLineStyle = new Style
+                             {
+                                 TargetType = typeof(Border)
+                             };
+
+                             if (previousFluentResourceExt.ResourceKey == _alternativeBrush.ResourceKey)
+                             {
+                                 timeLineStyle.Setters.Add(new Setter(Border.BackgroundProperty, _primaryBackgroundBrush));
+                             }
+                             else
+                             {
+                                 timeLineStyle.Setters.Add(new Setter(Border.BackgroundProperty, _alternativeBrush));
+                             }
+
+                             tpc.ElementStyle = timeLineStyle;
+                         }
+
+                         previousFluentResourceExt = fre;    
+                         */
+        //          }
+        //       }
+        //       catch
+        //        {
         //Avoid UI crash
-    }
-    finally
-    {
-      //  _timeLineUIRefreshing = false;
-    }
-});*/
+        //       }
+        //   });
+        /*_userControlDispatcher.Invoke(() =>
+        {                
+            try
+            {
+                //_timeLineUIRefreshing = true;
+                int index = 1;
+
+                List<TimelineStripLineControl> timelineStripLineControllList = _fireworkTimeline.ChildrenOfType<TimelineStripLineControl>().ToList();
+                foreach (TimelineStripLineControl tpc in timelineStripLineControllList)
+                {
+                    //Style elementStyle = tpc.ElementStyle;
+
+                    //Retrieve Setter of type System.Windows.Controls.Border
+                    //Type borderType = elementStyle.Setters[0].GetType();
+
+                    //Get Value Property
+                    //PropertyInfo pi = borderType.GetProperty("Value");
+
+                    //object obj = pi.GetValue(elementStyle.Setters[0], null);
+
+                    Style newStyle = new Style
+                    {
+                        TargetType = typeof(Border)
+                    };
+
+                    if (index % 2 == 0)
+                    {
+                        newStyle.Setters.Add(new Setter(Border.BackgroundProperty, _primaryBackgroundBrush));
+                    }
+                    else
+                    {
+                        newStyle.Setters.Add(new Setter(Border.BackgroundProperty, _alternativeBrush));
+                    }
+
+                    tpc.ElementStyle = newStyle;
+
+                    /*if (obj.GetType() == typeof(FluentResourceExtension))
+                    {
+                        FluentResourceExtension u = (FluentResourceExtension)obj;
+                    }
+
+
+                    if (obj.GetType() == typeof(SolidColorBrush))
+                    {
+                        SolidColorBrush u = (SolidColorBrush)obj;
+                    }*/
+
+        /*Grid grid = tpc.FindChildByType<Grid>();
+
+        if (index % 2 == 0)
+        {                            
+            grid.Background = _normalColor;
         }
+        else
+        {                            
+            grid.Background = _alternateColor;
+        }*/
+
+        /*index++;
+    }
+}
+catch
+{
+    //Avoid UI crash
+}
+finally
+{
+  //  _timeLineUIRefreshing = false;
+}
+});*/
+        //}
 
         private void RefreshFireworkUI()
         {
@@ -1080,7 +1151,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
                     //_fireworkTimeline.VisiblePeriod.Start
                     if (visiblePeriodStart.CompareTo(_fireworkManager.PeriodStartUI) > 0)
                     {
-                        _fireworkTimeline.VisiblePeriod = new Telerik.Windows.Controls.SelectionRange<DateTime>(visiblePeriodStart, visiblePeriodEnd);                       
+                        _fireworkTimeline.VisiblePeriod = new Telerik.Windows.Controls.SelectionRange<DateTime>(visiblePeriodStart, visiblePeriodEnd);
                     }
                     else
                     {
@@ -1119,7 +1190,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
                                     _lastCentereredVerticalSliderFireworkPositionStart = centereredVerticalSliderFireworkPositionStart;
                                 }
 
-                                verticalSlider.Selection = new SelectionRange<double>(_lastCentereredVerticalSliderFireworkPositionStart.Value, 1);                                
+                                verticalSlider.Selection = new SelectionRange<double>(_lastCentereredVerticalSliderFireworkPositionStart.Value, 1);
                             }
                             else
                             {
@@ -1164,7 +1235,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
             catch
             {
                 //NLog here
-            }            
+            }
         }
 
         private void ResetScrollBar()
@@ -1185,7 +1256,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
                 var newStart = 0;
                 var newEnd = verticalSlider.SelectionEnd;
 
-                verticalSlider.Selection = new SelectionRange<double>(newStart, newEnd);             
+                verticalSlider.Selection = new SelectionRange<double>(newStart, newEnd);
             }
         }
 

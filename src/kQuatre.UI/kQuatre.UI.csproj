@@ -16,8 +16,10 @@
     <None Remove="Resources\ExecutionIcon_32x32.png" />
     <None Remove="Resources\FireworksIcon.png" />
     <None Remove="Resources\IdeaIcon_32x32.png" />
+    <None Remove="Resources\notvalid.png" />
     <None Remove="Resources\SplashScreen.jpg" />
     <None Remove="Resources\TestIcon_32x32.png" />
+    <None Remove="Resources\valid.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -63,8 +65,10 @@
     <Resource Include="Resources\ExecutionIcon_32x32.png" />
     <Resource Include="Resources\FireworksIcon.png" />
     <Resource Include="Resources\IdeaIcon_32x32.png" />
+    <Resource Include="Resources\notvalid.png" />
     <Resource Include="Resources\SplashScreen.jpg" />
     <Resource Include="Resources\TestIcon_32x32.png" />
+    <Resource Include="Resources\valid.png" />
   </ItemGroup>
 
   <ItemGroup>
