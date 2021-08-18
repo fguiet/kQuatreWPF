@@ -29,10 +29,20 @@ namespace fr.guiet.kquatre.ui.viewmodel
         private RelayCommand _stopFireworkCommand = null;
         private RelayCommand _armFireworkCommand = null;
         private RelayCommand _centerTimeLineCommand = null;
+        
+        private Style _timeLineStyle = new Style
+        {
+            TargetType = typeof(Border)
+        };
+
+        private Style _currentTimeLineStyle = new Style
+        {
+            TargetType = typeof(Border)
+        };
 
         //private FluentResourceExtension _primaryBackgroundBrush = null;
         //private FluentResourceExtension _alternativeBrush = null;        
-        private FluentResourceExtension _currentTimeLineColor = null;
+        //private FluentResourceExtension _currentTimeLineColor = null;
 
         private double? _currentVerticalRange = null;
 
@@ -231,11 +241,15 @@ namespace fr.guiet.kquatre.ui.viewmodel
 
             FluentResourceKey frk2 = (FluentResourceKey)FluentResourceKey.AlternativeBrush;
             _alternativeBrush = new FluentResourceExtension();
-            _alternativeBrush.ResourceKey = frk2;   */
+            _alternativeBrush.ResourceKey = frk2;   */            
+                        
+            _timeLineStyle.Setters.Add(new Setter(Border.BackgroundProperty, Brushes.White));
 
             FluentResourceKey frk3 = (FluentResourceKey)FluentResourceKey.AccentBrush;
-            _currentTimeLineColor = new FluentResourceExtension();
-            _currentTimeLineColor.ResourceKey = frk3;
+            FluentResourceExtension currentTimeLineColor = new FluentResourceExtension();
+            currentTimeLineColor.ResourceKey = frk3;            
+
+            _currentTimeLineStyle.Setters.Add(new Setter(Border.BackgroundProperty, currentTimeLineColor));            
         }
 
         #endregion
@@ -293,10 +307,10 @@ namespace fr.guiet.kquatre.ui.viewmodel
                             //May occur during screen resize (number of interval may be very low...)
                             if (timeLineStripLineControlList != null && nbOfSeconds < timeLineStripLineControlList.Count)
                             {
-                                Style timeLineStyle = new Style
+                                /*Style timeLineStyle = new Style
                                 {
                                     TargetType = typeof(Border)
-                                };
+                                };*/
 
                                 /*if ((nbOfSeconds - 1) % 2 == 0)
                                 {
@@ -308,9 +322,9 @@ namespace fr.guiet.kquatre.ui.viewmodel
                                     timeLineStyle.Setters.Add(new Setter(Border.BackgroundProperty, _alternativeBrush));
                                 }*/
 
-                                timeLineStyle.Setters.Add(new Setter(Border.BackgroundProperty, Brushes.White));
+                                //timeLineStyle.Setters.Add(new Setter(Border.BackgroundProperty, Brushes.White));
 
-                                timeLineStripLineControlList[nbOfSeconds - 1].ElementStyle = timeLineStyle;
+                                timeLineStripLineControlList[nbOfSeconds - 1].ElementStyle = _timeLineStyle;
 
                                 //Retrieve current element style
                                 /*Style elementStyle = timeLineStripLineControlList[nbOfSeconds].ElementStyle;
@@ -345,15 +359,8 @@ namespace fr.guiet.kquatre.ui.viewmodel
 
                         //May occur during screen resize (number of interval may be very low...)
                         if (timeLineStripLineControlList != null && nbOfSeconds < timeLineStripLineControlList.Count)
-                        {
-                            Style currentTimeLineStyle = new Style
-                            {
-                                TargetType = typeof(Border)
-                            };
-
-                            currentTimeLineStyle.Setters.Add(new Setter(Border.BackgroundProperty, _currentTimeLineColor));
-
-                            timeLineStripLineControlList[nbOfSeconds].ElementStyle = currentTimeLineStyle;
+                        {                           
+                            timeLineStripLineControlList[nbOfSeconds].ElementStyle = _currentTimeLineStyle;
                         }
 
                         //When next firework is later and out ot visible screen, let's move the screen on
@@ -731,7 +738,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
                 OnPropertyChanged("IsPlaySoundTrackEnabled");
                 OnPropertyChanged("SanityCheckStatusImagePath");
 
-                //RefreshTimelineUI();
+                RefreshTimelineUI();
             });
         }
 
@@ -937,24 +944,29 @@ namespace fr.guiet.kquatre.ui.viewmodel
                     int visiblePeriodStart = Convert.ToInt32(Math.Floor(_fireworkTimeline.VisiblePeriodStart.TimeOfDay.TotalSeconds));                    
                     int fireworkElapsedTime = Convert.ToInt32(Math.Floor(_fireworkManager.ElapsedTime.TotalSeconds));
                     int nbOfSeconds = fireworkElapsedTime - visiblePeriodStart;
-                    int index = 0;
+                    //int index = 0;
 
                     List<TimelineStripLineControl> timelineStripLineControlList = _fireworkTimeline.ChildrenOfType<TimelineStripLineControl>().ToList();
                     foreach (TimelineStripLineControl tpc in timelineStripLineControlList)
                     {
-                        //Refresh only part of ui that need to be refreshed!                            
-                        if (index >= nbOfSeconds) break;
+                        //Refresh only part of ui that need to be refreshed!
+                        //2021-08-18 - Do not work if user uses scroll bar to move forward and go backward
+                        //if (index >= nbOfSeconds) break;
 
-                        index++;
+                        //index++;
 
-                        Style timeLineStyle = new Style
+                        /*Style timeLineStyle = new Style
                         {
                             TargetType = typeof(Border)
                         };
 
                         timeLineStyle.Setters.Add(new Setter(Border.BackgroundProperty, Brushes.White));
 
-                        tpc.ElementStyle = timeLineStyle;
+                        tpc.ElementStyle = timeLineStyle;*/
+                        if (tpc.ElementStyle != _timeLineStyle)
+                        {
+                            tpc.ElementStyle = _timeLineStyle;
+                        }
                     }
                 }
                 catch
