@@ -4,8 +4,8 @@
     <TargetFramework>net5.0</TargetFramework>
     <AssemblyName>Guiet.kQuatre.LoRaLibrary</AssemblyName>
     <RootNamespace>fr.guiet.lora</RootNamespace>
-    <AssemblyVersion>2021.2.0.0</AssemblyVersion>
-    <FileVersion>2021.2.0.0</FileVersion>
+    <AssemblyVersion>2021.2.1.0</AssemblyVersion>
+    <FileVersion>2021.2.1.1</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

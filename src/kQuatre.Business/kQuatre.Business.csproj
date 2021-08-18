@@ -5,8 +5,8 @@
     <UseWPF>true</UseWPF>
     <AssemblyName>Guiet.kQuatre.Business</AssemblyName>
     <RootNamespace>fr.guiet.kquatre.business</RootNamespace>
-    <AssemblyVersion>2021.2.1.0</AssemblyVersion>
-    <FileVersion>2021.2.0.0</FileVersion>
+    <AssemblyVersion>2021.2.1.1</AssemblyVersion>
+    <FileVersion>2021.2.1.1</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
