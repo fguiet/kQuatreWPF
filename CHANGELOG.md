@@ -1,5 +1,9 @@
 # Changelog
 
+## [2021.2.1.2] - 2021/08/18
+
+* Improve UI refresh speed (automatic time indicator)
+
 ## [2021.2.1.1] - 2021/07/28
 
 Bugs Fixing
