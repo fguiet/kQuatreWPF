@@ -50,7 +50,7 @@ namespace fr.guiet.kquatre.business.firework
         /// <summary>
         /// Firework name
         /// </summary>
-        private string _name = string.Empty;        
+        private string _name = string.Empty;
 
         /// <summary>
         /// Token used to cancel firework
@@ -108,7 +108,7 @@ namespace fr.guiet.kquatre.business.firework
         private string _fireworkFullFileName = DEFAULT_FIREWORK_NAME;
 
         private const string DEFAULT_K4_EXTENSION = ".k4";
-        private const string DEFAULT_FIREWORK_NAME = "NouveauFeu";        
+        private const string DEFAULT_FIREWORK_NAME = "NouveauFeu";
 
         #endregion
 
@@ -441,8 +441,8 @@ namespace fr.guiet.kquatre.business.firework
             get
             {
                 return _soundTrackManager.SoundTrackFilePath;
-            }    
-            
+            }
+
             set
             {
                 if (_soundTrackManager.SoundTrackFilePath != value)
@@ -451,7 +451,7 @@ namespace fr.guiet.kquatre.business.firework
                     _soundTrackManager.Load(value);
                     MakeItDirty(true);
                     OnPropertyChanged();
-                }                
+                }
             }
         }
 
@@ -574,6 +574,9 @@ namespace fr.guiet.kquatre.business.firework
 
             //Set default receptors
             _receptors = new ObservableCollection<Receptor>();
+
+            //Refresh default conf. (receptors...)
+            _configuration.Load();
 
             foreach (Receptor r in _configuration.DefaultReceptors)
             {
@@ -739,7 +742,7 @@ namespace fr.guiet.kquatre.business.firework
             {
                 //Stop soundtrack if any
                 _soundTrackManager.Stop();
-            }            
+            }
 
             //User ask to stop firework in this case...So stop it properly
             //Stop firework and line properly
@@ -760,7 +763,7 @@ namespace fr.guiet.kquatre.business.firework
             if (playSoundTrack && _soundTrackManager.HasSoundTrackToPlay() && _soundTrackManager.IsSoundTrackSanityCheckOk())
             {
                 _soundTrackManager.Play();
-            }            
+            }
 
             DoWorkAsync();
         }
@@ -782,27 +785,31 @@ namespace fr.guiet.kquatre.business.firework
         {
             int oldIndex = int.Parse(line.Number);
 
+            //Convert to 0 based index
+            oldIndex = oldIndex - 1;
+
             line.UpdateFromClone(lineClone);
 
             if (isAdd)
             {
                 int index = int.Parse(line.Number);
+                //Convert to 0 based index
+                index = index - 1;
 
-                if (index > _lines.Count)
-                    _lines.Add(line);
-                else
-                    _lines.Insert(int.Parse(line.Number), line);
+                _lines.Insert(index, line);
+               
             }
             else
             {
                 int newIndex = int.Parse(line.Number);
 
-                if (newIndex > _lines.Count)
-                    newIndex = _lines.Count - 1;
+                //Convert to 0 based index
+                newIndex = newIndex - 1;
 
                 if (oldIndex != newIndex)
                 {
-                    _lines.Move(oldIndex - 1, newIndex);
+                    //Move to new place
+                    _lines.Move(oldIndex, newIndex);
                 }
             }
 
@@ -859,7 +866,7 @@ namespace fr.guiet.kquatre.business.firework
                 //v2021.2.1.0.0 - Add SoundTrack
                 if (fireworkDefinition.Element("FireworkDefinition").Element("SoundTrack") != null)
                 {
-                    SoundTrackUI = fireworkDefinition.Element("FireworkDefinition").Element("SoundTrack").Attribute("soundTrackFilePath").Value.ToString();                    
+                    SoundTrackUI = fireworkDefinition.Element("FireworkDefinition").Element("SoundTrack").Attribute("soundTrackFilePath").Value.ToString();
                 }
 
                 //Parcours des lignes et création des artifices
@@ -1061,7 +1068,7 @@ namespace fr.guiet.kquatre.business.firework
                           select rl).FirstOrDefault();
 
                 if (l != null)
-                {                    
+                {
                     List<Line> lines = new List<Line>
                     {
                         l

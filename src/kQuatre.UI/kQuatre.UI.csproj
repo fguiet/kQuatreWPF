@@ -8,8 +8,8 @@
     <RootNamespace>fr.guiet.kquatre.ui</RootNamespace>
     <Company>Guiet</Company>
     <Authors>Frédéric Guiet</Authors>
-    <AssemblyVersion>2021.2.1.2</AssemblyVersion>
-    <FileVersion>2021.2.1.2</FileVersion>
+    <AssemblyVersion>2021.2.1.3</AssemblyVersion>
+    <FileVersion>2021.2.1.3</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

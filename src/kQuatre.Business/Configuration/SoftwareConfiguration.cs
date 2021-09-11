@@ -269,9 +269,10 @@ namespace fr.guiet.kquatre.business.configuration
             List<XElement> receptors = (from r in confFile.Descendants("Receptor")
                                         select r).ToList();
 
+            _receptors.Clear();
             foreach (XElement r in receptors)
             {
-                 fr.guiet.kquatre.business.receptor.Receptor recep = new fr.guiet.kquatre.business.receptor.Receptor(r.Attribute("name").Value, r.Attribute("address").Value.ToString(), Convert.ToInt32(r.Attribute("nbOfChannels").Value.ToString()));
+                Receptor recep = new Receptor(r.Attribute("name").Value, r.Attribute("address").Value.ToString(), Convert.ToInt32(r.Attribute("nbOfChannels").Value.ToString()));
                 _receptors.Add(recep);
             }
 
@@ -296,6 +297,7 @@ namespace fr.guiet.kquatre.business.configuration
             List<XElement> fireworks = (from r in fireworksFile.Descendants("Firework")
                                         select r).ToList();
 
+            _fireworks.Clear();
             foreach(XElement fw in fireworks)
             {
                 TimeSpan duration = TimeSpan.Parse(fw.Attribute("duration").Value.ToString());

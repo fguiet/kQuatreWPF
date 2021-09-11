@@ -1,5 +1,17 @@
 # Changelog
 
+## [2021.2.1.3] - 2021/09/11
+
+Bugs Fixing
+
+* Receptors where not reset properly when user was creating a new firework
+* Application was crashing when user wanted to add a new line 
+
+New functionalities
+
+* Rescue lines are added to the end when designing a new firework
+* Rescue lines appear in blue
+
 ## [2021.2.1.2] - 2021/08/18
 
 * Improve UI refresh speed (automatic time indicator)

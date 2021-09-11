@@ -21,7 +21,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
 
         private List<ComboBoxItem> _lineLocation = new List<ComboBoxItem>();
 
-        private const string DO_NOT_MOVE_ID = "-1";
+        private const string DO_NOT_MOVE_ID = "-1";        
 
         public List<ComboBoxItem> LineLocation
         {
@@ -141,7 +141,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
             {
                 _mode = WindowMode.Add;
                 _line = new Line();
-                _lineClone = new Line();
+                _lineClone = new Line();                
             }
             else
             {
@@ -182,8 +182,12 @@ namespace fr.guiet.kquatre.ui.viewmodel
         public void UpdateLineNumber()
         {
             //Update line number
-            if (SelectedLineLocation != DO_NOT_MOVE_ID)
+            if (SelectedLineLocation != DO_NOT_MOVE_ID && SelectedLineLocation != null)
+            {
                 _lineClone.Number = SelectedLineLocation;
+                //IsDirty = true;
+            }
+
         }
 
         public void Save()
@@ -197,100 +201,291 @@ namespace fr.guiet.kquatre.ui.viewmodel
 
         public void InitializeLineLocation()
         {
+            //Algo
+            //1 based index (follow line order 1,2,3, etc..)
+
+            //RescueLine en dernière position (pour ne pas perturber l'ordre du feu avec couleur arrière plan différent)
+
             List<ComboBoxItem> item = new List<ComboBoxItem>();
-
-            int firstPos = 0;
-            int nbLines = 0;
-            int lastPos = 0;
-            if (!_lineClone.IsRescueLine)
-            {
-                //Normal lines
-                nbLines = _fireworkManager.ActiveLines.Count;
-                firstPos = _fireworkManager.RescueLines.Count;
-                lastPos = _fireworkManager.ActiveLines.Count + _fireworkManager.RescueLines.Count;
-            }
-            else
-            {
-                //Rescue line
-                firstPos = 0;
-                lastPos = _fireworkManager.RescueLines.Count;
-                nbLines = _fireworkManager.RescueLines.Count;
-            }
-
-            string verb = string.Empty;
             ComboBoxItem cbi = null;
-            string message = string.Empty;
-            if (_mode == WindowMode.Add)
+
+            //int nbLine = 0;
+            const string FIRST_POS = "1";
+
+            string selectedItem = DO_NOT_MOVE_ID;
+            string message = String.Empty;
+
+            //LastPos = nbLine + 1
+            int lastPos = _fireworkManager.ActiveLines.Count + 1;
+            int lastPosWithRescue = _fireworkManager.ActiveLines.Count + _fireworkManager.RescueLines.Count + 1;
+
+            int nbNormalLine = _fireworkManager.ActiveLines.Count;
+            int nbRescueLine = _fireworkManager.RescueLines.Count;
+
+            int nbLineTot = _fireworkManager.ActiveLines.Count + _fireworkManager.RescueLines.Count;
+            
+            if (_lineClone.IsRescueLine)
             {
-                verb = "Insérer";
-                cbi = new ComboBoxItem(firstPos.ToString(), "Insérer en première position");
-                item.Add(cbi);
-
-
-                if (nbLines == 0)
+                //Add rescule line
+                if (_mode == WindowMode.Add)
                 {
-                    LineLocation = item;
 
-                    //Insert on first position selected by default
-                    //Refresh selected item
-                    SelectedLineLocation = firstPos.ToString();
-                    return;
-                }
-            }
-            else
-            {
-                verb = "Déplacer";
-                string defaultOption = DO_NOT_MOVE_ID; //By default
-
-                //On Rescue line you have to set the line position
-                if (!_lineClone.IsRescueLine)
-                {
-                    cbi = new ComboBoxItem(DO_NOT_MOVE_ID, "Ne pas déplacer");
-                    item.Add(cbi);
-                }
-
-                if (nbLines == 1)
-                {
-                    LineLocation = item;
-                    SelectedLineLocation = defaultOption;
-                    return;
-                }
-
-                if (_line.Number != "1")
-                {
-                    cbi = new ComboBoxItem(firstPos.ToString(), "Déplacer en première position");
-                    item.Add(cbi);
-
-                    //Default option for rescue line
-                    if (_lineClone.IsRescueLine)
+                    //CAS 1 - Pas de line existante
+                    if (nbRescueLine == 0)
                     {
-                        defaultOption = firstPos.ToString();
+                        cbi = new ComboBoxItem(lastPos.ToString(), "Insérer en première position");
+                        item.Add(cbi);
+
+                        selectedItem = lastPos.ToString();
                     }
-                }
 
-                if (nbLines >= 2)
-                {
-                    for (int i = firstPos + 1; i < lastPos; i++)
+                    //CAS 2 - Une ligne
+                    if (nbRescueLine == 1)
                     {
-                        if (i.ToString() != _line.Number && (i + 1).ToString() != _line.Number)
+                        cbi = new ComboBoxItem(lastPos.ToString(), "Insérer en première position");
+                        item.Add(cbi);
+
+                        selectedItem = lastPos.ToString();
+
+                        cbi = new ComboBoxItem(lastPosWithRescue.ToString(), "Insérer en dernière position");
+                        item.Add(cbi);
+
+                        selectedItem = lastPosWithRescue.ToString();
+                    }
+
+                    
+                    //CAS 3 - Au moins deux lignes
+                    if (nbRescueLine > 1)
+                    {
+                        cbi = new ComboBoxItem(lastPos.ToString(), "Insérer en première position");
+                        item.Add(cbi);
+
+                        for (int i = lastPos + 1; i < lastPosWithRescue; i++)
                         {
-                            message = string.Format("{0} entre la ligne {1} et {2}", verb, i, i + 1);
+                            message = string.Format("Insérer entre la ligne {0} et {1}", i - 1, i);
                             cbi = new ComboBoxItem(i.ToString(), message);
                             item.Add(cbi);
                         }
+
+                        cbi = new ComboBoxItem(lastPosWithRescue.ToString(), "Insérer en dernière position");
+                        item.Add(cbi);
+
+                        selectedItem = lastPosWithRescue.ToString();
+                    }
+
+                }
+                // Move rescue line
+                else
+                {                    
+                    //CAS 1 - Une ligne
+                    if (nbRescueLine == 1)
+                    {
+                        cbi = new ComboBoxItem(DO_NOT_MOVE_ID, "Ne pas déplacer");
+                        item.Add(cbi);
+
+                        selectedItem = DO_NOT_MOVE_ID;
+                    }
+
+                    //Cas 2 - Deux lignes
+                    if (nbRescueLine == 2)
+                    {
+                        cbi = new ComboBoxItem(DO_NOT_MOVE_ID, "Ne pas déplacer");
+                        item.Add(cbi);
+
+                        //User wants to edit first line
+                        if (_line.Number == lastPos.ToString())
+                        {
+                            cbi = new ComboBoxItem(nbRescueLine.ToString(), "Déplacer en dernière position");
+                            item.Add(cbi);
+                        }
+
+                        //User wants to edit second line
+                        if (_line.Number == nbLineTot.ToString())
+                        {
+                            cbi = new ComboBoxItem(lastPos.ToString(), "Déplacer en première position");
+                            item.Add(cbi);
+                        }
+
+                        selectedItem = DO_NOT_MOVE_ID;
+                    }
+
+                    //Cas 3 - > 2 lignes
+                    if (nbRescueLine > 2)
+                    {
+                        cbi = new ComboBoxItem(DO_NOT_MOVE_ID, "Ne pas déplacer");
+                        item.Add(cbi);
+
+                        //User do not edit first line
+                        if (_line.Number != lastPos.ToString())
+                        {
+                            cbi = new ComboBoxItem(lastPos.ToString(), "Déplacer en première position");
+                            item.Add(cbi);
+                        }
+
+                        //User do not edit last line
+                        if (_line.Number != nbLineTot.ToString())
+                        {
+                            cbi = new ComboBoxItem(nbLineTot.ToString(), "Déplacer en dernière position");
+                            item.Add(cbi);
+                        }
+
+                        for(int i = lastPos; i < nbLineTot; i++)
+                        {
+                            if (i.ToString() != _line.Number && (i + 1).ToString() != _line.Number)
+                            {
+
+                                if (i > int.Parse(_line.Number))
+                                {
+                                    message = string.Format("Déplacer entre la ligne {0} et {1}", i, i + 1);
+                                    cbi = new ComboBoxItem(i.ToString(), message);
+                                    item.Add(cbi);
+                                }
+                                else
+                                {
+                                    message = string.Format("Déplacer entre la ligne {0} et {1}", i, i + 1);
+                                    cbi = new ComboBoxItem((i + 1).ToString(), message);
+                                    item.Add(cbi);
+                                }
+                            }
+                        }
+
+                        selectedItem = DO_NOT_MOVE_ID;
                     }
                 }
-
-                if (_line.Number != lastPos.ToString())
-                {
-                    message = string.Format("{0} en dernière position", verb);
-                    cbi = new ComboBoxItem(lastPos.ToString(), message);
-                    item.Add(cbi);
-                }
-
-                LineLocation = item;
-                SelectedLineLocation = defaultOption;
             }
+            //Not a rescue line
+            else
+            {
+                //Add Normal line
+                if (_mode == WindowMode.Add)
+                {
+
+                    //CAS 1 - Pas de line existante
+                    if (nbNormalLine == 0)
+                    {
+                        cbi = new ComboBoxItem(FIRST_POS, "Insérer en première position");
+                        item.Add(cbi);
+
+                        selectedItem = FIRST_POS;
+                    }
+
+                    //CAS 2 - Une ligne
+                    if (nbNormalLine == 1)
+                    {
+                        cbi = new ComboBoxItem(FIRST_POS, "Insérer en première position");
+                        item.Add(cbi);
+
+                        cbi = new ComboBoxItem(lastPos.ToString(), "Insérer en dernière position");
+                        item.Add(cbi);
+
+                        selectedItem = FIRST_POS;
+                    }
+
+
+                    //CAS 3 - Au moins deux lignes
+                    if (nbNormalLine > 1)
+                    {
+                        cbi = new ComboBoxItem(FIRST_POS, "Insérer en première position");
+                        item.Add(cbi);
+
+                        for (int i = 2; i < lastPos; i++)
+                        {
+                            message = string.Format("Insérer entre la ligne {0} et {1}", i - 1, i);
+                            cbi = new ComboBoxItem(i.ToString(), message);
+                            item.Add(cbi);
+                        }
+
+                        cbi = new ComboBoxItem(lastPos.ToString(), "Insérer en dernière position");
+                        item.Add(cbi);
+
+                        selectedItem = FIRST_POS;
+                    }
+
+                }
+                // Move line
+                else
+                {
+                    //CAS 1 - Une ligne
+                    if (nbNormalLine == 1)
+                    {
+                        cbi = new ComboBoxItem(DO_NOT_MOVE_ID, "Ne pas déplacer");
+                        item.Add(cbi);
+
+                        selectedItem = DO_NOT_MOVE_ID;
+                    }
+
+                    //Cas 2 - Deux lignes
+                    if (nbNormalLine == 2)
+                    {
+                        cbi = new ComboBoxItem(DO_NOT_MOVE_ID, "Ne pas déplacer");
+                        item.Add(cbi);
+
+                        //User wants to edit first line
+                        if (_line.Number == "1")
+                        {
+                            cbi = new ComboBoxItem(nbNormalLine.ToString(), "Déplacer en dernière position");
+                            item.Add(cbi);
+                        }
+
+                        //User wants to edit second line
+                        if (_line.Number == "2")
+                        {
+                            cbi = new ComboBoxItem(FIRST_POS, "Déplacer en première position");
+                            item.Add(cbi);
+                        }
+
+                        selectedItem = DO_NOT_MOVE_ID;
+                    }
+
+                    //Cas 3 - > 2 lignes
+                    if (nbNormalLine > 2)
+                    {
+                        cbi = new ComboBoxItem(DO_NOT_MOVE_ID, "Ne pas déplacer");
+                        item.Add(cbi);
+
+                        //User do not edit first line
+                        if (_line.Number != "1")
+                        {
+                            cbi = new ComboBoxItem(FIRST_POS, "Déplacer en première position");
+                            item.Add(cbi);
+                        }
+
+                        //User do not edit last line
+                        if (_line.Number != nbNormalLine.ToString())
+                        {
+                            cbi = new ComboBoxItem(nbNormalLine.ToString(), "Déplacer en dernière position");
+                            item.Add(cbi);
+                        }
+
+                        for (int i = 1; i < nbNormalLine; i++)
+                        {
+                            if (i.ToString() != _line.Number && (i + 1).ToString() != _line.Number)
+                            {
+
+                                if (i > int.Parse(_line.Number))
+                                {
+                                    message = string.Format("Déplacer entre la ligne {0} et {1}", i, i + 1);
+                                    cbi = new ComboBoxItem(i.ToString(), message);
+                                    item.Add(cbi);
+                                }
+                                else
+                                {
+                                    message = string.Format("Déplacer entre la ligne {0} et {1}", i, i + 1);
+                                    cbi = new ComboBoxItem((i + 1).ToString(), message);
+                                    item.Add(cbi);
+                                }
+                            }
+                        }
+
+                        selectedItem = DO_NOT_MOVE_ID;
+                    }
+                }
+            }
+
+            LineLocation = item;
+            SelectedLineLocation = selectedItem;
+                       
+
         }
     }
 }

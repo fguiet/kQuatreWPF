@@ -3,78 +3,104 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"             
-             xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
-             xmlns:custom="clr-namespace:fr.guiet.kquatre.ui.controls.gridview"
+             xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"             
+             xmlns:conv="clr-namespace:fr.guiet.kquatre.ui.converters"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="1000" Background="White">
     <Grid Margin="20 20 0 0">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="Conception du feu d'artifice" FontSize="16" Foreground="#0099BC" FontWeight="Medium"/>
-
-        <Grid Margin="0 5 0 5" Grid.Row="1">
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="100px"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-
-            <Label Grid.Column="0" Content="Nom du feu : " />
-            <TextBox Grid.Column="1" Height="20" Width="400" Text="{Binding Path=FireworkManager.Name, UpdateSourceTrigger=PropertyChanged}" />
-        </Grid>
-
-        <Grid Margin="0 5 0 5" Grid.Row="2">
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="100px"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-
-            <Label Grid.Column="0" Content="Bande sonore : " />
-            <TextBox Grid.Column="1" Height="20" Width="600" Margin="0,0,5,0" Text="{Binding Path=FireworkManager.SoundTrackUI}" IsEnabled="False" />
-            <Button Name="_btnSelectSoundTrack" Width="50"  Height="20" Grid.Column="2" Margin="0,0,5,0" Content="..." Command="{Binding Path=SelectSoundTrackCommand}" ></Button>
-            <Button Name="_btnResetSoundTrack" Width="50" Height="20" Grid.Column="3" Content="Reset" Command="{Binding Path=ResetSoundTrackCommand}" ></Button>
-        </Grid>
-
-        <Grid Grid.Row="3">
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="130"/>
-                <ColumnDefinition Width="130"/>
-                <ColumnDefinition Width="130"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Border Grid.Row="0" Grid.Column="0"  Background="LightGray" />
-            <Border Grid.Row="0" Grid.Column="1"  Background="LightGray" />
-            <Border Grid.Row="0" Grid.Column="2"  Background="LightGray" />
-            <Border Grid.Row="0" Grid.Column="3"  Background="LightGray" />
-            <Button x:Name="_btnAddLine" Height="20" Width="120" Margin="5,5,5,5" HorizontalAlignment="left" VerticalAlignment="Center" Grid.Column="0" Content="Ajouter une ligne" Click="BtnAddLine_Click" ></Button>
-            <Button x:Name="_btnAlterLine" Width="120" Margin="5,5,5,5" HorizontalAlignment="left" VerticalAlignment="Center"  Grid.Column="1" Content="Modifier une ligne" Click="BtnAlterLine_Click" ></Button>
-            <Button Name="_btnDeleteLine" Width="120" Margin="5,5,5,5" HorizontalAlignment="left" VerticalAlignment="Center" Grid.Column="2" Content="Supprimer une ligne" Click="BtnDeleteLine_Click" ></Button>
-            <Button Name="_btnCheckFirework" Width="120" Margin="5,5,5,5" HorizontalAlignment="left" VerticalAlignment="Center" Grid.Column="3" Content="Vérifier la validité" Click="BtnCheckFirework_Click" ></Button>
-        </Grid>
-
-        <Grid Grid.Row="4">
+        <Grid>
+            <Grid.Resources>
+                <Style x:Key="RescueLineStyle" TargetType="telerik:GridViewRow">
+                    <Setter Property="Background" Value="{telerik:FluentResource ResourceKey=AccentBrush}" />
+                    <Setter Property="Foreground" Value="{telerik:FluentResource ResourceKey=MarkerInvertedBrush}" />
+                </Style>
+                <Style x:Key="StandardLineStyle" TargetType="telerik:GridViewRow"   />
+                <conv:LineConverter x:Key="lineConverter" />
+                <conv:LineStyleSelector x:Key="lineSelector" ConditionConverter="{StaticResource lineConverter}">
+                    <conv:LineStyleSelector.Rules>
+                        <conv:ConditionalStyleRule Style="{StaticResource RescueLineStyle}">
+                            <conv:ConditionalStyleRule.Value>
+                                <sys:Boolean>True</sys:Boolean>
+                            </conv:ConditionalStyleRule.Value>
+                        </conv:ConditionalStyleRule>
+                        <conv:ConditionalStyleRule Style="{StaticResource StandardLineStyle}">
+                            <conv:ConditionalStyleRule.Value>
+                                <sys:Boolean>False</sys:Boolean>
+                            </conv:ConditionalStyleRule.Value>
+                        </conv:ConditionalStyleRule>
+                    </conv:LineStyleSelector.Rules>
+                </conv:LineStyleSelector>
+            </Grid.Resources>
 
             <Grid.RowDefinitions>
-                <RowDefinition  />
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <telerik:RadGridView RowDetailsVisibilityMode="Visible"
+            <TextBlock Grid.Row="0" Text="Conception du feu d'artifice" FontSize="16" Foreground="#0099BC" FontWeight="Medium"/>
+
+            <Grid Margin="0 5 0 5" Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100px"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Column="0" Content="Nom du feu : " />
+                <TextBox Grid.Column="1" Height="20" Width="400" Text="{Binding Path=FireworkManager.Name, UpdateSourceTrigger=PropertyChanged}" />
+            </Grid>
+
+            <Grid Margin="0 5 0 5" Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100px"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Column="0" Content="Bande sonore : " />
+                <TextBox Grid.Column="1" Height="20" Width="600" Margin="0,0,5,0" Text="{Binding Path=FireworkManager.SoundTrackUI}" IsEnabled="False" />
+                <Button Name="_btnSelectSoundTrack" Width="50"  Height="20" Grid.Column="2" Margin="0,0,5,0" Content="..." Command="{Binding Path=SelectSoundTrackCommand}" ></Button>
+                <Button Name="_btnResetSoundTrack" Width="50" Height="20" Grid.Column="3" Content="Reset" Command="{Binding Path=ResetSoundTrackCommand}" ></Button>
+            </Grid>
+
+            <Grid Grid.Row="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="130"/>
+                    <ColumnDefinition Width="130"/>
+                    <ColumnDefinition Width="130"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Border Grid.Row="0" Grid.Column="0"  Background="LightGray" />
+                <Border Grid.Row="0" Grid.Column="1"  Background="LightGray" />
+                <Border Grid.Row="0" Grid.Column="2"  Background="LightGray" />
+                <Border Grid.Row="0" Grid.Column="3"  Background="LightGray" />
+                <Button x:Name="_btnAddLine" Height="20" Width="120" Margin="5,5,5,5" HorizontalAlignment="left" VerticalAlignment="Center" Grid.Column="0" Content="Ajouter une ligne" Click="BtnAddLine_Click" ></Button>
+                <Button x:Name="_btnAlterLine" Width="120" Margin="5,5,5,5" HorizontalAlignment="left" VerticalAlignment="Center"  Grid.Column="1" Content="Modifier une ligne" Click="BtnAlterLine_Click" ></Button>
+                <Button Name="_btnDeleteLine" Width="120" Margin="5,5,5,5" HorizontalAlignment="left" VerticalAlignment="Center" Grid.Column="2" Content="Supprimer une ligne" Click="BtnDeleteLine_Click" ></Button>
+                <Button Name="_btnCheckFirework" Width="120" Margin="5,5,5,5" HorizontalAlignment="left" VerticalAlignment="Center" Grid.Column="3" Content="Vérifier la validité" Click="BtnCheckFirework_Click" ></Button>
+            </Grid>
+
+            <Grid Grid.Row="4">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition  />
+                </Grid.RowDefinitions>
+
+                <telerik:RadGridView  RowDetailsVisibilityMode="Visible"                                         
                                  GroupRenderMode="Flat"                                
                                  x:Name="_fireworkGridView"                                 
                                  CanUserGroupColumns="False" 
@@ -89,30 +115,31 @@
                                  GridLinesVisibility="Horizontal"                                
                                  HorizontalGridLinesBrush="#0099BC" 
                                  RowIndicatorVisibility="Collapsed"
+                                 RowStyleSelector="{StaticResource lineSelector}"
                                  telerik:StyleManager.Theme="Fluent">
-                <telerik:RadGridView.Columns>
-                    <telerik:GridViewToggleRowDetailsColumn />
-                    <telerik:GridViewDataColumn Width="110"  Header="Numéro de ligne"
+                    <telerik:RadGridView.Columns>
+                        <telerik:GridViewToggleRowDetailsColumn />
+                        <telerik:GridViewDataColumn Width="110"  Header="Numéro de ligne"
 											DataMemberBinding="{Binding NumberUI}" />
-                    <telerik:GridViewDataColumn  Header="Mise à feu" Width="100"
+                        <telerik:GridViewDataColumn  Header="Mise à feu" Width="100"
 											DataMemberBinding="{Binding Ignition}" />
-                    <telerik:GridViewDataColumn   Header="Liaison" Width="150"
+                        <telerik:GridViewDataColumn   Header="Liaison" Width="150"
 											DataMemberBinding="{Binding ReceptorAddressUI}" />
-                    <telerik:GridViewDataColumn Header="Ligne de secours"
+                        <telerik:GridViewDataColumn Header="Ligne de secours"
 											DataMemberBinding="{Binding IsRescueLineText}" />
-                    <telerik:GridViewColumn Header="Action">
-                        <telerik:GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <telerik:RadButton Content="Ajouter un artifice"
+                        <telerik:GridViewColumn Header="Action">
+                            <telerik:GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <telerik:RadButton Content="Ajouter un artifice"
                                                    Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type telerik:RadGridView}},Path=DataContext.AddFireworkCommand}"
                                                    CommandParameter="{Binding}" />
-                            </DataTemplate>
-                        </telerik:GridViewColumn.CellTemplate>
-                    </telerik:GridViewColumn>
-                </telerik:RadGridView.Columns>
-                <telerik:RadGridView.RowDetailsTemplate>
-                    <DataTemplate>
-                        <telerik:RadGridView AutoGenerateColumns="False"                                             
+                                </DataTemplate>
+                            </telerik:GridViewColumn.CellTemplate>
+                        </telerik:GridViewColumn>
+                    </telerik:RadGridView.Columns>
+                    <telerik:RadGridView.RowDetailsTemplate>
+                        <DataTemplate>
+                            <telerik:RadGridView AutoGenerateColumns="False"                                             
                                              GroupRenderMode="Flat"
                                              IsReadOnly="True"                                                                                         
 										     IsFilteringAllowed="False"                                             
@@ -125,19 +152,20 @@
                                              RowIndicatorVisibility="Collapsed"
 										     Margin="25 10 10 30" 
                                              telerik:StyleManager.Theme="Fluent">
-                            <telerik:RadGridView.Columns>
-                                <telerik:GridViewDataColumn  Header="Référence"
+                                <telerik:RadGridView.Columns>
+                                    <telerik:GridViewDataColumn  Header="Référence"
 														DataMemberBinding="{Binding Reference}" Width="120" />
-                                <telerik:GridViewDataColumn Header="Désignation"
+                                    <telerik:GridViewDataColumn Header="Désignation"
 														 DataMemberBinding="{Binding Designation}" Width="300" />
-                                <telerik:GridViewDataColumn Header="Durée"
+                                    <telerik:GridViewDataColumn Header="Durée"
 														 DataMemberBinding="{Binding Duration}" />
-                            </telerik:RadGridView.Columns>
-                        </telerik:RadGridView>
-                    </DataTemplate>
-                </telerik:RadGridView.RowDetailsTemplate>
-            </telerik:RadGridView >
-        </Grid>
+                                </telerik:RadGridView.Columns>
+                            </telerik:RadGridView>
+                        </DataTemplate>
+                    </telerik:RadGridView.RowDetailsTemplate>
+                </telerik:RadGridView >
+            </Grid>
 
+        </Grid>
     </Grid>
 </UserControl>
