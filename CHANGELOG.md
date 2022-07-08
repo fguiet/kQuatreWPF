@@ -1,5 +1,16 @@
 # Changelog
 
+## [2022.1.0.0] - 2022/07/08
+
+* Move from .NET 5 to .NET 6
+* Library update : NLog 4.7.1 to NLog 5.0.1
+* Library update : EPPlus 5.7.2 to EPPlus 6.0.5
+* Library update : SerialPortStream 2.3.1 to SerialPortStream 2.4.0
+* Library update : NAudio 2.0.1 to SerialPortStream 2.1.0
+* Library update : System.Management 5.0.0 to SerialPortStream 6.0.0
+
+
+
 ## [2021.2.1.3] - 2021/09/11
 
 Bugs Fixing

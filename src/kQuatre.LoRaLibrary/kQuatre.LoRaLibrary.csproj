@@ -1,16 +1,16 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>Guiet.kQuatre.LoRaLibrary</AssemblyName>
     <RootNamespace>fr.guiet.lora</RootNamespace>
-    <AssemblyVersion>2021.2.1.3</AssemblyVersion>
-    <FileVersion>2021.2.1.3</FileVersion>
+    <AssemblyVersion>2022.1.0.0</AssemblyVersion>
+    <FileVersion>2022.1.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NLog" Version="4.7.10" />
-    <PackageReference Include="SerialPortStream" Version="2.3.1" />
+    <PackageReference Include="NLog" Version="5.0.1" />
+    <PackageReference Include="SerialPortStream" Version="2.4.0" />
   </ItemGroup>
 
 </Project>
