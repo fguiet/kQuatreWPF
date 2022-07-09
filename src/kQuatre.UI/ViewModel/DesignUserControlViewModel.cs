@@ -186,8 +186,9 @@ namespace fr.guiet.kquatre.ui.viewmodel
             {
                 Multiselect = false
             };
-            
-            ofd.Filter = "Fichier MP3 (*.mp3)|*.mp3";
+
+            //ofd.Filter = "Fichier MP3 (*.mp3)|*.mp3";
+            ofd.Filter = "Fichier MP3 / WAV (*.mp3, *.wav)|*.mp3;*.wav";
 
 
             if (ofd.ShowDialog() == DialogResult.OK)
