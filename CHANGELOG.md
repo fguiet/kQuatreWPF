@@ -1,5 +1,9 @@
 # Changelog
 
+## [2022.1.0.1] - 2022/07/09
+
+* Improve Transceiver USB Detection
+
 ## [2022.1.0.0] - 2022/07/08
 
 * Move from .NET 5 to .NET 6

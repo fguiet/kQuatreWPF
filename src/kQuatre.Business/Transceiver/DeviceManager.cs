@@ -1,6 +1,5 @@
 ﻿using fr.guiet.kquatre.business.configuration;
 using fr.guiet.lora.core;
-using RJCP.IO.Ports;
 using System;
 using System.Management;
 using System.Timers;
@@ -13,7 +12,7 @@ namespace fr.guiet.kquatre.business.transceiver
     public class DeviceManager
     {
         #region Private Members
-                
+
         private static ManagementEventWatcher _deviceWatcher;
 
         /// <summary>
@@ -26,7 +25,7 @@ namespace fr.guiet.kquatre.business.transceiver
         /// </summary>
         //private TransceiverManager _emitter = null;
         private LoRaCore _loraTransceiver = null;
-        
+
         private Timer _timerHelper = null;
 
         //private string _transceiverAddress = null;
@@ -58,13 +57,13 @@ namespace fr.guiet.kquatre.business.transceiver
                 return _loraTransceiver;
             }
         }
-       
+
 
         public bool IsTransceiverConnected
 
         {
             get
-            {                
+            {
                 return (_loraTransceiver != null);
             }
         }
@@ -80,14 +79,14 @@ namespace fr.guiet.kquatre.business.transceiver
             //WMI Query
             WqlEventQuery deviceArrivalQuery = new WqlEventQuery("SELECT * FROM Win32_DeviceChangeEvent WHERE EventType = 2");
 
-            _deviceWatcher = new ManagementEventWatcher(deviceArrivalQuery);                    
-            
+            _deviceWatcher = new ManagementEventWatcher(deviceArrivalQuery);
+
             // Attach an event listener to the device watcher.
             _deviceWatcher.EventArrived += DeviceWatcher_EventArrived;
 
             // Start monitoring the WMI tree for changes in SerialPort devices.
-            _deviceWatcher.Start();            
-        }            
+            _deviceWatcher.Start();
+        }
 
         #endregion
 
@@ -128,7 +127,7 @@ namespace fr.guiet.kquatre.business.transceiver
             {
                 _deviceWatcher.EventArrived -= DeviceWatcher_EventArrived;
                 _deviceWatcher.Stop();
-                _deviceWatcher= null;
+                _deviceWatcher = null;
             }
 
             if (_loraTransceiver != null)
@@ -144,40 +143,71 @@ namespace fr.guiet.kquatre.business.transceiver
         {
             try
             {
-                Exception ex = null;
+                //Transceiver connected?
+                UsbDevice transceiver = GetTransceiver();
 
-                foreach (string port in SerialPortStream.GetPortNames())
+                if (transceiver != null)
                 {
-                    try
+                    _loraTransceiver = new LoRaCore(transceiver.Port, _softwareConfiguration.TranceiverBaudrate, _softwareConfiguration.TransceiverAddress);
+                    if (_loraTransceiver != null)
                     {
-                        _loraTransceiver = new LoRaCore(port, _softwareConfiguration.TranceiverBaudrate, _softwareConfiguration.TransceiverAddress);                                              
-                        if (_loraTransceiver != null)
-                        {
-                            ex = null;
-                            _loraTransceiver.TransceiverDisconnected += Emitter_DeviceDisconnected;                            
-                            OnDeviceConnectedEvent(new ConnectionEventArgs(port));
-                            break;
-                        }
+                        
+                        _loraTransceiver.TransceiverDisconnected += Emitter_DeviceDisconnected;
+                        OnDeviceConnectedEvent(new ConnectionEventArgs(transceiver.Port));
+                       
                     }
-                    catch (Exception e)
-                    {
-                        ex = e;
-                    }
-                }
-
-                if (ex != null)
-                    throw ex;
+                }                 
             }
             catch (Exception exp)
             {
                 _loraTransceiver = null;
-                OnDeviceErrorWhenConnecting(new ConnectionErrorEventArgs(exp));                
-            }            
+                OnDeviceErrorWhenConnecting(new ConnectionErrorEventArgs(exp));
+            }
         }
 
         #endregion
 
         #region Private Methods
+
+        /// <summary>
+        /// Return Transceiver if connected
+        /// </summary>
+        /// <returns></returns>
+        private static UsbDevice GetTransceiver()
+        {
+
+            // Transceiver Device ID
+            // Device ID : "USB\\VID_1A86&PID_7523\\5&36BCFF3B&0&13"
+            // 1A86 (hex) = 6790 (dev)
+            // 7523 (hex) = 29987 (dev)
+            //var vid = 6790;
+            //var pid = 29987;
+            const string PID = "PID_7523";
+            const string VID = "VID_1A86";
+
+            ManagementObjectCollection collection;
+            using (var searcher = new ManagementObjectSearcher(@"Select * From Win32_PnPEntity"))
+                collection = searcher.Get();
+
+            //var devices = new List<UsbDevice>();
+
+            foreach (var device in collection)
+            {
+                string deviceId = (string)device.GetPropertyValue("DeviceID");
+
+                if (deviceId.Contains(PID) && deviceId.Contains(VID))
+                {
+                    string description = (string)device.GetPropertyValue("DeviceID");
+                    string comPort = (string)device.GetPropertyValue("Caption");
+                    comPort = comPort.Substring(comPort.LastIndexOf("(COM")).Replace("(", string.Empty).Replace(")", string.Empty);
+
+                    return new UsbDevice(deviceId, description, comPort);
+
+                }
+            }
+
+            return null;
+        }
 
         private void Emitter_DeviceDisconnected(object sender, EventArgs e)
         {
@@ -202,7 +232,7 @@ namespace fr.guiet.kquatre.business.transceiver
                 _timerHelper.Start();
                 _singleton.Reset();
                 _loraTransceiver = null;
-            }                 
+            }
         }
 
         private void TimerHelper_Elapsed(object sender, ElapsedEventArgs e)
@@ -228,12 +258,12 @@ namespace fr.guiet.kquatre.business.transceiver
         /// </summary>
         private void SuppressDevice()
         {
-            _loraTransceiver.TransceiverDisconnected-=Emitter_DeviceDisconnected;            
+            _loraTransceiver.TransceiverDisconnected -= Emitter_DeviceDisconnected;
             _loraTransceiver = null;
             _singleton.Reset();
             OnDeviceDisconnectedEvent();
         }
-        
+
         #endregion
     }
 }
