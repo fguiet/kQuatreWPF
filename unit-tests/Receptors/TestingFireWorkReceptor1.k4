@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FireworkDefinition fireworkName="OUTARVILLE 13.07.2022">
+  <Receptors>
+    <Receptor name="Coordinateur" address="0" nbOfChannels="0" />
+    <Receptor name="Boitier 1" address="1" nbOfChannels="16" />
+    <Receptor name="Boitier 2" address="2" nbOfChannels="16" />
+    <Receptor name="Boitier 3" address="3" nbOfChannels="16" />
+    <Receptor name="Boitier 4" address="4" nbOfChannels="16" />
+  </Receptors>
+  <SoundTrack soundTrackFilePath="" />
+  <Lines>
+    <Line number="1" ignition="00:00:01" rescue="no">
+      <ReceptorAddress address="1" channel="1" />
+      <Fireworks>
+        <Firework reference="AC130631A" designation="BENGALE 1MN VIOLET" duration="00:01:00" />
+      </Fireworks>
+    </Line>
+    <Line number="2" ignition="00:00:05" rescue="no">
+      <ReceptorAddress address="1" channel="2" />
+      <Fireworks>
+        <Firework reference="ACC120022B" designation="FONTAINE CONIQUE ARGENT" duration="00:01:00" />
+      </Fireworks>
+    </Line>
+    <Line number="3" ignition="00:00:10" rescue="no">
+      <ReceptorAddress address="1" channel="3" />
+      <Fireworks>
+        <Firework reference="YAC298041A" designation="NAPPE SALVE 13 PAF ROUGE A FINAL TIMERAIN" duration="00:00:01" />
+      </Fireworks>
+    </Line>
+    <Line number="4" ignition="00:00:15" rescue="no">
+      <ReceptorAddress address="1" channel="4" />
+      <Fireworks>
+        <Firework reference="YAC298041A" designation="NAPPE SALVE 13 PAF ROUGE A FINAL TIMERAIN" duration="00:00:01" />
+      </Fireworks>
+    </Line>
+    <Line number="5" ignition="00:00:20" rescue="no">
+      <ReceptorAddress address="1" channel="5" />
+      <Fireworks>
+        <Firework reference="YAC298041A" designation="NAPPE SALVE 13 PAF ROUGE A FINAL TIMERAIN" duration="00:00:01" />
+      </Fireworks>
+    </Line>
+    <Line number="6" ignition="00:00:25" rescue="no">
+      <ReceptorAddress address="1" channel="6" />
+      <Fireworks>
+        <Firework reference="ACC298154C" designation="PACK CD 16 CPS COMETE VIOLET" duration="00:00:20" />
+      </Fireworks>
+    </Line>
+    <Line number="7" ignition="00:00:30" rescue="no">
+      <ReceptorAddress address="1" channel="7" />
+      <Fireworks>
+        <Firework reference="ACC298141C" designation="PACK CD 16 CPS PAF BLANC" duration="00:00:23" />
+      </Fireworks>
+    </Line>
+    <Line number="8" ignition="00:00:35" rescue="no">
+      <ReceptorAddress address="1" channel="8" />
+      <Fireworks>
+        <Firework reference="AC190627A" designation="SAC 5 BBES COULEUR ET BLANC ASSORTIES  75MM R4&#xA;R4" duration="00:00:22" />
+      </Fireworks>
+    </Line>
+    <Line number="9" ignition="00:00:40" rescue="no">
+      <ReceptorAddress address="1" channel="9" />
+      <Fireworks>
+        <Firework reference="AC298057A" designation="PACK CD 36 CPS BBTES 5 EFFETS VARIES" duration="00:00:35" />
+      </Fireworks>
+    </Line>
+    <Line number="10" ignition="00:00:45" rescue="no">
+      <ReceptorAddress address="1" channel="10" />
+      <Fireworks>
+        <Firework reference="AC298058A" designation="PACK CD 19 CPS BBTES 4 EFFETS VARIES" duration="00:00:28" />
+        <Firework reference="AC298058A" designation="PACK CD 19 CPS BBTES 4 EFFETS VARIES" duration="00:00:28" />
+      </Fireworks>
+    </Line>
+    <Line number="11" ignition="00:00:50" rescue="no">
+      <ReceptorAddress address="1" channel="11" />
+      <Fireworks>
+        <Firework reference="AC190672A" designation="5 BOMBES 75MM R5 AIGUE MARINE&#xA;R5" duration="00:00:26" />
+      </Fireworks>
+    </Line>
+    <Line number="12" ignition="00:00:55" rescue="no">
+      <ReceptorAddress address="1" channel="12" />
+      <Fireworks>
+        <Firework reference="AC297426A" designation="HELIOTROPE TRONC ASSORTI SAULE COULEUR&#xA;PACK CD 25 " duration="00:00:22" />
+      </Fireworks>
+    </Line>
+    <Line number="13" ignition="00:01:00" rescue="no">
+      <ReceptorAddress address="1" channel="13" />
+      <Fireworks>
+        <Firework reference="AC298034A" designation="PACK CW 49 CPS BBTE QUEUE DE CH BROC CROWN" duration="00:00:35" />
+        <Firework reference="AC190263A" designation="SAC 5 BOMBES 75MM KAMURO ET ROUGE&#xA;R4" duration="00:00:23" />
+      </Fireworks>
+    </Line>
+    <Line number="14" ignition="00:01:05" rescue="no">
+      <ReceptorAddress address="1" channel="14" />
+      <Fireworks>
+        <Firework reference="YAC298041A" designation="NAPPE SALVE 13 PAF ROUGE A FINAL TIMERAIN" duration="00:00:01" />
+      </Fireworks>
+    </Line>
+    <Line number="15" ignition="00:01:10" rescue="no">
+      <ReceptorAddress address="1" channel="15" />
+      <Fireworks>
+        <Firework reference="B100SPCVI/SA" designation="BOMBE 100MM ETOILES VIOLETTE CHGT SCINT. ARGENT" duration="00:00:06" />
+      </Fireworks>
+    </Line>
+    <Line number="16" ignition="00:01:15" rescue="no">
+      <ReceptorAddress address="1" channel="16" />
+      <Fireworks>
+        <Firework reference="C20.10CVA" designation="CHANDELLE 20MM 10 COMETES VARIEES" duration="00:00:30" />
+      </Fireworks>
+    </Line>
+  </Lines>
+</FireworkDefinition>
