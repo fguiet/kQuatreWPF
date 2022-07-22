@@ -1,5 +1,9 @@
 # Changelog
 
+## [2021.1.0.2] - 2022/07/13
+
+* Fix rescue line launching not working anymore (bug introduce in [2021.2.1.3])
+
 ## [2022.1.0.1] - 2022/07/09
 
 * Improve Transceiver USB Detection

@@ -1084,13 +1084,15 @@ namespace fr.guiet.kquatre.business.firework
         }
 
         public void LaunchRescueLine(string lineNumber)
-        {
+        {           
             //Check             
             if (_state == FireworkManagerState.FireworkRunning)
             {
+                //Calcul du numéro de ligne reel car les lignes de secours sont mises à la fin du feu d'artifice
+                string rescueLineNumber  = (ActiveLines.Count() + int.Parse(lineNumber)).ToString();
 
                 Line l = (from rl in RescueLines
-                          where rl.State == LineState.Standby && rl.Number == lineNumber
+                          where rl.State == LineState.Standby && rl.Number == rescueLineNumber
                           select rl).FirstOrDefault();
 
                 if (l != null)
@@ -1467,7 +1469,12 @@ namespace fr.guiet.kquatre.business.firework
 
             Task.Run(async () =>
             {
+                //TODO : Remplacer IsAllLineFinished par ElapsedTime <= TotalDuration
+                //Car sinon le feu s'arrête avant la fin si on a des lignes en statut launchedfailed à la fin du feu
+                //A bien tester avec les lignes de secours
+
                 while (!IsAllLineFinished() && !_fireworkCancellationToken.IsCancellationRequested)
+                //while (ElapsedTime < TotalDuration && !_fireworkCancellationToken.IsCancellationRequested)
                 {
                     //Prepare next lines?
                     if (prepareNextLines)
