@@ -1033,16 +1033,18 @@ namespace fr.guiet.kquatre.business.firework
             }         
             catch(InvalidCastException ice)
             {
+                BeginNewFirework();
+
                 throw new Exception(string.Format("Un problème de lecture des données sur la ligne : {0} est apparue.", i.ToString()) + Environment.NewLine + "Détail de l'erreur : " + ice.Message);
             }
             catch (Exception)
-            {               
-                throw;
-            }
-            finally
             {
                 BeginNewFirework();
 
+                throw;
+            }
+            finally
+            {              
                 _isLoadingFromFile = false;
             }
         }
