@@ -964,6 +964,8 @@ namespace fr.guiet.kquatre.business.firework
         /// <returns></returns>
         public void LoadFireworkFromExcel(string fullFileName)
         {
+            int i = 0;
+
             try
             {
                 BeginNewFirework();
@@ -986,7 +988,7 @@ namespace fr.guiet.kquatre.business.firework
                 int firstRowDataIndex = _configuration.ExcelFirstRowData;
 
                 Line line = null;
-                for (int i = firstRowDataIndex; i <= rows; i++)
+                for (i = firstRowDataIndex; i <= rows; i++)
                 {
 
                     //Last line read maybe empty
@@ -1028,15 +1030,19 @@ namespace fr.guiet.kquatre.business.firework
                 MakeItDirty(false);
 
                 OnFireworkLoadedEvent();
-            }
-            catch (Exception e)
+            }         
+            catch(InvalidCastException ice)
             {
-                BeginNewFirework();
-
-                throw e;
+                throw new Exception(string.Format("Un problème de lecture des données sur la ligne : {0} est apparue.", i.ToString()) + Environment.NewLine + "Détail de l'erreur : " + ice.Message);
+            }
+            catch (Exception)
+            {               
+                throw;
             }
             finally
             {
+                BeginNewFirework();
+
                 _isLoadingFromFile = false;
             }
         }
