@@ -1,6 +1,7 @@
 ﻿using fr.guiet.kquatre.business.exceptions;
 using fr.guiet.kquatre.business.firework;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -29,9 +30,9 @@ namespace fr.guiet.kquatre.business.receptor
         private string _address;
 
         /// <summary>
-        /// Line assigned to this address (null is not assigned)
+        /// Fireworks assigned to this address 
         /// </summary>
-        private Line _line = null;
+        private List<Firework> _fireworks = new List<Firework>();
 
         /// <summary>
         /// Current conductivity of this receptor address
@@ -40,15 +41,16 @@ namespace fr.guiet.kquatre.business.receptor
 
         #endregion
 
+        /// <summary>
+        /// Available Receptor Address are adresses not linked to any firework
+        /// </summary>
         public bool IsAvailable
         {
             get
             {
-                return (_line == null);
+                return (_fireworks.Count == 0);
             }
         }
-
-       
 
         #region Constructor
 
@@ -83,7 +85,9 @@ namespace fr.guiet.kquatre.business.receptor
         {
             get
             {
-                return _line.NumberUI;
+                //Receptor Address can be associated with multiple firework but they are all on the same line
+                //So we take the first firework to obtain the info
+                return _fireworks[0].AssignedLine.NumberUI;                
             }
         }
 
@@ -96,23 +100,26 @@ namespace fr.guiet.kquatre.business.receptor
         }
 
         /// <summary>
-        /// Assign line to this address
+        /// Assign a firework to this receptor address (multiple firework can be assigned to the same receptor address)
         /// </summary>
-        /// <param name="line"></param>
-        public void AssignLine(Line line)
+        /// <param name="firework"></param>
+        /// <exception cref="ReceptorAddressAlreadyAssignedException"></exception>
+        public void AssignFirework(Firework firework)
         {
-            if (_line != null)
+            if (!_fireworks.Contains(firework))
             {
-                string message = string.Format("Le récepteur : {0} / calnal {1} est déjà occupé par la ligne n° {2} ", _receptor.Name, _channel, _line.Number);
-                throw new ReceptorAddressAlreadyAssignedException(message);
+                _fireworks.Add(firework);
             }
-
-            _line = line;
+            else
+            {
+                string message = string.Format("Le récepteur : {0} / calnal {1} est déjà lié avec le feu d'artifice de référence : {2}, désignation : {3} sur la ligne : {4}", _receptor.Name, _channel, firework.Reference, firework.Designation, firework.AssignedLine.Number);
+                throw new ReceptorAddressAlreadyAssignedException(message);
+            }                     
         }
 
-        public void Unassign(Line line)
+        public void UnassignFirework(Firework firework)
         {
-            _line = null;
+            _fireworks.Remove(firework);
         }
 
         public string Address

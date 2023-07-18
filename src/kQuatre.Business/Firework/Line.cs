@@ -54,9 +54,6 @@ namespace fr.guiet.kquatre.business.firework
         //Line number
         private int _number = -1;
 
-        //Receptor address linked to this line
-        private ReceptorAddress _receptorAddress = null;
-
         //Time at which firework(s) is/are launched
         private TimeSpan _ignition;
 
@@ -70,12 +67,7 @@ namespace fr.guiet.kquatre.business.firework
         /// Line state
         /// </summary>
         private LineState _state = LineState.Standby;
-
-        /// <summary>
-        /// Elapsed time since line has been fired
-        /// </summary>
-        //private Stopwatch _elapsedTime = null;
-
+       
         #endregion
 
         #region Public Members
@@ -121,18 +113,6 @@ namespace fr.guiet.kquatre.business.firework
                 OnPropertyChanged();
             }
         }
-
-        /*public bool IsDirty
-        {
-            get
-            {
-                return _isDirty;
-            }
-            set
-            {
-                _isDirty = value;
-            }
-        }*/
 
         public LineState State
         {
@@ -195,7 +175,6 @@ namespace fr.guiet.kquatre.business.firework
             }
         }
         
-
         public TimeSpan Ignition
         {
             get
@@ -212,38 +191,7 @@ namespace fr.guiet.kquatre.business.firework
                 }
             }
         }
-
-        public string ReceptorAddressUI
-        {                    
-            get
-            {
-                if (_receptorAddress != null)
-                {
-                    return _receptorAddress.ReceptorAddressUI;                    
-                }
-                else
-                {
-                    return "Non renseigné";
-                }
-            }
-        }
-
-        public ReceptorAddress ReceptorAddress
-        {
-            get
-            {
-                return _receptorAddress;
-            }   
-            set
-            {
-                if (_receptorAddress != value)
-                {
-                    _receptorAddress = value;
-                    OnPropertyChanged();                    
-                }
-            }
-        }
-
+       
         public ObservableCollection<Firework> Fireworks
         {
             get
@@ -282,55 +230,61 @@ namespace fr.guiet.kquatre.business.firework
 
         #endregion
 
-        #region Public Methods        
+        #region Public Methods    
+
+        /// <summary>
+        /// Return a list of firework associated with the same receptor (but maybe not the same channel)
+        /// </summary>
+        /// <param name="receptorAddress"></param>
+        /// <returns></returns>
+        public List<Firework> GetFireworksWithSameReceptor(string receptorAddress)
+        {
+            return (from f in _fireworks
+                    where f.ReceptorAddress.Address == receptorAddress
+                    select f).ToList();
+        }
         
+               
         public void Reorder(int number)
         {
             Number = number.ToString();            
         }
-
-        public void AssignReceptorAddress(ReceptorAddress ra)
-        {
-            if (this._receptorAddress != null)
-            {                
-                string message = string.Format("La line n°{0} est déjà associée au récepteur : {1} / calnal {2} ", _number, _receptorAddress.Receptor.Name, _receptorAddress.Channel);
-                throw new LineAlreadyAssignedException(message);
-            }
-
-            this._receptorAddress = ra;
-            ra.AssignLine(this);
-        }
-
-        public void UnassignReceptorAddress()
-        {
-            if (this._receptorAddress != null)
-            {
-                _receptorAddress.Unassign(this);
-                ReceptorAddress = null;
-                //this._receptorAddress = null;                
-            }
-        }
-
+       
         public bool IsFinished
         {
             get
             {
-                return (_state == LineState.Finished || _state == LineState.LaunchFailed);
+                //return (_state == LineState.Finished);
+                //|| _state == LineState.LaunchFailed);
+
+                //Une ligne est termine si tout ces feux sont termines ou failed
+                //ou si c'est une ligne de secours et feux en attente 
+
+                if (!_isRescueLine)
+                {
+                    var fList = (from f in _fireworks
+                                 where f.State == FireworkState.Finished || f.State == FireworkState.LaunchFailed
+                                 select f).ToList();
+
+                    return (fList.Count == _fireworks.Count);
+                }
+
+                if (_isRescueLine)
+                {
+                    var fList = (from f in _fireworks
+                                 where f.State == FireworkState.Standby 
+                                 || f.State == FireworkState.LaunchFailed
+                                 || f.State == FireworkState.Finished
+                                 select f).ToList();
+
+                    return (fList.Count == _fireworks.Count);
+                }
+
+                //Will never happen
+                return true;
             }
         }
-
-        public void SetFailed()
-        {
-            OnLineFailedEvent();
-
-            _state = LineState.LaunchFailed;
-
-            foreach (Firework firework in _fireworks)
-            {
-                firework.SetFailed();
-            }
-        }
-
+       
         public void SetImminentLaunch()
         {
             _state = LineState.ImminentLaunch;
@@ -366,18 +320,46 @@ namespace fr.guiet.kquatre.business.firework
             }
         }
 
-        public void Start()
-        {                         
-            OnLineStartedEvent();
+        /// <summary>
+        /// Start some fireworks of this line
+        /// If line status != InProgress set it to InProgress Status
+        /// </summary>
+        public void StartFireworks(List<Firework> fireworks)
+        {
+            //Not in Progress?
+            if (_state != LineState.InProgress)
+            {
+                OnLineStartedEvent();
 
-            //Change line state
-            _state = LineState.InProgress;
+                //Change line state
+                _state = LineState.InProgress;
+            }
 
             //Start firework
-            foreach (Firework firework in _fireworks)
+            foreach (Firework firework in fireworks)
             {
                 firework.Start();
             }
+        }
+
+        /// <summary>
+        /// Set this line as failed even thought some firework associated with different receptor are ok
+        /// </summary>
+        /// <param name="fireworks"></param>
+        public void SetFailed(List<Firework> fireworks)
+        {
+            if (_state != LineState.LaunchFailed)
+            {
+                OnLineFailedEvent();
+
+                _state = LineState.LaunchFailed;
+            }
+
+            //Set firework state to failed
+            foreach (Firework firework in fireworks)
+            {
+                firework.SetFailed();
+            }            
         }
 
         /// <summary>
@@ -392,17 +374,34 @@ namespace fr.guiet.kquatre.business.firework
         }
 
         /// <summary>
-        /// Get a partial clone of this object
-        /// Only alterable property are cloned
+        /// Remove a firework line association
         /// </summary>
-        /// <returns></returns>
+        /// <param name="firework"></param>
+        public void DeleteFirework(Firework firework)
+        {
+            //Delete Event
+            firework.FireworkFinished-= Firework_FireworkFinished;
+
+            //Remove receptor association
+            firework.UnassignReceptorAddress();
+
+            //Remove line association from firework
+            firework.AssignLine(null);
+
+            //Remove firework from list
+            _fireworks.Remove(firework);
+        }
+
+        /// <summary>
+        /// Get a partial clone of this object
+        /// Only alterable property and property shown on screen are cloned
+        /// </summary>
+        /// <returns></returns>               
         public Line PartialClone()
         {
             Line l = new Line(_number)
             {
-                Ignition = _ignition,
-                ReceptorAddress = _receptorAddress,
-                //l.IsDirty = false;
+                Ignition = _ignition,                                            
                 IsRescueLine = _isRescueLine
             };
 
@@ -417,18 +416,7 @@ namespace fr.guiet.kquatre.business.firework
         {
             Number = lineClone.Number;
             Ignition = lineClone.Ignition;
-            IsRescueLine = lineClone.IsRescueLine;
-
-            if (lineClone.ReceptorAddress == null)
-                UnassignReceptorAddress();
-            else
-            {
-                //First unassign current address if any
-                UnassignReceptorAddress();
-
-                //Then assign new address
-                AssignReceptorAddress(lineClone.ReceptorAddress);
-            }
+            IsRescueLine = lineClone.IsRescueLine;          
         }
 
         #endregion
@@ -437,7 +425,8 @@ namespace fr.guiet.kquatre.business.firework
 
         /// <summary>
         /// Event raised by firework when it is finished
-        /// Allow to compute whehter line is finishied or not (ie all fireworks are finished)
+        /// Allow to compute whehter line is finishied or not (ie all fireworks are finished and not in failed state for instance)
+        /// Line state is not represented by a color on the UI 
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>

@@ -8,7 +8,7 @@
     xmlns:conv="clr-namespace:fr.guiet.kquatre.ui.converters"
     x:Class="fr.guiet.kquatre.ui.views.LineWindow"
         mc:Ignorable="d"
-        Title="Gestion d'une ligne" Height="250" Width="460" MinHeight="210" MinWidth="460" WindowStartupLocation="CenterScreen" Icon="/kQuatre;component/Resources/FireworksIcon.png">
+        Title="Gestion d'une ligne" Height="150" Width="460" MinHeight="210" MinWidth="460"  WindowStartupLocation="CenterScreen" Icon="/kQuatre;component/Resources/FireworksIcon.png" ResizeMode="NoResize">
     <Window.Resources>
         <conv:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"></conv:BooleanToVisibilityConverter>
     </Window.Resources>
@@ -25,7 +25,6 @@
                 <RowDefinition Height="40"/>
                 <RowDefinition Height="40"/>
                 <RowDefinition Height="40"/>
-                <RowDefinition Height="40"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -36,7 +35,6 @@
             <Label Name="_lblAdd" Visibility="{Binding Path=IsModeCreation, Converter={StaticResource BooleanToVisibilityConverter}}" Grid.Row="0" Grid.Column="0" Content="Insérer après la ligne :" HorizontalAlignment="Left"  VerticalAlignment="Center" />
             <Label Name="_lblUpdate" Visibility="{Binding Path=IsModeUpdate, Converter={StaticResource BooleanToVisibilityConverter}}" Grid.Row="0" Grid.Column="0" Content="Déplacer après la ligne :" HorizontalAlignment="Left"  VerticalAlignment="Center" />
             <Label Grid.Row="1" Grid.Column="0" Content="Mise à feu :" HorizontalAlignment="Left"  VerticalAlignment="Center"/>
-            <Label Grid.Row="2" Grid.Column="0" Content="Association récepteur :" HorizontalAlignment="Left"  VerticalAlignment="Center" />
             <telerik:RadMaskedTextInput ErrorMessage="Mise à feu invalide" 
                                         ValidationRegex="^(?:2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$" 
                                         Mask="a8"
@@ -53,10 +51,8 @@
                                         Placeholder=" "></telerik:RadMaskedTextInput>
             <!--<Custom:XamMaskedEditor Mask="99:99:99" x:Name="_mkeIgnition" Value="{Binding Path=Line.Ignition}" Grid.Column="1" Grid.Row="1" Width="70" HorizontalAlignment="Left"  VerticalAlignment="Center"/>-->
             <ComboBox x:Name="_cbxLineLocation" Grid.Column="1" Grid.Row="0" SelectedValuePath="Id" SelectedValue="{Binding Path=SelectedLineLocation}" DisplayMemberPath="Value" ItemsSource="{Binding Path=LineLocation}" HorizontalAlignment="Left" VerticalAlignment="Center" Width="200" SelectionChanged="_cbxLineLocation_SelectionChanged"  />
-            <ComboBox Grid.Column="1" Grid.Row="2" SelectedItem="{Binding Path=Line.ReceptorAddress}" DisplayMemberPath="ReceptorAddressUI" ItemsSource="{Binding Path=ReceptorAddressesAvailable}" HorizontalAlignment="Left" VerticalAlignment="Center" Width="200"  />
-            <Button Content="Dissocier" Name="_btnDissociate" Grid.Column="2" HorizontalAlignment="Center"  Grid.Row="2" VerticalAlignment="Center" Width="76" Click="_btnDissociate_Click" />
-            <Label Grid.Row="3" Grid.Column="0" Content="Ligne de secours :" HorizontalAlignment="Left"  VerticalAlignment="Center"/>
-            <CheckBox x:Name="_chkRescueLine" Content="" Grid.Column="1" IsChecked="{Binding Path=Line.IsRescueLine}" HorizontalAlignment="Left" Grid.Row="3" VerticalAlignment="Center" Checked="_chkRescueLine_Checked" Unchecked="_chkRescueLine_Unchecked"/>
+            <Label Grid.Row="2" Grid.Column="0" Content="Ligne de secours :" HorizontalAlignment="Left"  VerticalAlignment="Center"/>
+            <CheckBox x:Name="_chkRescueLine" Content="" Grid.Column="1" IsChecked="{Binding Path=Line.IsRescueLine}" HorizontalAlignment="Left" Grid.Row="2" VerticalAlignment="Center" Checked="_chkRescueLine_Checked" Unchecked="_chkRescueLine_Unchecked"/>
         </Grid>
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>

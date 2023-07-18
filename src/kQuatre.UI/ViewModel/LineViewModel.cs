@@ -55,27 +55,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
                 }
             }
         }
-
-        public List<ReceptorAddress> ReceptorAddressesAvailable
-        {
-            get
-            {
-                if (_line.ReceptorAddress != null)
-                {
-                    List<ReceptorAddress> ra = new List<ReceptorAddress>();
-                    ra.AddRange(_fireworkManager.ReceptorAddressesAvailable);
-                    ra.Add(_line.ReceptorAddress);
-
-                    return ra;
-                }
-                else
-                    return _fireworkManager.ReceptorAddressesAvailable;
-            }
-
-        }
-
-        //private bool _isLineNumberReadOnly;
-
+       
         public bool IsLineNumberEnabled
         {
             get
@@ -147,6 +127,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
             {
                 _mode = WindowMode.Modify;
                 _lineClone = line.PartialClone();
+                
             }
 
             InitializeLineLocation();
@@ -172,11 +153,6 @@ namespace fr.guiet.kquatre.ui.viewmodel
             {
                 return _fireworkManager;
             }
-        }
-
-        public void Dissociate()
-        {
-            _lineClone.UnassignReceptorAddress();
         }
 
         public void UpdateLineNumber()

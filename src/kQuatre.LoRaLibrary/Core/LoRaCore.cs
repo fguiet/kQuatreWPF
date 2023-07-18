@@ -227,9 +227,9 @@ namespace fr.guiet.lora.core
             }
         }
 
-        public async Task SendFireFrame(string receiverAddress, List<string> receiverChannels, List<string> lineNumbers, int timeOut, int frameSentMaxRetry)
+        public async Task SendFireFrame(string receiverAddress, List<string> receiverChannels, string lineNumber, int timeOut, int frameSentMaxRetry)
         {
-            FireFrame fireFrame = new FireFrame(GetNextFrameId(), _address, receiverAddress, receiverChannels, lineNumbers, timeOut, frameSentMaxRetry);
+            FireFrame fireFrame = new FireFrame(GetNextFrameId(), _address, receiverAddress, receiverChannels, lineNumber, timeOut, frameSentMaxRetry);
 
             try
             {

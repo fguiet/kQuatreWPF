@@ -19,9 +19,10 @@ namespace fr.guiet.kquatre.ui.viewmodel
         private FireworkManager _fireworkManager = null;
         private SoftwareConfiguration _configuration = null;
         private RelayCommand _addFireworkCommand;
+        private RelayCommand _modifyFireworkCommand;
+        private RelayCommand _deleteFireworkCommand;
         private RelayCommand _selectSoundTrack = null;
         private RelayCommand _resetSoundTrack = null;
-
 
         #endregion
 
@@ -50,6 +51,32 @@ namespace fr.guiet.kquatre.ui.viewmodel
                 }
 
                 return _selectSoundTrack;
+            }
+        }
+
+        public RelayCommand ManageFireworkCommand
+        {
+            get
+            {
+                if (_modifyFireworkCommand == null)
+                {
+                    _modifyFireworkCommand = new RelayCommand(new Action<object>((l) => ManageFirework(l)));
+                }
+
+                return _modifyFireworkCommand;
+            }
+        }
+
+        public RelayCommand DeleteFireworkCommand
+        {
+            get
+            {
+                if (_deleteFireworkCommand == null)
+                {
+                    _deleteFireworkCommand = new RelayCommand(new Action<object>((l) => DeleteFirework(l)));
+                }
+
+                return _deleteFireworkCommand;
             }
         }
 
@@ -135,10 +162,18 @@ namespace fr.guiet.kquatre.ui.viewmodel
             window.ShowDialog();
         }
 
-        public void OpenFireworkManagementWindow(Line line)
+        private void OpenAddFireworkWindow(Line line)
         {
             FireworkManagementWindow window = new FireworkManagementWindow(_fireworkManager, _configuration, line);
             window.ShowDialog();
+        }
+
+        private void OpenFireworkWindow(Firework firework)
+        {           
+            FireworkWindow window = new FireworkWindow(_fireworkManager, firework);
+
+            window.ShowDialog();
+
         }
 
         /// <summary>
@@ -203,13 +238,44 @@ namespace fr.guiet.kquatre.ui.viewmodel
         {
             if (l is Line line)
             {
-                OpenFireworkManagementWindow(line);
+                OpenAddFireworkWindow(line);
+            }
+        }
+
+        /// <summary>
+        /// Modifiy a firework (receptor association for ce moment)
+        /// </summary>
+        /// <param name="l"></param>
+        private void ManageFirework(object l)
+        {
+            if (l is Firework firework)
+            {
+                OpenFireworkWindow(firework);
+                               
             }            
+        }
+
+        /// <summary>
+        /// Delete a firework from a line
+        /// </summary>
+        /// <param name="l"></param>
+        private void DeleteFirework(object l)
+        {
+            if (l is Firework firework)
+            {
+                string message = string.Format("Validez-vous la suppression du feu avec la référence {0} et la désignation {1} ?.", firework.Reference, firework.Designation);
+
+                if (DialogBoxHelper.ShowQuestionMessage(message) == MessageBoxResult.Yes)
+                {
+                    _fireworkManager.RemoveFireworkFromLine(firework);                                       
+                }
+            }               
         }
 
         private void RefreshGUI()
         {
             OnPropertyChanged("FireworkManager");
+         
         }
 
         #endregion

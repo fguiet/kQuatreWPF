@@ -72,11 +72,6 @@ namespace fr.guiet.kquatre.ui.views
             }
         }
 
-        private void _btnDissociate_Click(object sender, RoutedEventArgs e)
-        {
-            _viewModel.Dissociate();
-        }
-
         private void _cbxLineLocation_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {            
             _viewModel.UpdateLineNumber();            

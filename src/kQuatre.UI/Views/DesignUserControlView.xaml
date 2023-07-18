@@ -12,11 +12,34 @@
 
         <Grid>
             <Grid.Resources>
-                <Style x:Key="RescueLineStyle" TargetType="telerik:GridViewRow">
-                    <Setter Property="Background" Value="{telerik:FluentResource ResourceKey=AccentBrush}" />
-                    <Setter Property="Foreground" Value="{telerik:FluentResource ResourceKey=MarkerInvertedBrush}" />
+
+                <Style TargetType="telerik:RadButton">
+                    <!-- TODO : A revoir-->
+                    <Setter Property="Opacity" Value="1"/>
+                    <Setter Property="BorderBrush" Value="Black"/>
+                    <Setter Property="BorderThickness" Value="1"/>
                 </Style>
-                <Style x:Key="StandardLineStyle" TargetType="telerik:GridViewRow"   />
+
+                <Style x:Key="RescueLineStyle" TargetType="telerik:GridViewRow">
+                    <!--<Setter Property="Background" Value="{telerik:FluentResource ResourceKey=AccentBrush}" />-->
+                    <Setter Property="Background" Value="Orange" />
+                    <!--<Setter Property="Foreground" Value="
+                    {telerik:FluentResource ResourceKey=MarkerInvertedBrush}" />-->
+                    <!--<Setter Property="Foreground" Value="Black"/>-->
+                </Style>
+                <Style x:Key="StandardLineStyle" TargetType="telerik:GridViewRow">
+                    <Setter Property="Background" Value="#b7b6b8" />
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="#0099BC" />
+                           <!-- <Setter Property="Foreground" Value="Black" />-->
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#0099BC" />
+                           <!-- <Setter Property="Foreground" Value="Black" />-->
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
                 <conv:LineConverter x:Key="lineConverter" />
                 <conv:LineStyleSelector x:Key="lineSelector" ConditionConverter="{StaticResource lineConverter}">
                     <conv:LineStyleSelector.Rules>
@@ -32,6 +55,16 @@
                         </conv:ConditionalStyleRule>
                     </conv:LineStyleSelector.Rules>
                 </conv:LineStyleSelector>
+                <Style x:Key="StandardFireworkStyle" TargetType="telerik:GridViewRow">
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="White" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="White" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
             </Grid.Resources>
 
             <Grid.RowDefinitions>
@@ -100,37 +133,34 @@
                     <RowDefinition  />
                 </Grid.RowDefinitions>
 
-                <telerik:RadGridView  RowDetailsVisibilityMode="Visible"                                         
-                                 GroupRenderMode="Flat"                                
-                                 x:Name="_fireworkGridView"                                 
-                                 CanUserGroupColumns="False" 
-                                 ShowGroupPanel="False" 
-                                 CanUserSortColumns="False" 
-                                 CanUserFreezeColumns="False" 
-                                 CanUserReorderColumns="False"
-                                 ItemsSource="{Binding FireworkManager.AllLines}" 
-                                 AutoGenerateColumns="False" 
-                                 IsReadOnly="True"   
-                                 IsFilteringAllowed="False"
-                                 GridLinesVisibility="Horizontal"                                
-                                 HorizontalGridLinesBrush="#0099BC" 
-                                 RowIndicatorVisibility="Collapsed"
-                                 RowStyleSelector="{StaticResource lineSelector}"
-                                 telerik:StyleManager.Theme="Fluent">
+                <telerik:RadGridView  RowDetailsVisibilityMode="Visible"  
+                                      SelectionMode="Single"
+                                     SelectionUnit="FullRow"
+                                     GroupRenderMode="Flat"                                
+                                     x:Name="_fireworkGridView"                                 
+                                     CanUserGroupColumns="False" 
+                                     ShowGroupPanel="False" 
+                                     CanUserSortColumns="False" 
+                                     CanUserFreezeColumns="False" 
+                                     CanUserReorderColumns="False"
+                                     ItemsSource="{Binding FireworkManager.AllLines}" 
+                                     AutoGenerateColumns="False" 
+                                     IsReadOnly="True"   
+                                     IsFilteringAllowed="False"
+                                     GridLinesVisibility="Horizontal"                                
+                                     HorizontalGridLinesBrush="#0099BC" 
+                                     RowIndicatorVisibility="Collapsed"                                      
+                                     RowStyleSelector="{StaticResource lineSelector}"
+                                     telerik:StyleManager.Theme="Fluent">
                     <telerik:RadGridView.Columns>
                         <telerik:GridViewToggleRowDetailsColumn />
-                        <telerik:GridViewDataColumn Width="110"  Header="Numéro de ligne"
-											DataMemberBinding="{Binding NumberUI}" />
-                        <telerik:GridViewDataColumn  Header="Mise à feu" Width="100"
-											DataMemberBinding="{Binding Ignition}" />
-                        <telerik:GridViewDataColumn   Header="Liaison" Width="150"
-											DataMemberBinding="{Binding ReceptorAddressUI}" />
-                        <telerik:GridViewDataColumn Header="Ligne de secours"
-											DataMemberBinding="{Binding IsRescueLineText}" />
-                        <telerik:GridViewColumn Header="Action">
+                        <telerik:GridViewDataColumn Width="110"  Header="Numéro de ligne" DataMemberBinding="{Binding NumberUI}" />
+                        <telerik:GridViewDataColumn  Header="Mise à feu" Width="100" DataMemberBinding="{Binding Ignition}" />
+                        <telerik:GridViewDataColumn Header="Ligne de secours" DataMemberBinding="{Binding IsRescueLineText}" />
+                        <telerik:GridViewColumn Header="Ajout">
                             <telerik:GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <telerik:RadButton Content="Ajouter un artifice"
+                                    <telerik:RadButton Content="Ajout d'artifice"
                                                    Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type telerik:RadGridView}},Path=DataContext.AddFireworkCommand}"
                                                    CommandParameter="{Binding}" />
                                 </DataTemplate>
@@ -139,7 +169,7 @@
                     </telerik:RadGridView.Columns>
                     <telerik:RadGridView.RowDetailsTemplate>
                         <DataTemplate>
-                            <telerik:RadGridView AutoGenerateColumns="False"                                             
+                            <telerik:RadGridView AutoGenerateColumns="False"                                              
                                              GroupRenderMode="Flat"
                                              IsReadOnly="True"                                                                                         
 										     IsFilteringAllowed="False"                                             
@@ -147,18 +177,36 @@
 										     CanUserReorderColumns="False"
 										     CanUserFreezeColumns="False"
 										     CanUserResizeColumns="False"
+                                             CanUserSelect="False"
                                              CanUserSortColumns="False" 
 										     ShowGroupPanel="False"  
                                              RowIndicatorVisibility="Collapsed"
-										     Margin="25 10 10 30" 
+										     Margin="25 10 10 30"               
+                                             RowStyle="{StaticResource StandardFireworkStyle}"
                                              telerik:StyleManager.Theme="Fluent">
                                 <telerik:RadGridView.Columns>
-                                    <telerik:GridViewDataColumn  Header="Référence"
-														DataMemberBinding="{Binding Reference}" Width="120" />
-                                    <telerik:GridViewDataColumn Header="Désignation"
-														 DataMemberBinding="{Binding Designation}" Width="300" />
-                                    <telerik:GridViewDataColumn Header="Durée"
-														 DataMemberBinding="{Binding Duration}" />
+                                    <telerik:GridViewDataColumn Header="Référence" DataMemberBinding="{Binding Reference}" Width="120" />
+                                    <telerik:GridViewDataColumn Header="Désignation" DataMemberBinding="{Binding Designation}" Width="300" />
+                                    <telerik:GridViewDataColumn Header="Durée" DataMemberBinding="{Binding Duration}" />
+                                    <telerik:GridViewDataColumn Header="Liaison" Width="150" DataMemberBinding="{Binding ReceptorAddressUI}" />
+                                    <telerik:GridViewColumn Header="Modification">
+                                        <telerik:GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <telerik:RadButton Content="Modifier"
+                                                   Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type telerik:RadGridView},AncestorLevel=2},Path=DataContext.ManageFireworkCommand}"
+                                                   CommandParameter="{Binding}" />
+                                            </DataTemplate>
+                                        </telerik:GridViewColumn.CellTemplate>
+                                    </telerik:GridViewColumn>
+                                    <telerik:GridViewColumn Header="Suppression">
+                                        <telerik:GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <telerik:RadButton Content="Supprimer"
+                                                   Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type telerik:RadGridView},AncestorLevel=2},Path=DataContext.DeleteFireworkCommand}"
+                                                   CommandParameter="{Binding}" />
+                                            </DataTemplate>
+                                        </telerik:GridViewColumn.CellTemplate>
+                                    </telerik:GridViewColumn>
                                 </telerik:RadGridView.Columns>
                             </telerik:RadGridView>
                         </DataTemplate>

@@ -39,9 +39,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
 
         private bool _isFireworkNavigationEnabled = true;
 
-        private bool _isFileMenuEnabled = true;
-
-        private Version _softwareVersion = null;
+        private bool _isFileMenuEnabled = true;        
 
         #endregion
 
@@ -120,9 +118,9 @@ namespace fr.guiet.kquatre.ui.viewmodel
             get
             {
                 if (FireworkManager.IsDirty)
-                    return string.Format("{0} - v{1} - {2} {3}", SOFTWARE_TITLE, _softwareVersion, FireworkManager.FireworkFullFileName, "*");
+                    return string.Format("{0} - v{1} - {2} {3}", SOFTWARE_TITLE, _fireworkManager.SoftwareVersion, FireworkManager.FireworkFullFileName, "*");
                 else
-                    return string.Format("{0} - v{1} - {2}", SOFTWARE_TITLE, _softwareVersion, FireworkManager.FireworkFullFileName);
+                    return string.Format("{0} - v{1} - {2}", SOFTWARE_TITLE, _fireworkManager.SoftwareVersion, FireworkManager.FireworkFullFileName);
             }
         }
 
@@ -205,10 +203,7 @@ namespace fr.guiet.kquatre.ui.viewmodel
         #region Constructor 
 
         public MainWindowViewModel()
-        {
-            //Gets software version
-            _softwareVersion = Assembly.GetExecutingAssembly().GetName().Version;
-
+        {           
             //Initialize Software configuration
             _configuration = new SoftwareConfiguration();
 

@@ -48,6 +48,11 @@ namespace fr.guiet.kquatre.ui.views
             this.DataContext = _viewModel;
         }
 
+        private void _btnClose_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
         private void _btnSelect_Click(object sender, RoutedEventArgs e)
         {
             List<Firework> fireworkList = new List<Firework>();
@@ -76,7 +81,7 @@ namespace fr.guiet.kquatre.ui.views
 
             foreach (Firework fr in fireworkList)
             {
-                Firework fireworkClone = fr.GetClone();
+                Firework fireworkClone = fr.PartialClone();
                 _fireworkManager.AddFireworkToLine(fireworkClone, _line);
             }
 

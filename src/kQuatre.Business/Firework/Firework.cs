@@ -1,4 +1,6 @@
-﻿using System;
+﻿using fr.guiet.kquatre.business.exceptions;
+using fr.guiet.kquatre.business.receptor;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -12,7 +14,12 @@ namespace fr.guiet.kquatre.business.firework
     /// </summary>
     public class Firework : INotifyPropertyChanged
     {
-        #region Private Members
+        #region Private Members        
+
+        /// <summary>
+        /// Receptor assign to this firework
+        /// </summary>
+        private ReceptorAddress _receptorAddress = null;
 
         /// <summary>
         /// Radrow index (firework order number without rescue line)
@@ -58,11 +65,6 @@ namespace fr.guiet.kquatre.business.firework
         /// Timer helper
         /// </summary>
         private Timer _timerHelper = null;
-        
-        /// <summary>
-        /// Color representation of firework on Gantt Diagramm
-        /// </summary>
-        //private SolidColorBrush _colorPresentation = new SolidColorBrush(Colors.Gray);
 
         /// <summary>
         /// Color representation of firework on Timeline Diagramm
@@ -72,7 +74,7 @@ namespace fr.guiet.kquatre.business.firework
         /// <summary>
         /// Line assigned to this firework
         /// </summary>
-        private Line _assignedLine = null;        
+        private Line _assignedLine = null;
 
         #endregion
 
@@ -82,9 +84,9 @@ namespace fr.guiet.kquatre.business.firework
         {
             _reference = reference;
             _designation = designation;
-            _duration = duration;        
+            _duration = duration;
         }
-        
+
         #endregion
 
         #region Event
@@ -118,6 +120,41 @@ namespace fr.guiet.kquatre.business.firework
         #endregion
 
         #region Public Members 
+
+        public string ReceptorAddressUI
+        {
+            get
+            {
+                if (_receptorAddress != null)
+                {
+                    return _receptorAddress.ReceptorAddressUI;
+                }
+                else
+                {
+                    return "Non renseigné";
+                }
+            }
+        }
+
+        public ReceptorAddress ReceptorAddress
+        {
+            get
+            {
+                return _receptorAddress;
+            }
+            set
+            {
+                if (_receptorAddress != value)
+                {
+                    _receptorAddress = value;
+                    OnPropertyChanged();
+
+                    //Update Receptor Address UI when receptor address is changed
+                    OnPropertyChanged("ReceptorAddressUI");
+                }
+            }
+        }
+
         public String StateText
         {
             get
@@ -148,7 +185,7 @@ namespace fr.guiet.kquatre.business.firework
         {
             get
             {
-                return string.Format("{0} ({1})", _assignedLine.NumberUI, _assignedLine.ReceptorAddressUI);
+                return string.Format("{0} ({1})", _assignedLine.NumberUI, ReceptorAddressUI);
             }
         }
 
@@ -158,7 +195,7 @@ namespace fr.guiet.kquatre.business.firework
             {
                 return DateTime.Now.Date.Add(_assignedLine.Ignition);
             }
-        }        
+        }
 
         public bool IsFinished
         {
@@ -166,7 +203,7 @@ namespace fr.guiet.kquatre.business.firework
             {
                 return (this.State == FireworkState.Finished || this.State == FireworkState.LaunchFailed);
             }
-        }        
+        }
 
         public FireworkState State
         {
@@ -177,32 +214,32 @@ namespace fr.guiet.kquatre.business.firework
                 switch (_state)
                 {
                     case FireworkState.Finished:
-                       // this.ColorPresentation = new SolidColorBrush(Colors.Green);
+                        // this.ColorPresentation = new SolidColorBrush(Colors.Green);
                         this.RadColor = Colors.Green;
                         break;
 
                     case FireworkState.ImminentLaunch:
-                      //  this.ColorPresentation = new SolidColorBrush(Colors.Orange);
+                        //  this.ColorPresentation = new SolidColorBrush(Colors.Orange);
                         this.RadColor = Colors.Orange;
                         break;
 
                     case FireworkState.InProgress:
-                     //   this.ColorPresentation = new SolidColorBrush(Colors.Red);
+                        //   this.ColorPresentation = new SolidColorBrush(Colors.Red);
                         this.RadColor = Colors.Red;
                         break;
 
                     case FireworkState.LaunchFailed:
-                     //   this.ColorPresentation = new SolidColorBrush(Colors.Black);
+                        //   this.ColorPresentation = new SolidColorBrush(Colors.Black);
                         this.RadColor = Colors.Black;
                         break;
 
                     case FireworkState.Standby:
-                      //  this.ColorPresentation = new SolidColorBrush(Colors.Gray);
+                        //  this.ColorPresentation = new SolidColorBrush(Colors.Gray);
                         this.RadColor = Colors.Gray;
                         break;
                 }
 
-                OnPropertyChanged("StateText");                
+                OnPropertyChanged("StateText");
             }
             get
             {
@@ -233,20 +270,6 @@ namespace fr.guiet.kquatre.business.firework
             }
         }
 
-        //TODO: Still Needed?
-        /*public SolidColorBrush ColorPresentation
-        {
-            get { return _colorPresentation; }
-            set
-            {
-                if (_colorPresentation != value)
-                {
-                    _colorPresentation = value;
-                    OnPropertyChanged();
-                }
-            }
-        }*/
-
         public decimal PercentComplete
         {
             get { return _percentComplete; }
@@ -273,7 +296,8 @@ namespace fr.guiet.kquatre.business.firework
         {
             get
             {
-                if (_radRowIndex.HasValue) {
+                if (_radRowIndex.HasValue)
+                {
                     return _radRowIndex.Value;
                 }
                 else
@@ -330,29 +354,76 @@ namespace fr.guiet.kquatre.business.firework
 
         #endregion
 
-        #region Public Method 
+        #region Public Method
+
+
+
+        /// <summary>
+        /// Get a partial clone of this object
+        /// Only alterable property and property shown on screen are cloned
+        /// </summary>
+        /// <returns></returns>
+        public Firework PartialClone()
+        {
+            Firework firework = new Firework(_reference, _designation, _duration);
+
+            firework.ReceptorAddress = _receptorAddress;
+
+            return firework;
+
+        }
+
+        /// <summary>
+        /// Update changes from clone
+        /// </summary>
+        /// <param name="fireworkClone"></param>
+        public void UpdateFromClone(Firework fireworkClone)
+        {
+            if (fireworkClone.ReceptorAddress == null)
+                UnassignReceptorAddress();
+            else
+            {
+                //First unassign current address if any
+                UnassignReceptorAddress();
+
+                //Then assign new address
+                AssignReceptorAddress(fireworkClone.ReceptorAddress);
+            }
+        }
+
+        /// <summary>
+        /// Assign Receptor Address to a firework
+        /// </summary>
+        /// <param name="ra"></param>
+        /// <exception cref="LineAlreadyAssignedException"></exception>
+        public void AssignReceptorAddress(ReceptorAddress ra)
+        {
+            this.ReceptorAddress = ra;
+            ra.AssignFirework(this);            
+        }
+
+        /// <summary>
+        /// Unassign Receptor Address
+        /// </summary>
+        public void UnassignReceptorAddress()
+        {
+            if (this._receptorAddress != null)
+            {
+                _receptorAddress.UnassignFirework(this);
+                ReceptorAddress = null;
+            }
+        }
 
         public void AssignLine(Line line)
         {
             _assignedLine = line;
         }
-
-        public Firework GetClone()
-        {
-            Firework f = new Firework(_reference, _designation, _duration);
-            return f;
-        }
-
+  
         public void Reorder(int order, int? radRowIndex)
         {
             _number = order;
             _radRowIndex = radRowIndex;
         }
-
-        /*public void Reorder(int order)
-        {
-            _number = order;            
-        }*/
 
         public void Reset()
         {
@@ -374,11 +445,11 @@ namespace fr.guiet.kquatre.business.firework
             {
                 _elapsedTime.Stop();
                 _elapsedTime = null;
-            }            
+            }
         }
 
         public void Start()
-        {         
+        {
             // Start timer
             _elapsedTime = new Stopwatch();
             _elapsedTime.Start();
@@ -391,7 +462,7 @@ namespace fr.guiet.kquatre.business.firework
 
             //Change firework state
             this.State = FireworkState.InProgress;
-        }               
+        }
 
         public void SetFailed()
         {
@@ -442,8 +513,6 @@ namespace fr.guiet.kquatre.business.firework
                 this.PercentComplete = Convert.ToDecimal(complete);
             }
         }
-
-       
 
         #endregion
     }

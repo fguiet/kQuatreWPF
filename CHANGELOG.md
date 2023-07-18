@@ -1,5 +1,12 @@
 # Changelog
 
+## [2023.1.0.0] - 2023/07/09
+
+Change in functionalities
+
+* A receptor channel is not assign to a line anymore but to a firework
+* Add kQuatre software version in k4 file
+
 ## [2022.1.0.2] - 2022/07/13
 
 * Fix rescue line launching not working anymore (bug introduce in [2021.2.1.3])

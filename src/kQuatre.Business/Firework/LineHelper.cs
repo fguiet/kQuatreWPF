@@ -1,24 +1,32 @@
-﻿using System.Collections.Generic;
+﻿using fr.guiet.kquatre.business.receptor;
+using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Shapes;
 
 namespace fr.guiet.kquatre.business.firework
 {
+    /// <summary>
+    /// This is a helper class.
+    /// 
+    /// It prepares the next line to launch with associated fireworks
+    /// </summary>
     public class LineHelper
     {
-        private List<Line> _lines = new List<Line>();
-        private Dictionary<string, List<Line>> _messages = new Dictionary<string, List<Line>>();
-
-        //private const string FIRE_MESSAGE_KEY = "FIRE";
-
-        public LineHelper(List<Line> lines)
+        private Line _line = null;
+        private Dictionary<string, List<Firework>> _messages = new Dictionary<string, List<Firework>>();
+       
+        public LineHelper(Line line)
         {
-            _lines = lines;
+            _line = line;
 
-            //Group line with same receptor
-            GroupLinesWithSameReceptorAddress();
+            //This line will be launched next!!
+            line.SetImminentLaunch();
+
+            //Group firework with same receptor
+            GroupFireworksWithSameReceptorAddress();
         }
 
-        public Dictionary<string, List<Line>> LinesGroupByReceptorAddress
+        public Dictionary<string, List<Firework>> FireworksGroupByReceptorAddress
         {
             get
             {
@@ -26,58 +34,44 @@ namespace fr.guiet.kquatre.business.firework
             }
         }
 
+        public Line GetLine
+        {
+            get
+            {
+                return _line;
+            }
+        }
+
         public double Ignition
         {
             get
             {
-                return _lines[0].Ignition.TotalMilliseconds;
+                return _line.Ignition.TotalMilliseconds;
             }
         }
 
-        private void GroupLinesWithSameReceptorAddress()
+        /// <summary>
+        /// TODO : [2023.1.0.0] - 2023/07/09 - Rework that part of code...
+        /// Group fireworks wih same receptor address
+        /// </summary>
+        private void GroupFireworksWithSameReceptorAddress()
         {
-
-            foreach (Line line in _lines)
+            foreach (Firework f in _line.Fireworks)
             {
-                line.SetImminentLaunch();
-
-                if (_messages.ContainsKey(line.ReceptorAddress.Receptor.Address))
+                if (_messages.ContainsKey(f.ReceptorAddress.Address))
                 {
                     //line already treated
                     continue;
                 }
                 else
                 {
-                    List<Line> linesSameAddress = (from l in _lines
-                                                      where l.ReceptorAddress.Receptor.Address
-                                                      == line.ReceptorAddress.Receptor.Address
-                                                      select l).ToList();
+                    List<Firework> fireworksSameAddress = (from firework in _line.Fireworks
+                                                           where firework.ReceptorAddress.Address == f.ReceptorAddress.Address
+                                                           select firework).ToList();
 
-                    //string channels = string.Join(";", linesSameAddress.Select(l => l.ReceptorAddress.Channel.ToString()));
-
-                    //string message = string.Format("{0};{1}", linesSameAddress.Count(), channels);
-
-                    _messages.Add(line.ReceptorAddress.Receptor.Address, linesSameAddress);
-                   //_messages.Add(message, linesSameAddress);
+                    _messages.Add(f.ReceptorAddress.Address, fireworksSameAddress);
                 }
-            }
+            }            
         }
-        
-        /*public static string GetFireMessage(List<Line> lines)
-        {
-            string channels = string.Join("+", lines.Select(l => l.ReceptorAddress.Channel.ToString()));
-
-            return string.Format("{0}+{1}", lines.Count(), channels);
-        }*/
-        /*public void AddLine(Line line)
-        {
-            List<Line> lineOnSameReceptor =
-                                    (from l in _lines
-                                     where l.ReceptorAddress.Receptor.Address == line.ReceptorAddress.Receptor.Address
-                                     select l).ToList();
-            _lines.Add(line);
-
-
-        }*/
     }
 }

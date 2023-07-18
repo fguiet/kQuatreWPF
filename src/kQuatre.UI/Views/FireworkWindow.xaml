@@ -1,0 +1,59 @@
+﻿<Window x:Class="fr.guiet.kquatre.ui.views.FireworkWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:fr.guiet.kquatre.ui.views"
+        xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
+        mc:Ignorable="d"
+        Title="Gestion d'un feu d'artifice d'une ligne" Height="250" Width="600"  WindowStartupLocation="CenterScreen" Icon="/kQuatre;component/Resources/FireworksIcon.png" ResizeMode="NoResize">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" >
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="40"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Row="0" Grid.Column="0" Width="200" Content="Référence :" HorizontalAlignment="Left"  VerticalAlignment="Center"  />
+                <Label Grid.Row="0" Grid.Column="1" Width="200"  HorizontalAlignment="Left"  VerticalAlignment="Center"  Content="{Binding Path=Firework.Reference}" />
+
+                <Label Grid.Row="1" Grid.Column="0" Width="200" Content="Désignation :" HorizontalAlignment="Left"  VerticalAlignment="Center"  />
+                <Label Grid.Row="1" Grid.Column="1" Width="200"  HorizontalAlignment="Left"  VerticalAlignment="Center"  Content="{Binding Path=Firework.Designation}" />
+
+                <Label Grid.Row="2" Grid.Column="0" Width="200" Content="Duréé :" HorizontalAlignment="Left"  VerticalAlignment="Center"  />
+                <Label Grid.Row="2" Grid.Column="1" Width="200"  HorizontalAlignment="Left"  VerticalAlignment="Center"  Content="{Binding Path=Firework.Duration}" />
+
+                <Label Grid.Row="3" Grid.Column="0" Width="200" Content="Association récepteur :" HorizontalAlignment="Left"  VerticalAlignment="Center" />
+                <ComboBox Grid.Row="3" Grid.Column="1" Width="300" SelectedItem="{Binding Path=Firework.ReceptorAddress}" DisplayMemberPath="ReceptorAddressUI" ItemsSource="{Binding Path=ReceptorAddressesAvailable}" HorizontalAlignment="Left" VerticalAlignment="Center"   />
+                <Button Grid.Row="3" Grid.Column="2" Content="Dissocier" Name="_btnDissociate"  HorizontalAlignment="Center"  VerticalAlignment="Center" Width="76" Click="_btnDissociate_Click" />
+            </Grid>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="85"/>
+                <ColumnDefinition Width="85"/>
+            </Grid.ColumnDefinitions>
+            <Border  Grid.Column="0"  Background="LightGray" />
+            <Border  Grid.Column="1"  Background="LightGray" />
+            <Border  Grid.Column="2"  Background="LightGray" />
+
+            <Button Content="Enregistrer" IsEnabled="{Binding IsDirty}" Command="" Grid.Column="1" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="75" x:Name="_btnSave" Click="_btnSave_Click" />
+            <Button x:Name="_btnClose" Content="Fermer" Grid.Column="2" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="75" Click="_btnClose_Click" />
+        </Grid>
+    </Grid>
+</Window>

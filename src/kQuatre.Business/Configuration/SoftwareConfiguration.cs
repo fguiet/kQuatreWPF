@@ -180,7 +180,8 @@ namespace fr.guiet.kquatre.business.configuration
 
             if (f == null)
             {
-                Firework newFirework = firework.GetClone();
+                //Firework newFirework = firework.Get
+                Firework newFirework = firework.PartialClone();
                 _fireworks.Add(newFirework);
                 SaveFireworks();
             }

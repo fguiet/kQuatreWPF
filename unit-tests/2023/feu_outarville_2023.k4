@@ -12,15 +12,7 @@
   <Lines>
     <Line number="1" ignition="00:00:29" rescue="no">
       <Fireworks>
-        <Firework reference="YAC931484A" designation="CHANDELLE MONO-COUP POT A FEU KAMURO ET COMETE ROU" duration="00:00:02">
-          <ReceptorAddress address="1" channel="1" />
-        </Firework>
-        <Firework reference="AC160140A" designation="MARRON AIR 50MM TITANE LOGE EN MORTIER" duration="00:00:03">
-          <ReceptorAddress address="1" channel="1" />
-        </Firework>
-        <Firework reference="WAC298058A" designation="PACK CD 19 CPS BBTES 4 EFFETS VARIES" duration="00:00:28">
-          <ReceptorAddress address="1" channel="1" />
-        </Firework>
+        <Firework reference="YAC931484A" designation="CHANDELLE MONO-COUP POT A FEU KAMURO ET COMETE ROU" duration="00:00:02" />
       </Fireworks>
     </Line>
     <Line number="2" ignition="00:00:35" rescue="no">
