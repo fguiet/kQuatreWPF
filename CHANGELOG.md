@@ -1,5 +1,14 @@
 # Changelog
 
+## [2024.1.0.0] - 2024/08/26
+
+* Change version number to 2024.1.0.0
+* Add Receptor 6 to kQuatreConfiguration.xml
+
+## [2023.1.0.0] - 2023/07/01
+
+* Change version number, add 2023 k4 file 
+
 ## [2022.1.0.2] - 2022/07/13
 
 * Fix rescue line launching not working anymore (bug introduce in [2021.2.1.3])
