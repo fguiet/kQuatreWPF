@@ -1,0 +1,254 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FireworkDefinition fireworkName="OUTARVILLE (MAIRIE) 13.07.2024">
+  <Receptors>
+    <Receptor name="Coordinateur" address="0" nbOfChannels="0" />
+    <Receptor name="Boitier 1" address="1" nbOfChannels="16" />
+    <Receptor name="Boitier 2" address="2" nbOfChannels="16" />
+    <Receptor name="Boitier 3" address="3" nbOfChannels="16" />
+    <Receptor name="Boitier 4" address="4" nbOfChannels="16" />
+    <Receptor name="Boitier 5" address="5" nbOfChannels="16" />
+    <Receptor name="Boitier 6" address="6" nbOfChannels="16" />
+  </Receptors>
+  <SoundTrack soundTrackFilePath="" />
+  <Lines>
+    <Line number="1" ignition="00:01:33" rescue="no">
+      <Fireworks>
+        <Firework reference="ACC130617J" designation="BENGALE 1 MN ROUGE" duration="00:01:00" />
+      </Fireworks>
+    </Line>
+    <Line number="2" ignition="00:02:05" rescue="no">
+      <Fireworks>
+        <Firework reference="ACC120021B" designation="FONTAINE CONIQUE DOREE (120022=)" duration="00:01:00" />
+      </Fireworks>
+    </Line>
+    <Line number="3" ignition="00:02:21" rescue="no">
+      <Fireworks>
+        <Firework reference="AC298079A" designation="PACK CD 19 CPS SPIRALE PIVOINE RGE VERT VIOLET" duration="00:00:30" />
+      </Fireworks>
+    </Line>
+    <Line number="4" ignition="00:02:31" rescue="no">
+      <Fireworks>
+        <Firework reference="ACC990808B-BPE" designation="ASSORTIMENT N°6-5 BBES 75MM R5 ACC190631B" duration="00:00:27" />
+      </Fireworks>
+    </Line>
+    <Line number="5" ignition="00:02:53" rescue="no">
+      <Fireworks>
+        <Firework reference="AC298057A" designation="PACK CD 36 CPS BBTES 5 EFFETS VARIES" duration="00:00:35" />
+        <Firework reference="AC298057A" designation="PACK CD 36 CPS BBTES 5 EFFETS VARIES" duration="00:00:35" />
+      </Fireworks>
+    </Line>
+    <Line number="6" ignition="00:03:25" rescue="no">
+      <Fireworks>
+        <Firework reference="AC298059A" designation="PACK CD 19 CPS RGE VERT BLEU A CREPITANT" duration="00:00:32" />
+      </Fireworks>
+    </Line>
+    <Line number="7" ignition="00:03:37" rescue="no">
+      <Fireworks>
+        <Firework reference="ACC190211A" designation="SAC DE 5 BOMBES 75MM COULEURS VARIEES (LGDLF)" duration="00:00:06" />
+      </Fireworks>
+    </Line>
+    <Line number="8" ignition="00:03:55" rescue="no">
+      <Fireworks>
+        <Firework reference="YAC192566A" designation="BBE 75MM QUEUE DE CHEVAL KAM CHG VIOLET" duration="00:00:05" />
+      </Fireworks>
+    </Line>
+    <Line number="9" ignition="00:04:51" rescue="no">
+      <Fireworks>
+        <Firework reference="C20.10CVA" designation="CHANDELLE 20MM 10 COMETES VARIEES-R3" duration="00:00:30" />
+      </Fireworks>
+    </Line>
+    <Line number="10" ignition="00:05:21" rescue="no">
+      <Fireworks>
+        <Firework reference="ACC298152C" designation="PACK CD 16 CPS COMETE VERT" duration="00:00:20" />
+        <Firework reference="ACC298153C" designation="PACK CD 16 CPS COMETE JAUNE" duration="00:00:20" />
+        <Firework reference="ACC298149C" designation="PACK CD 16 CPS COMETE BLEU" duration="00:00:20" />
+      </Fireworks>
+    </Line>
+    <Line number="11" ignition="00:05:41" rescue="no">
+      <Fireworks>
+        <Firework reference="ACC298152C" designation="PACK CD 16 CPS COMETE VERT" duration="00:00:20" />
+        <Firework reference="ACC298153C" designation="PACK CD 16 CPS COMETE JAUNE" duration="00:00:20" />
+        <Firework reference="ACC298149C" designation="PACK CD 16 CPS COMETE BLEU" duration="00:00:20" />
+      </Fireworks>
+    </Line>
+    <Line number="12" ignition="00:06:00" rescue="no">
+      <Fireworks>
+        <Firework reference="ACC298239A" designation="PACK CW 36 CPS 20MM COMETE RAINBOW" duration="00:00:25" />
+      </Fireworks>
+    </Line>
+    <Line number="13" ignition="00:06:17" rescue="no">
+      <Fireworks>
+        <Firework reference="ACC298239A" designation="PACK CW 36 CPS 20MM COMETE RAINBOW" duration="00:00:25" />
+      </Fireworks>
+    </Line>
+    <Line number="14" ignition="00:06:28" rescue="no">
+      <Fireworks>
+        <Firework reference="ACC190111B" designation="SAC 5 BOMBES 75MM CROSSETTES ASSORTIES" duration="00:00:06" />
+      </Fireworks>
+    </Line>
+    <Line number="15" ignition="00:06:47" rescue="no">
+      <Fireworks>
+        <Firework reference="C20.10CVA" designation="CHANDELLE 20MM 10 COMETES VARIEES-R3" duration="00:00:30" />
+      </Fireworks>
+    </Line>
+    <Line number="16" ignition="00:07:17" rescue="no">
+      <Fireworks>
+        <Firework reference="AC298076A" designation="PACK CD 25CPS EFFETS VARIES TRAINEE ASSORTI" duration="00:00:32" />
+        <Firework reference="AC298079A" designation="PACK CD 19 CPS SPIRALE PIVOINE RGE VERT VIOLET" duration="00:00:30" />
+      </Fireworks>
+    </Line>
+    <Line number="17" ignition="00:07:32" rescue="no">
+      <Fireworks>
+        <Firework reference="ACC990810B-BPE" designation="ASSORTIMENT N°8-5 BBES 75MM R5 AC19633A" duration="00:00:27" />
+      </Fireworks>
+    </Line>
+    <Line number="18" ignition="00:07:50" rescue="no">
+      <Fireworks>
+        <Firework reference="ACC298255A" designation="PACK CD 50 CPS ASSORT CROS (298013 x2=)" duration="00:00:30" />
+        <Firework reference="ACC298255A" designation="PACK CD 50 CPS ASSORT CROS (298013 x2=)" duration="00:00:30" />
+      </Fireworks>
+    </Line>
+    <Line number="19" ignition="00:08:04" rescue="no">
+      <Fireworks>
+        <Firework reference="ACC190211A" designation="SAC DE 5 BOMBES 75MM COULEURS VARIEES (LGDLF)" duration="00:00:06" />
+      </Fireworks>
+    </Line>
+    <Line number="20" ignition="00:08:58" rescue="no">
+      <Fireworks>
+        <Firework reference="AC380330A" designation="JET DE SCENE ARGENT 3 SEC. 6 METRES AVEC AE " duration="00:00:03" />
+      </Fireworks>
+    </Line>
+    <Line number="21" ignition="00:09:05" rescue="no">
+      <Fireworks>
+        <Firework reference="AC380330A" designation="JET DE SCENE ARGENT 3 SEC. 6 METRES AVEC AE " duration="00:00:03" />
+      </Fireworks>
+    </Line>
+    <Line number="22" ignition="00:09:12" rescue="no">
+      <Fireworks>
+        <Firework reference="AC380330A" designation="JET DE SCENE ARGENT 3 SEC. 6 METRES AVEC AE " duration="00:00:03" />
+      </Fireworks>
+    </Line>
+    <Line number="23" ignition="00:09:32" rescue="no">
+      <Fireworks>
+        <Firework reference="AC380330A" designation="JET DE SCENE ARGENT 3 SEC. 6 METRES AVEC AE " duration="00:00:03" />
+      </Fireworks>
+    </Line>
+    <Line number="24" ignition="00:10:03" rescue="no">
+      <Fireworks>
+        <Firework reference="J31CO43" designation="JET 31MM DOREE" duration="00:00:43" />
+        <Firework reference="C20.10RM" designation="CHANDELLE 20MM 10 COMETES ROUGE MAGNESIUM-R3" duration="00:00:30" />
+      </Fireworks>
+    </Line>
+    <Line number="25" ignition="00:10:30" rescue="no">
+      <Fireworks>
+        <Firework reference="C20.10CPO" designation="CHANDELLE 20MM 10 COMETES PALME OR-R3" duration="00:00:30" />
+        <Firework reference="C20.10BM" designation="CHANDELLE 20MM 10 COMETES BLEUE MAGNESIUM-R3" duration="00:00:30" />
+      </Fireworks>
+    </Line>
+    <Line number="26" ignition="00:10:58" rescue="no">
+      <Fireworks>
+        <Firework reference="AC298060A" designation="PACK CD 19 CPS PALME OR CLIGNO RGE" duration="00:00:31" />
+      </Fireworks>
+    </Line>
+    <Line number="27" ignition="00:11:13" rescue="no">
+      <Fireworks>
+        <Firework reference="AC380330A" designation="JET DE SCENE ARGENT 3 SEC. 6 METRES AVEC AE " duration="00:00:03" />
+      </Fireworks>
+    </Line>
+    <Line number="28" ignition="00:11:18" rescue="no">
+      <Fireworks>
+        <Firework reference="ACC190263C" designation="SAC 5 BOMBES 75MM KAMURO ET ROUGE" duration="00:00:06" />
+      </Fireworks>
+    </Line>
+    <Line number="29" ignition="00:11:50" rescue="no">
+      <Fireworks>
+        <Firework reference="ACC297302B" designation="HORTENSIA KAMURO A BLEU&#xA;PACK CW 42 COUPS 7 VOLEES " duration="00:00:26" />
+        <Firework reference="YAC931484A" designation="CHANDELLE MONO-COUP POT A FEU KAMURO ET COMETE ROU" duration="00:00:02" />
+        <Firework reference="ACC297426D" designation="HELIOTROPE TRONC ASSORTI SAULE COULEUR&#xA;PACK CD 25 " duration="00:00:22" />
+      </Fireworks>
+    </Line>
+    <Line number="30" ignition="00:11:51" rescue="no">
+      <Fireworks>
+        <Firework reference="ACC190241B" designation="SAC 5 BOMBES 75MM PIERRE DE LUNE" duration="00:00:06" />
+      </Fireworks>
+    </Line>
+    <Line number="31" ignition="00:12:04" rescue="no">
+      <Fireworks>
+        <Firework reference="AC931002A" designation="EVENTAIL RAFALE COMETES KAMURO" duration="00:00:03" />
+        <Firework reference="AC192567A" designation="BOMBE 75MM QUEUE DE CHEVAL KAMURO CHANGEMENT CLIGN" duration="00:00:06" />
+      </Fireworks>
+    </Line>
+    <Line number="32" ignition="00:12:27" rescue="no">
+      <Fireworks>
+        <Firework reference="ACC120022B" designation="FONTAINE CONIQUE ARGENT" duration="00:01:00" />
+      </Fireworks>
+    </Line>
+    <Line number="33" ignition="00:13:50" rescue="no">
+      <Fireworks>
+        <Firework reference="ACC130615J" designation="BENGALE 1 MN BLEU" duration="00:01:00" />
+        <Firework reference="AC130616A" designation="BENGALE 1 MN BLANC" duration="00:01:00" />
+        <Firework reference="ACC130617J" designation="BENGALE 1 MN ROUGE" duration="00:01:00" />
+      </Fireworks>
+    </Line>
+    <Line number="34" ignition="00:14:19" rescue="no">
+      <Fireworks>
+        <Firework reference="ACC297096C" designation="PACK CW 117 COUPS DE BBES BL.BLC.RG AVEC TRONCS" duration="00:00:33" />
+      </Fireworks>
+    </Line>
+    <Line number="35" ignition="00:14:34" rescue="no">
+      <Fireworks>
+        <Firework reference="ACC190279B" designation="SAC 5 BBES DRAPEAU 75MM" duration="00:00:06" />
+      </Fireworks>
+    </Line>
+    <Line number="36" ignition="00:14:47" rescue="no">
+      <Fireworks>
+        <Firework reference="ACC298251A" designation="PACK 9 COUPS RANGEE BB BLEU BLANC ROUGE" duration="00:00:20" />
+      </Fireworks>
+    </Line>
+    <Line number="37" ignition="00:14:54" rescue="no">
+      <Fireworks>
+        <Firework reference="AC298056A" designation="PACK CD 16 CPS BBTES 4 EFFETS VARIES" duration="00:00:22" />
+        <Firework reference="AC298056A" designation="PACK CD 16 CPS BBTES 4 EFFETS VARIES" duration="00:00:22" />
+        <Firework reference="ACC298251A" designation="PACK 9 COUPS RANGEE BB BLEU BLANC ROUGE" duration="00:00:20" />
+      </Fireworks>
+    </Line>
+    <Line number="38" ignition="00:14:58" rescue="no">
+      <Fireworks>
+        <Firework reference="AC298072A" designation="PACK CD 25CPS 47MM BBES ASSORTIES" duration="00:00:35" />
+      </Fireworks>
+    </Line>
+    <Line number="39" ignition="00:15:03" rescue="no">
+      <Fireworks>
+        <Firework reference="AC298058A" designation="PACK CD 19 CPS BBTES 4 EFFETS VARIES" duration="00:00:29" />
+        <Firework reference="AC298059A" designation="PACK CD 19 CPS RGE VERT BLEU A CREPITANT" duration="00:00:32" />
+        <Firework reference="ACC298093B" designation="PACK 49 CPS BROCADE CROWN ETOILE RGE (298059=)" duration="00:00:32" />
+      </Fireworks>
+    </Line>
+    <Line number="40" ignition="00:15:05" rescue="no">
+      <Fireworks>
+        <Firework reference="ACC990809B-BPE" designation="ASSORTIMENT N°7-5 BBES 75MM R5 AC19632A" duration="00:00:27" />
+      </Fireworks>
+    </Line>
+    <Line number="41" ignition="00:15:10" rescue="no">
+      <Fireworks>
+        <Firework reference="ACC190211A" designation="SAC DE 5 BOMBES 75MM COULEURS VARIEES (LGDLF)" duration="00:00:06" />
+      </Fireworks>
+    </Line>
+    <Line number="42" ignition="00:15:18" rescue="no">
+      <Fireworks>
+        <Firework reference="ACC190211A" designation="SAC DE 5 BOMBES 75MM COULEURS VARIEES (LGDLF)" duration="00:00:06" />
+      </Fireworks>
+    </Line>
+    <Line number="43" ignition="00:15:22" rescue="no">
+      <Fireworks>
+        <Firework reference="ACC190211A" designation="SAC DE 5 BOMBES 75MM COULEURS VARIEES (LGDLF)" duration="00:00:06" />
+      </Fireworks>
+    </Line>
+    <Line number="44" ignition="00:15:30" rescue="no">
+      <Fireworks>
+        <Firework reference="ACC190246C" designation="SAC 5 BOMBES 75MM BROCADE CLIGNOTANT" duration="00:00:26" />
+        <Firework reference="ACC298251A" designation="PACK 9 COUPS RANGEE BB BLEU BLANC ROUGE" duration="00:00:20" />
+      </Fireworks>
+    </Line>
+  </Lines>
+</FireworkDefinition>
