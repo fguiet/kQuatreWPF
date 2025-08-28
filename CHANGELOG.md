@@ -1,5 +1,10 @@
 # Changelog
 
+## [2025.1.0.0] - 2025/08/28
+
+* Change version number to 2025.1.0.0
+* Fix Excel file loading (Datetime column was not handling properly since many years now)
+
 ## [2024.1.0.0] - 2024/08/26
 
 * Change version number to 2024.1.0.0

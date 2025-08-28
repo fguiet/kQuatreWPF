@@ -1005,14 +1005,27 @@ namespace fr.guiet.kquatre.business.firework
                         line.LineFailed += Line_LineFailed;
                         line.PropertyChanged += Line_PropertyChanged;
 
-                        line.Ignition = ((DateTime)excelWorkSheet.Cells[i, 2].Value).TimeOfDay;
+                        // 2025/08/28 - Value gets back from Excel is a fraction of a day and not a DateTime object                        
+                        //line.Ignition = ((DateTime)excelWorkSheet.Cells[i, 2].Value).TimeOfDay;                        
+                        line.Ignition = TimeSpan.FromDays((double)excelWorkSheet.Cells[i, 2].Value);
+
+                        //Round value to upper second
+                        line.Ignition = TimeSpan.FromSeconds(Math.Ceiling(line.Ignition.TotalSeconds));
+                        
                         AddLine(line);
                     }
 
                     //Get Data for firework
                     string reference = excelWorkSheet.Cells[i, 8].Value.ToString();
                     string designation = excelWorkSheet.Cells[i, 5].Value.ToString();
-                    TimeSpan duration = ((DateTime)excelWorkSheet.Cells[i, 6].Value).TimeOfDay;
+
+                    // 2025/08/28 - Value gets back from Excel is a fraction of a day and not a DateTime object
+                    //TimeSpan duration = ((DateTime)excelWorkSheet.Cells[i, 6].Value).TimeOfDay;
+                    TimeSpan duration = TimeSpan.FromDays((double)excelWorkSheet.Cells[i, 6].Value);
+
+                    //round value to upper second
+                    duration = TimeSpan.FromSeconds(Math.Ceiling(duration.TotalSeconds));
+
                     Firework firework = new Firework(reference, designation, duration);
 
                     //Add firework reference if it does not exists in the fireworks reference list
